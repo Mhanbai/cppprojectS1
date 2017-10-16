@@ -92,8 +92,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the light object.
-	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(1.0f, 0.0f, 0.0f);
+	m_Light->SetAmbientColor(0.15f, 0.0f, 0.0f, 0.0f);
+	m_Light->SetDiffuseColor(1.0f, 0.0f, 0.0f, 0.0f);
+	m_Light->SetDirection(1.0f, 0.0f, 1.0f);
+	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light->SetSpecularPower(10.0f);
 
 	return true;
 }
@@ -151,11 +154,11 @@ bool GraphicsClass::Frame()
 
 
 	// Update the rotation variable each frame.
-	rotation += (float)D3DX_PI * 0.01f;
+	/*rotation += (float)D3DX_PI * 0.01f;
 	if(rotation > 360.0f)
 	{
 		rotation -= 360.0f;
-	}
+	}*/
 
 	// Update the delta variable each frame. (keep this between 0 and 1)
 	delta += 0.001f;
@@ -200,7 +203,7 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 
 	// Render the model using the light shader.
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
-								    m_Light->GetDirection(), m_Light->GetDiffuseColor(), deltavalue);
+								    m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), deltavalue);
 	if(!result)
 	{
 		return false;
