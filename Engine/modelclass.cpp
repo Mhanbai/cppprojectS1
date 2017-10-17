@@ -9,6 +9,7 @@ ModelClass::ModelClass()
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
 	m_model = 0;
+	m_texture = 0;
 }
 
 
@@ -34,6 +35,14 @@ bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* te
 		return false;
 	}
 
+	// Load the texture for this model.
+	result = LoadTexture(device, textureFilename);
+	if (!result)
+	{
+		return false;
+	}
+
+
 	// Initialize the vertex and index buffers.
 	result = InitializeBuffers(device);
 	if(!result)
@@ -50,6 +59,9 @@ void ModelClass::Shutdown()
 
 	// Shutdown the vertex and index buffers.
 	ShutdownBuffers();
+
+	// Release the model texture.
+	ReleaseTexture();
 
 	// Release the model data.
 	ReleaseModel();
@@ -70,6 +82,11 @@ void ModelClass::Render(ID3D11DeviceContext* deviceContext)
 int ModelClass::GetIndexCount()
 {
 	return m_indexCount;
+}
+
+ID3D11ShaderResourceView * ModelClass::GetTexture()
+{
+	return m_texture->GetTexture();
 }
 
 
@@ -196,6 +213,40 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 
     // Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	return;
+}
+
+bool ModelClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
+{
+	bool result;
+
+	// Create the texture object.
+	m_texture = new TextureClass;
+	if (!m_texture)
+	{
+		return false;
+	}
+
+	// Initialize the texture object.
+	result = m_texture->Initialize(device, filename);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void ModelClass::ReleaseTexture()
+{
+	// Release the texture object.
+	if (m_texture)
+	{
+		m_texture->Shutdown();
+		delete m_texture;
+		m_texture = 0;
+	}
 
 	return;
 }

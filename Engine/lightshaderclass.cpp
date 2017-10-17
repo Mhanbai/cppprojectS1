@@ -53,13 +53,13 @@ void LightShaderClass::Shutdown()
 
 
 bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
-							  D3DXMATRIX projectionMatrix , D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor, D3DXVECTOR4 ambientColor, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, float deltavalue)
+							  D3DXMATRIX projectionMatrix , D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor, D3DXVECTOR4 ambientColor, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, float deltavalue, ID3D11ShaderResourceView* texture)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightDirection, diffuseColor, ambientColor, cameraPosition, specularColor, specularPower, deltavalue);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightDirection, diffuseColor, ambientColor, cameraPosition, specularColor, specularPower, deltavalue, texture);
 	if(!result)
 	{
 		return false;
@@ -374,7 +374,7 @@ void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
 
 bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
 										   D3DXMATRIX projectionMatrix, D3DXVECTOR3 lightDirection, 
-										   D3DXVECTOR4 diffuseColor, D3DXVECTOR4 ambientColor, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, float deltavalue)
+										   D3DXVECTOR4 diffuseColor, D3DXVECTOR4 ambientColor, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, float deltavalue, ID3D11ShaderResourceView* texture)
 {
 	HRESULT result;
     D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -487,6 +487,9 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 
 	// Now set the variable constant buffer in the vertex shader with the updated values.
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_cameraBuffer);
+
+	// Set shader texture resource in the pixel shader.
+	deviceContext->PSSetShaderResources(0, 1, &texture);
 
 	return true;
 }
