@@ -62,7 +62,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the model object.
-	result = m_Model->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere.txt", L"../Engine/data/seafloor.dds");
+	result = m_Model->Initialize(m_D3D->GetDevice(), "../Engine/data/cube.txt", L"../Engine/data/seafloor.dds");
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -154,11 +154,11 @@ bool GraphicsClass::Frame()
 
 
 	// Update the rotation variable each frame.
-	/*rotation += (float)D3DX_PI * 0.01f;
+	rotation += (float)D3DX_PI * 0.01f;
 	if(rotation > 360.0f)
 	{
 		rotation -= 360.0f;
-	}*/
+	}
 
 	// Update the delta variable each frame. (keep this between 0 and 1)
 	delta += 0.001f;
