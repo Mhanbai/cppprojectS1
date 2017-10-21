@@ -10,6 +10,9 @@ ModelClass::ModelClass()
 	m_indexBuffer = 0;
 	m_model = 0;
 	m_texture = 0;
+	pos.x = 0.0f;
+	pos.y = 0.0f;
+	pos.z = 0.0f;
 }
 
 
@@ -322,4 +325,19 @@ void ModelClass::ReleaseModel()
 	}
 
 	return;
+}
+
+void ModelClass::MoveModelX(float input)
+{
+	pos.x = pos.x + input;
+}
+
+void ModelClass::MoveModelY(float input)
+{
+	pos.y = pos.y + input;
+}
+
+void ModelClass::MoveModelZ(float input)
+{
+	pos.z = pos.z + input;
 }

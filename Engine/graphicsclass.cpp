@@ -53,7 +53,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
+	m_Camera->SetPosition(0.0f, 1.0f, -10.0f);
 	
 	// Create the model object.
 	m_Model = new ModelClass;
@@ -224,11 +224,23 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 
 	// Render the model using the light shader.
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
-								    m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), deltavalue, m_Model->GetTexture());
+								    m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(), 
+											m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), m_Model->pos, m_Model->GetTexture());
 	if(!result)
 	{
 		return false;
 	}
+
+	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	/*m_Model2->Render(m_D3D->GetDeviceContext());
+
+	// Render the model using the light shader.
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), 1.0f, m_Model->GetTexture());
+	if (!result)
+	{
+		return false;
+	}*/
 
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();

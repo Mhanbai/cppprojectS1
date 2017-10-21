@@ -38,14 +38,15 @@ public:
 	void Shutdown();
 	bool Frame();
 
+	ModelClass* m_Model;
+	ModelClass* m_Model2;
+
 private:
 	bool Render(float, float);
 
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
-	ModelClass* m_Model;
-	ModelClass* m_Model2;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 };

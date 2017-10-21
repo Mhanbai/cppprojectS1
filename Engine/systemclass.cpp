@@ -134,6 +134,10 @@ void SystemClass::Run()
 			done = true;
 		}
 
+		if (m_Input->IsUpPressed() == true)
+		{
+			m_Graphics->m_Model->MoveModelX(0.1f);
+		}
 	}
 
 	return;
@@ -229,8 +233,8 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	else
 	{
 		// If windowed then set it to 800x600 resolution.
-		screenWidth  = 800;
-		screenHeight = 600;
+		screenWidth  = 1600;
+		screenHeight = 1024;
 
 		// Place the window in the middle of the screen.
 		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth)  / 2;

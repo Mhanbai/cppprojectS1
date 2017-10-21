@@ -16,7 +16,7 @@ cbuffer MatrixBuffer
 cbuffer VariableBuffer
 {
     float delta;
-	float3 padding;
+	float3 modelPosition;
 };
 
 cbuffer CameraBuffer
@@ -60,6 +60,10 @@ PixelInputType LightVertexShader(VertexInputType input)
     output.position = mul(input.position, worldMatrix);
     output.position = mul(output.position, viewMatrix);
     output.position = mul(output.position, projectionMatrix);
+
+	output.position.x = output.position.x + modelPosition.x;
+	output.position.y = output.position.y + modelPosition.y;
+	output.position.z = output.position.z + modelPosition.z;
     
 	// Store the texture coordinates for the pixel shader.
 	output.tex = input.tex;
