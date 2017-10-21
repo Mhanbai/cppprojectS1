@@ -71,11 +71,11 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
         specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
 	}
 
-	// Add the specular component last to the output color.
-    color = saturate(color + specular);
-
 	// Multiply the texture pixel and the final diffuse color to get the final pixel color result.
 	color = color * textureColor;
+
+	// Add the specular component last to the output color.
+    color = saturate(color + specular);
 
     return color;
 }
