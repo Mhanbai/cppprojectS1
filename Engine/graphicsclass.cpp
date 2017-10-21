@@ -9,6 +9,7 @@ GraphicsClass::GraphicsClass()
 	m_D3D = 0;
 	m_Camera = 0;
 	m_Model = 0;
+	m_Model2 = 0;
 	m_LightShader = 0;
 	m_Light = 0;
 }
@@ -61,9 +62,22 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	m_Model2 = new ModelClass;
+	if (!m_Model2)
+	{
+		return false;
+	}
+
 	// Initialize the model object.
 	result = m_Model->Initialize(m_D3D->GetDevice(), "../Engine/data/car.txt", L"../Engine/data/RaceC_red_diffuse.dds");
 	if(!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+		return false;
+	}
+
+	result = m_Model2->Initialize(m_D3D->GetDevice(), "../Engine/data/car.txt", L"../Engine/data/RaceC_red_diffuse.dds");
+	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 		return false;
@@ -125,6 +139,13 @@ void GraphicsClass::Shutdown()
 		m_Model->Shutdown();
 		delete m_Model;
 		m_Model = 0;
+	}
+
+	if (m_Model2)
+	{
+		m_Model2->Shutdown();
+		delete m_Model;
+		m_Model2 = 0;
 	}
 
 	// Release the camera object.
