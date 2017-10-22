@@ -148,12 +148,13 @@ void GraphicsClass::Shutdown()
 bool GraphicsClass::Frame()
 {
 	bool result;
-	static float rotation = 0.0f;
+	static float rotation = 0.5f;
 	static float delta =0.0f;
 
+	m_Codex->Frame();
 
 	// Update the rotation variable each frame.
-	rotation += (float)D3DX_PI * 0.01f;
+	/*rotation += (float)D3DX_PI * 0.01f;
 	if(rotation > 360.0f)
 	{
 		rotation -= 360.0f;
@@ -164,7 +165,7 @@ bool GraphicsClass::Frame()
 	if(delta >1.0f)
 	{
 		delta -=1.0f;
-	}
+	}*/
 	
 	// Render the graphics scene.
 	result = Render(rotation, delta);
@@ -194,17 +195,18 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	// Rotate the world matrix by the rotation value so that the triangle will spin.
-	D3DXMatrixRotationY(&worldMatrix, rotation);
+	//for (ModelClass* m_Model : m_Codex->modelList) {
+	for (int i = 0; i < m_Codex->modelCount; i++) {
+		// Rotate the world matrix by the rotation value so that the triangle will spin.
+		D3DXMatrixRotationY(&worldMatrix, m_Codex->positionList[i]->w);
 
-	for (ModelClass* m_Model : m_Codex->modelList) {
 		// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-		m_Model->Render(m_D3D->GetDeviceContext());
+		m_Codex->modelList[i]->Render(m_D3D->GetDeviceContext());
 
 		// Render the model using the light shader.
-		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Codex->modelList[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 			m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(),
-			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), m_Model->pos, m_Model->GetTexture());
+			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), m_Codex->modelList[i]->pos, m_Codex->modelList[i]->GetTexture());
 		if (!result)
 		{
 			return false;

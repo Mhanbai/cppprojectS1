@@ -24,7 +24,12 @@ public:
 	bool Initialize(D3DClass* m_D3D, HWND hwnd);
 	void Shutdown();
 
-	ModelClass* modelList[4];
+	void Frame();
+
+	static const int modelCount = 4;
+
+	ModelClass* modelList[modelCount];
+	D3DXVECTOR4* positionList[modelCount];
 };
 
 #endif

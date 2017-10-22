@@ -133,11 +133,6 @@ void SystemClass::Run()
 		{
 			done = true;
 		}
-
-		if (m_Input->IsUpPressed() == true)
-		{
-			//m_Graphics->m_Model->MoveModelX(0.1f);
-		}
 	}
 
 	return;

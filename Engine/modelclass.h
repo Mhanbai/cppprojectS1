@@ -47,9 +47,6 @@ public:
 	ID3D11ShaderResourceView* GetTexture();
 
 	D3DXVECTOR3 pos;
-	void MoveModelX(float);
-	void MoveModelY(float);
-	void MoveModelZ(float);
 
 private:
 	bool InitializeBuffers(ID3D11Device*);

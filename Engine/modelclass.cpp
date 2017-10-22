@@ -326,18 +326,3 @@ void ModelClass::ReleaseModel()
 
 	return;
 }
-
-void ModelClass::MoveModelX(float input)
-{
-	pos.x = pos.x + input;
-}
-
-void ModelClass::MoveModelY(float input)
-{
-	pos.y = pos.y + input;
-}
-
-void ModelClass::MoveModelZ(float input)
-{
-	pos.z = pos.z + input;
-}
