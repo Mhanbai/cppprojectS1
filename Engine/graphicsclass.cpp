@@ -2,16 +2,16 @@
 // Filename: graphicsclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "graphicsclass.h"
+#include "modelcodex.h"
 
 
 GraphicsClass::GraphicsClass()
 {
 	m_D3D = 0;
 	m_Camera = 0;
-	m_Model = 0;
-	m_Model2 = 0;
 	m_LightShader = 0;
 	m_Light = 0;
+	m_Codex = 0;
 }
 
 
@@ -29,7 +29,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
 	bool result;
 
-
 	// Create the Direct3D object.
 	m_D3D = new D3DClass;
 	if(!m_D3D)
@@ -45,6 +44,20 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	m_Codex = new ModelCodex;
+	if (!m_Codex)
+	{
+		return false;
+	}
+
+	// Initialize the Direct3D object.
+	result = m_Codex->Initialize(m_D3D, hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize Model Codex.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Create the camera object.
 	m_Camera = new CameraClass;
 	if(!m_Camera)
@@ -53,35 +66,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 1.0f, -10.0f);
-	
-	// Create the model object.
-	m_Model = new ModelClass;
-	if(!m_Model)
-	{
-		return false;
-	}
-
-	m_Model2 = new ModelClass;
-	if (!m_Model2)
-	{
-		return false;
-	}
-
-	// Initialize the model object.
-	result = m_Model->Initialize(m_D3D->GetDevice(), "../Engine/data/car.txt", L"../Engine/data/RaceC_red_diffuse.dds");
-	if(!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
-		return false;
-	}
-
-	result = m_Model2->Initialize(m_D3D->GetDevice(), "../Engine/data/car.txt", L"../Engine/data/RaceC_red_diffuse.dds");
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
-		return false;
-	}
+	m_Camera->SetPosition(0.0f, 2.0f, -10.0f);
 
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;
@@ -134,18 +119,11 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release the model object.
-	if(m_Model)
+	if(m_Codex)
 	{
-		m_Model->Shutdown();
-		delete m_Model;
-		m_Model = 0;
-	}
-
-	if (m_Model2)
-	{
-		m_Model2->Shutdown();
-		delete m_Model;
-		m_Model2 = 0;
+		m_Codex->Shutdown();
+		delete m_Codex;
+		m_Codex = 0;
 	}
 
 	// Release the camera object.
@@ -219,30 +197,20 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 	// Rotate the world matrix by the rotation value so that the triangle will spin.
 	D3DXMatrixRotationY(&worldMatrix, rotation);
 
-	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_Model->Render(m_D3D->GetDeviceContext());
+	for (ModelClass* m_Model : m_Codex->modelList) {
+		// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+		m_Model->Render(m_D3D->GetDeviceContext());
 
-	// Render the model using the light shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
-								    m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(), 
-											m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), m_Model->pos, m_Model->GetTexture());
-	if(!result)
-	{
-		return false;
+		// Render the model using the light shader.
+		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(),
+			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), m_Model->pos, m_Model->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
 	}
 
-	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	/*m_Model2->Render(m_D3D->GetDeviceContext());
-
-	// Render the model using the light shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-		m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), 1.0f, m_Model->GetTexture());
-	if (!result)
-	{
-		return false;
-	}*/
-
-	// Present the rendered scene to the screen.
 	m_D3D->EndScene();
 
 	return true;

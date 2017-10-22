@@ -13,6 +13,7 @@
 #include "modelclass.h"
 #include "lightshaderclass.h"
 #include "lightclass.h"
+#include "modelcodex.h"
 
 
 /////////////
@@ -38,9 +39,6 @@ public:
 	void Shutdown();
 	bool Frame();
 
-	ModelClass* m_Model;
-	ModelClass* m_Model2;
-
 private:
 	bool Render(float, float);
 
@@ -49,6 +47,7 @@ private:
 	CameraClass* m_Camera;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
+	ModelCodex* m_Codex;
 };
 
 #endif
