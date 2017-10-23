@@ -244,6 +244,28 @@ bool InputClass::IsUpPressed()
 	return false;
 }
 
+bool InputClass::IsLeftPressed()
+{
+	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.
+	if (m_keyboardState[DIK_LEFT] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::IsRightPressed()
+{
+	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.
+	if (m_keyboardState[DIK_RIGHT] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
 
 void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 {

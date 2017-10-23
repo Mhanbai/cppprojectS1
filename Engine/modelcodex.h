@@ -30,6 +30,7 @@ public:
 
 	ModelClass* modelList[modelCount];
 	D3DXVECTOR4* positionList[modelCount];
+	D3DXMATRIX GetModelRotationMatrix(float rotation);
 };
 
 #endif

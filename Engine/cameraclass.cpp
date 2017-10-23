@@ -76,12 +76,12 @@ void CameraClass::Render()
 	// Setup where the camera is looking by default.
 	lookAt.x = 0.0f;
 	lookAt.y = 0.0f;
-	lookAt.z = 1.0f;
+	lookAt.z = -1.0f;
 
 	// Set the yaw (Y axis), pitch (X axis), and roll (Z axis) rotations in radians.
 	pitch = m_rotationX * 0.0174532925f;
-	yaw   = m_rotationY * 0.0174532925f;
-	roll  = m_rotationZ * 0.0174532925f;
+	yaw = m_rotationY * 0.0174532925f;
+	roll = m_rotationZ * 0.0174532925f;
 
 	// Create the rotation matrix from the yaw, pitch, and roll values.
 	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, yaw, pitch, roll);
@@ -99,9 +99,33 @@ void CameraClass::Render()
 	return;
 }
 
-
 void CameraClass::GetViewMatrix(D3DXMATRIX& viewMatrix)
 {
 	viewMatrix = m_viewMatrix;
 	return;
+}
+
+void CameraClass::Follow(D3DXVECTOR4* followTarget)
+{
+	D3DXVECTOR3 direction;
+	D3DXVECTOR3 targetEndPosition = D3DXVECTOR3(followTarget->x, followTarget->y, followTarget->z);
+	D3DXVECTOR3 cameraStartPosition = GetPosition();
+	
+	//Take vector from follow target to camera
+	D3DXVec3Subtract(&direction, &cameraStartPosition, &targetEndPosition);
+
+	// Normalize vector
+	D3DXVec3Normalize(&direction, &direction);
+
+	// Multiply by d
+	D3DXVec3Scale(&direction, &direction, 30.0f);
+
+	// add height
+	direction.y = 4.0f;
+
+	// Add vector to target position to find camera position
+	D3DXVec3Add(&direction, &direction, &targetEndPosition);
+
+	// Lerp camera to new position
+	SetPosition(direction.x, direction.y, direction.z);
 }

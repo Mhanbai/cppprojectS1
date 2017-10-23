@@ -17,6 +17,7 @@ cbuffer VariableBuffer
 {
     float delta;
 	float3 modelPosition;
+	matrix rotate;
 };
 
 cbuffer CameraBuffer
@@ -58,6 +59,7 @@ PixelInputType LightVertexShader(VertexInputType input)
 
 	// Calculate the position of the vertex against the world, view, and projection matrices.
     output.position = mul(input.position, worldMatrix);
+	output.position = mul(output.position, rotate);
     output.position = mul(output.position, viewMatrix);
     output.position = mul(output.position, projectionMatrix);
 

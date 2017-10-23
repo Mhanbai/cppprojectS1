@@ -54,13 +54,13 @@ void LightShaderClass::Shutdown()
 
 bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
 							  D3DXMATRIX projectionMatrix , D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor, D3DXVECTOR4 ambientColor, 
-								D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, D3DXVECTOR3 modelPosition, ID3D11ShaderResourceView* texture)
+								D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, float specularPower, D3DXVECTOR3 modelPosition, D3DXMATRIX rotation, ID3D11ShaderResourceView* texture)
 {
 	bool result;
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightDirection, diffuseColor, ambientColor, cameraPosition, specularColor, specularPower, modelPosition, texture);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightDirection, diffuseColor, ambientColor, cameraPosition, specularColor, specularPower, modelPosition, rotation, texture);
 	if(!result)
 	{
 		return false;
@@ -376,7 +376,7 @@ void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
 bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, 
 										   D3DXMATRIX projectionMatrix, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor, 
 											D3DXVECTOR4 ambientColor, D3DXVECTOR3 cameraPosition, D3DXVECTOR4 specularColor, 
-												float specularPower, D3DXVECTOR3 modelPosition, ID3D11ShaderResourceView* texture)
+												float specularPower, D3DXVECTOR3 modelPosition, D3DXMATRIX rotation, ID3D11ShaderResourceView* texture)
 {
 	HRESULT result;
     D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -429,6 +429,7 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	// Copy the variablethe constant buffer.
 	dataPtr3->delta = 0.0f;
 	dataPtr3->modelPosition = modelPosition; //this is just padding so this data isnt used.
+	dataPtr3->rotate = rotation;
 
 	// Unlock the variable constant buffer.
 	deviceContext->Unmap(m_variableBuffer, 0);

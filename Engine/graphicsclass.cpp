@@ -66,7 +66,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 2.0f, -10.0f);
+	m_Camera->SetPosition(0.0f, 4.0f, 31.5f);
 
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;
@@ -153,19 +153,7 @@ bool GraphicsClass::Frame()
 
 	m_Codex->Frame();
 
-	// Update the rotation variable each frame.
-	/*rotation += (float)D3DX_PI * 0.01f;
-	if(rotation > 360.0f)
-	{
-		rotation -= 360.0f;
-	}
-
-	// Update the delta variable each frame. (keep this between 0 and 1)
-	delta += 0.001f;
-	if(delta >1.0f)
-	{
-		delta -=1.0f;
-	}*/
+	m_Camera->Follow(m_Codex->positionList[0]);
 	
 	// Render the graphics scene.
 	result = Render(rotation, delta);
@@ -188,6 +176,7 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Generate the view matrix based on the camera's position.
+	//m_Camera->Render(m_Codex->positionList[0], 4.0f, 31.5f, -10.0f);
 	m_Camera->Render();
 
 	// Get the world, view, and projection matrices from the camera and d3d objects.
@@ -198,7 +187,7 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 	//for (ModelClass* m_Model : m_Codex->modelList) {
 	for (int i = 0; i < m_Codex->modelCount; i++) {
 		// Rotate the world matrix by the rotation value so that the triangle will spin.
-		D3DXMatrixRotationY(&worldMatrix, m_Codex->positionList[i]->w);
+		//D3DXMatrixRotationY(&worldMatrix, m_Codex->positionList[i]->w);
 
 		// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 		m_Codex->modelList[i]->Render(m_D3D->GetDeviceContext());
@@ -206,7 +195,7 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 		// Render the model using the light shader.
 		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Codex->modelList[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 			m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(),
-			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), m_Codex->modelList[i]->pos, m_Codex->modelList[i]->GetTexture());
+			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), m_Codex->modelList[i]->pos, m_Codex->GetModelRotationMatrix(m_Codex->positionList[i]->w), m_Codex->modelList[i]->GetTexture());
 		if (!result)
 		{
 			return false;

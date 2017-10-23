@@ -39,6 +39,8 @@ public:
 	void Shutdown();
 	bool Frame();
 
+	ModelCodex* m_Codex;
+
 private:
 	bool Render(float, float);
 
@@ -47,7 +49,6 @@ private:
 	CameraClass* m_Camera;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
-	ModelCodex* m_Codex;
 };
 
 #endif

@@ -2,6 +2,7 @@
 // Filename: systemclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "systemclass.h"
+#include "modelcodex.h"
 
 
 SystemClass::SystemClass()
@@ -132,6 +133,16 @@ void SystemClass::Run()
 		if (m_Input->IsEscapePressed() == true)
 		{
 			done = true;
+		}
+
+		if (m_Input->IsRightPressed() == true)
+		{
+			m_Graphics->m_Codex->positionList[0]->w = m_Graphics->m_Codex->positionList[0]->w - 0.5f;
+		}
+
+		if (m_Input->IsLeftPressed() == true)
+		{
+			m_Graphics->m_Codex->positionList[0]->w = m_Graphics->m_Codex->positionList[0]->w + 0.5f;
 		}
 	}
 

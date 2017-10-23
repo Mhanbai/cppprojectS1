@@ -3,13 +3,13 @@
 ModelCodex::ModelCodex()
 {
 	modelList[0] = new ModelClass;
-	positionList[0] = new D3DXVECTOR4(-10.0f, 0.0f, 0.0f, 0.0f);
+	positionList[0] = new D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);
 	modelList[1] = new ModelClass;
-	positionList[1] = new D3DXVECTOR4(-5.0f, 0.0f, 0.0f, 1.0f);
+	positionList[1] = new D3DXVECTOR4(-30.0f, 0.0f, 0.0f, 45.0f);
 	modelList[2] = new ModelClass;
-	positionList[2] = new D3DXVECTOR4(0.0f, 0.0f, 0.0f, 2.0f);
+	positionList[2] = new D3DXVECTOR4(30.0f, 0.0f, 0.0f, -45.0f);
 	modelList[3] = new ModelClass;
-	positionList[3] = new D3DXVECTOR4(5.0f, 0.0f, 0.0f, 3.0f);
+	positionList[3] = new D3DXVECTOR4(60.0f, 0.0f, 0.0f, 180.0f);
 }
 
 ModelCodex::ModelCodex(const ModelCodex& other)
@@ -26,28 +26,28 @@ bool ModelCodex::Initialize(D3DClass* m_D3D, HWND hwnd)
 	bool result;
 
 	// Initialize the model object.
-	result = modelList[0]->Initialize(m_D3D->GetDevice(), "../Engine/data/car.txt", L"../Engine/data/RaceC_red_diffuse.dds");
+	result = modelList[0]->Initialize(m_D3D->GetDevice(), "../Engine/data/car.txt", L"../Engine/data/Car1Texture.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the main Player object.", L"Error", MB_OK);
 		return false;
 	}
 
-	result = modelList[1]->Initialize(m_D3D->GetDevice(), "../Engine/data/car.txt", L"../Engine/data/RaceC_red_diffuse.dds");
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the opponent 1 object.", L"Error", MB_OK);
-		return false;
-	}
-
-	result = modelList[2]->Initialize(m_D3D->GetDevice(), "../Engine/data/car.txt", L"../Engine/data/RaceC_red_diffuse.dds");
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the opponent 2 object.", L"Error", MB_OK);
-		return false;
-	}
-
-	result = modelList[3]->Initialize(m_D3D->GetDevice(), "../Engine/data/car.txt", L"../Engine/data/RaceC_red_diffuse.dds");
+	result = modelList[1]->Initialize(m_D3D->GetDevice(), "../Engine/data/car.txt", L"../Engine/data/Car2Texture.dds");
+	if (!result)																					 
+	{																								 
+		MessageBox(hwnd, L"Could not initialize the opponent 1 object.", L"Error", MB_OK);			 
+		return false;																				 
+	}																								 
+																									 
+	result = modelList[2]->Initialize(m_D3D->GetDevice(), "../Engine/data/car.txt", L"../Engine/data/Car3Texture.dds");
+	if (!result)																					 
+	{																								 
+		MessageBox(hwnd, L"Could not initialize the opponent 2 object.", L"Error", MB_OK);			 
+		return false;																				 
+	}																								 
+																									 
+	result = modelList[3]->Initialize(m_D3D->GetDevice(), "../Engine/data/car.txt", L"../Engine/data/Car4Texture.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the opponent 3 object.", L"Error", MB_OK);
@@ -76,4 +76,10 @@ void ModelCodex::Frame()
 		modelList[i]->pos.y = positionList[i]->y;
 		modelList[i]->pos.z = positionList[i]->z;
 	}
+}
+
+D3DXMATRIX ModelCodex::GetModelRotationMatrix(float rotation) {
+	D3DXMATRIX toReturn;
+	D3DXMatrixRotationY(&toReturn, rotation * 0.0174532925f);
+	return toReturn;
 }
