@@ -2,7 +2,6 @@
 // Filename: graphicsclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "graphicsclass.h"
-#include "modelcodex.h"
 
 
 GraphicsClass::GraphicsClass()
@@ -11,7 +10,7 @@ GraphicsClass::GraphicsClass()
 	m_Camera = 0;
 	m_LightShader = 0;
 	m_Light = 0;
-	m_Codex = 0;
+	graphicsPipeline.reserve(10);
 }
 
 
@@ -41,20 +40,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Direct3D.", L"Error", MB_OK);
-		return false;
-	}
-
-	m_Codex = new ModelCodex;
-	if (!m_Codex)
-	{
-		return false;
-	}
-
-	// Initialize the Direct3D object.
-	result = m_Codex->Initialize(m_D3D, hwnd);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize Model Codex.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -119,11 +104,10 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release the model object.
-	if(m_Codex)
-	{
-		m_Codex->Shutdown();
-		delete m_Codex;
-		m_Codex = 0;
+	for (ModelClass* m : graphicsPipeline) {
+		m->Shutdown();
+		delete m;
+		m = 0;
 	}
 
 	// Release the camera object.
@@ -145,18 +129,14 @@ void GraphicsClass::Shutdown()
 }
 
 
-bool GraphicsClass::Frame()
+bool GraphicsClass::Frame(D3DXVECTOR3 toFollow)
 {
 	bool result;
 	static float rotation = 0.5f;
 	static float delta =0.0f;
-
-	m_Codex->Frame();
-
-	m_Camera->Follow(m_Codex->positionList[0]);
 	
 	// Render the graphics scene.
-	result = Render(rotation, delta);
+	result = Render(rotation, delta, toFollow);
 	if(!result)
 	{
 		return false;
@@ -166,36 +146,36 @@ bool GraphicsClass::Frame()
 }
 
 
-bool GraphicsClass::Render(float rotation, float deltavalue)
+void GraphicsClass::AddToGraphicsPipeline(ModelClass* toAdd)
+{
+	graphicsPipeline.push_back(toAdd);
+}
+
+bool GraphicsClass::Render(float rotation, float deltavalue, D3DXVECTOR3 toFollow)
 {
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	bool result;
-
 
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Generate the view matrix based on the camera's position.
-	//m_Camera->Render(m_Codex->positionList[0], 4.0f, 31.5f, -10.0f);
 	m_Camera->Render();
+	m_Camera->Follow(toFollow);
 
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	//for (ModelClass* m_Model : m_Codex->modelList) {
-	for (int i = 0; i < m_Codex->modelCount; i++) {
-		// Rotate the world matrix by the rotation value so that the triangle will spin.
-		//D3DXMatrixRotationY(&worldMatrix, m_Codex->positionList[i]->w);
-
+	for (int i = 0; i < graphicsPipeline.size(); i++) {
 		// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-		m_Codex->modelList[i]->Render(m_D3D->GetDeviceContext());
+		graphicsPipeline[i]->Render(m_D3D->GetDeviceContext());
 
 		// Render the model using the light shader.
-		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Codex->modelList[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		result = m_LightShader->Render(m_D3D->GetDeviceContext(), graphicsPipeline[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 			m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(),
-			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), m_Codex->modelList[i]->pos, m_Codex->GetModelRotationMatrix(m_Codex->positionList[i]->w), m_Codex->modelList[i]->GetTexture());
+			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), graphicsPipeline[i]->GetModelPosition(), graphicsPipeline[i]->GetModelRotationMatrix(), graphicsPipeline[i]->GetTexture());
 		if (!result)
 		{
 			return false;

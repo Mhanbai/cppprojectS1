@@ -46,7 +46,10 @@ public:
 	int GetIndexCount();
 	ID3D11ShaderResourceView* GetTexture();
 
-	D3DXVECTOR3 pos;
+	void SetModelPosition(float xIn, float yIn, float zIn);
+	void SetModelRotation(float angleIn);
+	D3DXVECTOR3 GetModelPosition();
+	D3DXMATRIX GetModelRotationMatrix();
 
 private:
 	bool InitializeBuffers(ID3D11Device*);
@@ -55,9 +58,10 @@ private:
 	bool LoadTexture(ID3D11Device*, WCHAR*);
 	void ReleaseTexture();
 
-
 	bool LoadModel(char*);
 	void ReleaseModel();
+
+	D3DXVECTOR4 modelPosition;
 
 private:
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;

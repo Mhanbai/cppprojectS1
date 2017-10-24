@@ -105,20 +105,21 @@ void CameraClass::GetViewMatrix(D3DXMATRIX& viewMatrix)
 	return;
 }
 
-void CameraClass::Follow(D3DXVECTOR4* followTarget)
+void CameraClass::Follow(D3DXVECTOR3 followTarget)
 {
 	D3DXVECTOR3 direction;
-	D3DXVECTOR3 targetEndPosition = D3DXVECTOR3(followTarget->x, followTarget->y, followTarget->z);
+	D3DXVECTOR3 targetEndPosition = followTarget;
 	D3DXVECTOR3 cameraStartPosition = GetPosition();
 	
 	//Take vector from follow target to camera
-	D3DXVec3Subtract(&direction, &cameraStartPosition, &targetEndPosition);
+	D3DXVec3Subtract(&direction, &targetEndPosition, &cameraStartPosition);
 
 	// Normalize vector
 	D3DXVec3Normalize(&direction, &direction);
 
 	// Multiply by d
-	D3DXVec3Scale(&direction, &direction, 30.0f);
+	//D3DXVec3Scale(&direction, &direction, 30.0f);
+	direction.z = 30.0f;
 
 	// add height
 	direction.y = 4.0f;

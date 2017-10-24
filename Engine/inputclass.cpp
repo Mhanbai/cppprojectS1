@@ -244,6 +244,16 @@ bool InputClass::IsUpPressed()
 	return false;
 }
 
+bool InputClass::IsDownPressed()
+{
+	if (m_keyboardState[DIK_DOWN] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
 bool InputClass::IsLeftPressed()
 {
 	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.

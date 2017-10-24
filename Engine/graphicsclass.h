@@ -10,10 +10,10 @@
 ///////////////////////
 #include "d3dclass.h"
 #include "cameraclass.h"
-#include "modelclass.h"
 #include "lightshaderclass.h"
 #include "lightclass.h"
-#include "modelcodex.h"
+#include "modelclass.h"
+#include <vector>
 
 
 /////////////
@@ -37,15 +37,17 @@ public:
 
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame();
+	bool Frame(D3DXVECTOR3 toFollow);
 
-	ModelCodex* m_Codex;
+	void AddToGraphicsPipeline(ModelClass* toAdd);
 
-private:
-	bool Render(float, float);
-
-private:
 	D3DClass* m_D3D;
+
+private:
+	bool Render(float, float, D3DXVECTOR3);
+
+private:
+	std::vector<ModelClass*> graphicsPipeline;
 	CameraClass* m_Camera;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;

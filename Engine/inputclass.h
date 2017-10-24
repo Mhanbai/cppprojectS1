@@ -40,6 +40,7 @@ public:
 
 	bool IsEscapePressed();
 	bool IsUpPressed();
+	bool IsDownPressed();
 	bool IsLeftPressed();
 	bool IsRightPressed();
 	void GetMouseLocation(int&, int&);

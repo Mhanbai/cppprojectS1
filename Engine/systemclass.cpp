@@ -2,8 +2,6 @@
 // Filename: systemclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "systemclass.h"
-#include "modelcodex.h"
-
 
 SystemClass::SystemClass()
 {
@@ -64,7 +62,14 @@ bool SystemClass::Initialize()
 	{
 		return false;
 	}
-	
+
+	mainPlayer = new Car;
+	result = mainPlayer->Initialize(m_Graphics->m_D3D, m_hwnd, m_Graphics, 0.0f, 0.0f, 0.0f, 0.0f);
+	if (!result)
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -135,14 +140,24 @@ void SystemClass::Run()
 			done = true;
 		}
 
+		if (m_Input->IsUpPressed() == true)
+		{
+			mainPlayer->Accelerate();
+		}
+
+		if (m_Input->IsDownPressed() == true)
+		{
+			mainPlayer->Break();
+		}
+		
 		if (m_Input->IsRightPressed() == true)
 		{
-			m_Graphics->m_Codex->positionList[0]->w = m_Graphics->m_Codex->positionList[0]->w - 0.5f;
+			mainPlayer->TurnLeft();
 		}
 
 		if (m_Input->IsLeftPressed() == true)
 		{
-			m_Graphics->m_Codex->positionList[0]->w = m_Graphics->m_Codex->positionList[0]->w + 0.5f;
+			mainPlayer->TurnRight();
 		}
 	}
 
@@ -162,14 +177,14 @@ bool SystemClass::Frame()
 		return false;
 	}
 
-
-
 	// Do the frame processing for the graphics object.
-	result = m_Graphics->Frame();
+	result = m_Graphics->Frame(mainPlayer->GetPosition());
 	if(!result)
 	{
 		return false;
 	}
+
+	mainPlayer->Frame();
 
 	return true;
 }
