@@ -20,8 +20,8 @@ private:
 	ModelClass* carModel;
 
 public:
-	bool Initialize(D3DClass* m_D3D, HWND hwnd, GraphicsClass* gfx, float xPos, float yPos, float zPos, float rotation);
-	void Frame();
+	bool Initialize(D3DClass* m_D3D, HWND hwnd, float xPos, float yPos, float zPos, float rotation);
+	void Frame(GraphicsClass* gfx);
 	void Accelerate();
 	void Break();
 	void TurnLeft();
