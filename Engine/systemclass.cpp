@@ -64,7 +64,7 @@ bool SystemClass::Initialize()
 	}
 
 	mainPlayer = new Car;
-	result = mainPlayer->Initialize(m_Graphics->m_D3D, m_hwnd, m_Graphics, 0.0f, 0.0f, 0.0f, 0.0f);
+	result = mainPlayer->Initialize(m_Graphics->m_D3D, m_hwnd, 0.0f, 0.0f, 0.0f, 0.0f);
 	if (!result)
 	{
 		return false;
@@ -184,7 +184,7 @@ bool SystemClass::Frame()
 		return false;
 	}
 
-	mainPlayer->Frame();
+	mainPlayer->Frame(m_Graphics);
 
 	return true;
 }

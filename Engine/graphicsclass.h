@@ -38,16 +38,12 @@ public:
 	bool Initialize(int, int, HWND);
 	void Shutdown();
 	bool Frame(D3DXVECTOR3 toFollow);
-
-	void AddToGraphicsPipeline(ModelClass* toAdd);
+	bool Render(ModelClass* toRender);
 
 	D3DClass* m_D3D;
 
 private:
-	bool Render(float, float, D3DXVECTOR3);
-
-private:
-	std::vector<ModelClass*> graphicsPipeline;
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	CameraClass* m_Camera;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;

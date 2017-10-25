@@ -10,7 +10,6 @@ GraphicsClass::GraphicsClass()
 	m_Camera = 0;
 	m_LightShader = 0;
 	m_Light = 0;
-	graphicsPipeline.reserve(10);
 }
 
 
@@ -103,13 +102,6 @@ void GraphicsClass::Shutdown()
 		m_LightShader = 0;
 	}
 
-	// Release the model object.
-	for (ModelClass* m : graphicsPipeline) {
-		m->Shutdown();
-		delete m;
-		m = 0;
-	}
-
 	// Release the camera object.
 	if(m_Camera)
 	{
@@ -135,51 +127,35 @@ bool GraphicsClass::Frame(D3DXVECTOR3 toFollow)
 	static float rotation = 0.5f;
 	static float delta =0.0f;
 	
-	// Render the graphics scene.
-	result = Render(rotation, delta, toFollow);
-	if(!result)
-	{
-		return false;
-	}
-
-	return true;
-}
-
-
-void GraphicsClass::AddToGraphicsPipeline(ModelClass* toAdd)
-{
-	graphicsPipeline.push_back(toAdd);
-}
-
-bool GraphicsClass::Render(float rotation, float deltavalue, D3DXVECTOR3 toFollow)
-{
-	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
-	bool result;
-
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Generate the view matrix based on the camera's position.
 	m_Camera->Render();
-	m_Camera->Follow(toFollow);
+	//m_Camera->Follow(toFollow);
 
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	for (int i = 0; i < graphicsPipeline.size(); i++) {
-		// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-		graphicsPipeline[i]->Render(m_D3D->GetDeviceContext());
+	return true;
+}
 
-		// Render the model using the light shader.
-		result = m_LightShader->Render(m_D3D->GetDeviceContext(), graphicsPipeline[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-			m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(),
-			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), graphicsPipeline[i]->GetModelPosition(), graphicsPipeline[i]->GetModelRotationMatrix(), graphicsPipeline[i]->GetTexture());
-		if (!result)
-		{
-			return false;
-		}
+bool GraphicsClass::Render(ModelClass* toRender)
+{
+	bool result;
+
+	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	toRender->Render(m_D3D->GetDeviceContext());
+
+	// Render the model using the light shader.
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), toRender->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(), m_Light->GetSpecularColor(), 
+		m_Light->GetSpecularPower(), toRender->GetModelPosition(), toRender->GetModelRotationMatrix(), toRender->GetTexture());
+	if (!result)
+	{
+		return false;
 	}
 
 	m_D3D->EndScene();
