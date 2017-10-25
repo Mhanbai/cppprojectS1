@@ -1,6 +1,6 @@
 #include "car.h"
 
-bool Car::Initialize(D3DClass* m_D3D, HWND hwnd, float xPos, float yPos, float zPos, float rotation)
+bool Car::Initialize(D3DClass* m_D3D, HWND hwnd, GraphicsClass* gfx, float xPos, float yPos, float zPos, float rotation)
 {
 	velLength = 0.0f;
 	acceleration = 0.2f;
@@ -21,10 +21,12 @@ bool Car::Initialize(D3DClass* m_D3D, HWND hwnd, float xPos, float yPos, float z
 		return false;
 	}
 
+	gfx->AddToGraphicsPipeline(carModel);
+
 	return true;
 }
 
-void Car::Frame(GraphicsClass* gfx)
+void Car::Frame()
 {
 	/*velocity.x = velLength * cos(velAngle * 0.0174532925f);
 	velocity.y = velLength * sin(velAngle * 0.0174532925f);
@@ -34,8 +36,6 @@ void Car::Frame(GraphicsClass* gfx)
 
 	carModel->SetModelPosition(position.x, position.y, position.z);
 	carModel->SetModelRotation(velAngle);
-
-	gfx->Render(carModel);
 }
 
 void Car::Accelerate()
