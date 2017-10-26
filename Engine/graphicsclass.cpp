@@ -2,7 +2,6 @@
 // Filename: graphicsclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "graphicsclass.h"
-#include "modelcodex.h"
 
 
 GraphicsClass::GraphicsClass()
@@ -13,7 +12,6 @@ GraphicsClass::GraphicsClass()
 	m_Light = 0;
 	modelList = 0;
 	modelCount = 0;
-	mainPlayer = 0;
 }
 
 
@@ -80,10 +78,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create dynamic array of models
 	modelList = new ModelClass*[10];
-
-	AddToPipeline(mainPlayer, hwnd, "../Engine/data/car.txt", L"../Engine/data/Car1Texture.dds");
-
-	mainPlayer->SetPosition(5.0f, 5.0f, 5.0f);
 
 	// Initialize the light object.
 	m_Light->SetAmbientColor(0.4f, 0.4f, 0.4f, 1.0f);

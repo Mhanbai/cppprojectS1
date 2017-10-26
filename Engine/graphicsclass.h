@@ -13,7 +13,6 @@
 #include "modelclass.h"
 #include "lightshaderclass.h"
 #include "lightclass.h"
-#include "modelcodex.h"
 
 
 /////////////
@@ -45,7 +44,6 @@ private:
 	bool Render(float, float);
 
 private:
-	ModelClass* mainPlayer;
 	ModelClass* *modelList;
 	int modelCount;
 	D3DClass* m_D3D;

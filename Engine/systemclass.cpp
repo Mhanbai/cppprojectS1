@@ -9,6 +9,7 @@ SystemClass::SystemClass()
 {
 	m_Input = 0;
 	m_Graphics = 0;
+	m_Game = 0;
 }
 
 
@@ -64,6 +65,19 @@ bool SystemClass::Initialize()
 	{
 		return false;
 	}
+
+	m_Game = new Game;
+	if (!m_Game)
+	{
+		return false;
+	}
+
+	// Initialize the game object.
+	result = m_Game->Initialize(m_Input, m_Graphics, m_hwnd);
+	if (!result)
+	{
+		return false;
+	}
 	
 	return true;
 }
@@ -71,6 +85,14 @@ bool SystemClass::Initialize()
 
 void SystemClass::Shutdown()
 {
+	// Release the game object.
+	if (m_Game)
+	{
+		m_Game->Shutdown();
+		delete m_Game;
+		m_Game = 0;
+	}
+
 	// Release the graphics object.
 	if(m_Graphics)
 	{
@@ -134,16 +156,6 @@ void SystemClass::Run()
 		{
 			done = true;
 		}
-
-		if (m_Input->IsRightPressed() == true)
-		{
-			//m_Graphics->m_Codex->modelList[0]->SetRotation(m_Graphics->m_Codex->modelList[0]->GetRotation() - 0.5f);
-		}
-
-		if (m_Input->IsLeftPressed() == true)
-		{
-			//m_Graphics->m_Codex->modelList[0]->SetRotation(m_Graphics->m_Codex->modelList[0]->GetRotation() + 0.5f);
-		}
 	}
 
 	return;
@@ -154,7 +166,6 @@ bool SystemClass::Frame()
 {
 	bool result;
 
-
 	// Do the input frame processing.
 	result = m_Input->Frame();
 	if (!result)
@@ -162,11 +173,16 @@ bool SystemClass::Frame()
 		return false;
 	}
 
-
-
 	// Do the frame processing for the graphics object.
 	result = m_Graphics->Frame();
 	if(!result)
+	{
+		return false;
+	}
+
+	// Do the frame processing for the game object.
+	result = m_Game->Frame();
+	if (!result)
 	{
 		return false;
 	}

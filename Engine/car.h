@@ -1,36 +1,35 @@
 #pragma once
 
 ////////////////////////////////////////////////////////////////////////////////
-// Filename: game.h
+// Filename: car.h
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef _GAME_H_
-#define _GAME_H_
+#ifndef _CAR_H_
+#define _CAR_H_
 
 
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
-#include "inputclass.h"
+#include <windows.h>
 #include "graphicsclass.h"
-#include "car.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// Class name: Game
+// Class name: Car
 ////////////////////////////////////////////////////////////////////////////////
-class Game
+class Car
 {
 public:
-	Game();
-	Game(const Game&);
-	~Game();
-	bool Initialize(InputClass* &input, GraphicsClass* &graphics, HWND &hwnd);
+	Car();
+	Car(const Car&);
+	~Car();
+	bool Initialize(GraphicsClass* &graphics, HWND &hwnd, WCHAR* textureFilename);
 	void Shutdown();
 	bool Frame();
 
 private:
-	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
-	Car* mainPlayer;
+	ModelClass* m_Model;
+
 };
 
 #endif
