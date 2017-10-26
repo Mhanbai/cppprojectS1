@@ -24,11 +24,26 @@ public:
 	~Car();
 	bool Initialize(GraphicsClass* &graphics, HWND &hwnd, WCHAR* textureFilename);
 	void Shutdown();
-	bool Frame();
+	void Frame();
+
+	void Accelerate();
+	void BreakReverse();
+	void TurnLeft();
+	void TurnRight();
+	void SetPosition(float xPos, float yPos, float zPos, float rotation);
 
 private:
 	GraphicsClass* m_Graphics;
 	ModelClass* m_Model;
+
+	float velAngle;
+	float velLength;
+	float acceleration;
+	float maxForwardSpeed;
+	float reverseAcceleration;
+	float maxBackwardSpeed;
+	D3DXVECTOR3 velocity;
+	D3DXVECTOR3 position;
 
 };
 

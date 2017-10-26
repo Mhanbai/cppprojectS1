@@ -32,6 +32,8 @@ bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, HWND &hwnd)
 		return false;
 	}
 
+	mainPlayer->SetPosition(0.0f, 0.0f, 0.0f, 0.0f);
+
 	return true;
 }
 
@@ -51,14 +53,14 @@ bool Game::Frame()
 {
 	mainPlayer->Frame();
 
-	if (m_Input->IsRightPressed() == true)
+	if (m_Input->IsUpPressed() == true)
 	{
-		//m_Graphics->m_Codex->modelList[0]->SetRotation(m_Graphics->m_Codex->modelList[0]->GetRotation() - 0.5f);
+		mainPlayer->Accelerate();
 	}
 
-	if (m_Input->IsLeftPressed() == true)
+	if (m_Input->IsDownPressed() == true)
 	{
-		//m_Graphics->m_Codex->modelList[0]->SetRotation(m_Graphics->m_Codex->modelList[0]->GetRotation() + 0.5f);
+		mainPlayer->BreakReverse();
 	}
 
 	return true;

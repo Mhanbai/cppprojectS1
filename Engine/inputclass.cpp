@@ -235,8 +235,19 @@ bool InputClass::IsEscapePressed()
 
 bool InputClass::IsUpPressed()
 {
-	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.
+	// Do a bitwise and on the keyboard state to check if the up key is currently being pressed.
 	if (m_keyboardState[DIK_UP] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::IsDownPressed()
+{
+	// Do a bitwise and on the keyboard state to check if the down key is currently being pressed.
+	if (m_keyboardState[DIK_DOWN] & 0x80)
 	{
 		return true;
 	}
@@ -246,7 +257,7 @@ bool InputClass::IsUpPressed()
 
 bool InputClass::IsLeftPressed()
 {
-	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.
+	// Do a bitwise and on the keyboard state to check if the left key is currently being pressed.
 	if (m_keyboardState[DIK_LEFT] & 0x80)
 	{
 		return true;
@@ -257,7 +268,7 @@ bool InputClass::IsLeftPressed()
 
 bool InputClass::IsRightPressed()
 {
-	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.
+	// Do a bitwise and on the keyboard state to check if the right key is currently being pressed.
 	if (m_keyboardState[DIK_RIGHT] & 0x80)
 	{
 		return true;
