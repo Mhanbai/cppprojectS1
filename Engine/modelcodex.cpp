@@ -3,13 +3,16 @@
 ModelCodex::ModelCodex()
 {
 	modelList[0] = new ModelClass;
-	positionList[0] = new D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);
 	modelList[1] = new ModelClass;
-	positionList[1] = new D3DXVECTOR4(-30.0f, 0.0f, 0.0f, 45.0f);
 	modelList[2] = new ModelClass;
-	positionList[2] = new D3DXVECTOR4(30.0f, 0.0f, 0.0f, -45.0f);
 	modelList[3] = new ModelClass;
-	positionList[3] = new D3DXVECTOR4(60.0f, 0.0f, 0.0f, 180.0f);
+
+	modelList[1]->SetPosition(30.0f, 0.0f, 0.0f);
+	modelList[1]->SetRotation(0.0f);
+	modelList[2]->SetPosition(60.0f, 0.0f, 0.0f);
+	modelList[2]->SetRotation(0.0f);
+	modelList[3]->SetPosition(90.0f, 0.0f, 0.0f);
+	modelList[3]->SetRotation(0.0f);
 }
 
 ModelCodex::ModelCodex(const ModelCodex& other)
@@ -71,11 +74,7 @@ void ModelCodex::Shutdown()
 
 void ModelCodex::Frame()
 {
-	for (int i = 0; i < modelCount; i++) {
-		modelList[i]->pos.x = positionList[i]->x;
-		modelList[i]->pos.y = positionList[i]->y;
-		modelList[i]->pos.z = positionList[i]->z;
-	}
+
 }
 
 D3DXMATRIX ModelCodex::GetModelRotationMatrix(float rotation) {

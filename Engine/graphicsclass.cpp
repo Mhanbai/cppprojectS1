@@ -153,7 +153,7 @@ bool GraphicsClass::Frame()
 
 	m_Codex->Frame();
 
-	m_Camera->Follow(m_Codex->positionList[0]);
+	m_Camera->Follow(m_Codex->modelList[0]->GetPosition());
 	
 	// Render the graphics scene.
 	result = Render(rotation, delta);
@@ -195,7 +195,7 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 		// Render the model using the light shader.
 		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Codex->modelList[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 			m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(),
-			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), m_Codex->modelList[i]->pos, m_Codex->GetModelRotationMatrix(m_Codex->positionList[i]->w), m_Codex->modelList[i]->GetTexture());
+			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), m_Codex->modelList[i]->GetPosition(), m_Codex->modelList[i]->GetRotationMatrix(), m_Codex->modelList[i]->GetTexture());
 		if (!result)
 		{
 			return false;

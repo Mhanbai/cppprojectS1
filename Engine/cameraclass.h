@@ -30,7 +30,7 @@ public:
 	void Render();
 	void GetViewMatrix(D3DXMATRIX&);
 
-	void Follow(D3DXVECTOR4* followTarget);
+	void Follow(D3DXVECTOR3 followTarget);
 
 private:
 	float m_positionX, m_positionY, m_positionZ;

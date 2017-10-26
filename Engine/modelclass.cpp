@@ -10,9 +10,7 @@ ModelClass::ModelClass()
 	m_indexBuffer = 0;
 	m_model = 0;
 	m_texture = 0;
-	pos.x = 0.0f;
-	pos.y = 0.0f;
-	pos.z = 0.0f;
+	gameObjectPosition = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 
@@ -90,6 +88,35 @@ int ModelClass::GetIndexCount()
 ID3D11ShaderResourceView * ModelClass::GetTexture()
 {
 	return m_texture->GetTexture();
+}
+
+D3DXVECTOR3 ModelClass::GetPosition()
+{
+	return D3DXVECTOR3(gameObjectPosition.x, gameObjectPosition.y, gameObjectPosition.z);
+}
+
+void ModelClass::SetPosition(float xPos, float yPos, float zPos)
+{
+	gameObjectPosition.x = xPos;
+	gameObjectPosition.y = yPos;
+	gameObjectPosition.z = zPos;
+}
+
+float ModelClass::GetRotation()
+{
+	return gameObjectPosition.w;
+}
+
+D3DXMATRIX ModelClass::GetRotationMatrix()
+{
+	D3DXMATRIX toReturn;
+	D3DXMatrixRotationY(&toReturn, gameObjectPosition.w * 0.0174532925f);
+	return toReturn;
+}
+
+void ModelClass::SetRotation(float angle)
+{
+	gameObjectPosition.w = angle;
 }
 
 
