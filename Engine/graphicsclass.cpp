@@ -11,7 +11,9 @@ GraphicsClass::GraphicsClass()
 	m_Camera = 0;
 	m_LightShader = 0;
 	m_Light = 0;
-	m_Codex = 0;
+	modelList = 0;
+	modelCount = 0;
+	mainPlayer = 0;
 }
 
 
@@ -41,20 +43,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Direct3D.", L"Error", MB_OK);
-		return false;
-	}
-
-	m_Codex = new ModelCodex;
-	if (!m_Codex)
-	{
-		return false;
-	}
-
-	// Initialize the Direct3D object.
-	result = m_Codex->Initialize(m_D3D, hwnd);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize Model Codex.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -90,6 +78,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	// Create dynamic array of models
+	modelList = new ModelClass*[10];
+
+	AddToPipeline(mainPlayer, hwnd, "../Engine/data/car.txt", L"../Engine/data/Car1Texture.dds");
+
+	mainPlayer->SetPosition(5.0f, 5.0f, 5.0f);
+
 	// Initialize the light object.
 	m_Light->SetAmbientColor(0.4f, 0.4f, 0.4f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -118,12 +113,20 @@ void GraphicsClass::Shutdown()
 		m_LightShader = 0;
 	}
 
-	// Release the model object.
-	if(m_Codex)
-	{
-		m_Codex->Shutdown();
-		delete m_Codex;
-		m_Codex = 0;
+	// Release the model objects.
+	if (modelList) {
+		for (int i = 0; i < modelCount; i++) {
+			if (modelList[i])
+			{
+				modelList[i]->Shutdown();
+				delete modelList[i];
+				modelList[i] = 0;
+			}
+		}
+
+		// Release the model list
+		delete modelList;
+		modelList = 0;
 	}
 
 	// Release the camera object.
@@ -151,9 +154,7 @@ bool GraphicsClass::Frame()
 	static float rotation = 0.5f;
 	static float delta =0.0f;
 
-	m_Codex->Frame();
-
-	m_Camera->Follow(m_Codex->modelList[0]->GetPosition());
+	m_Camera->Follow(modelList[0]->GetPosition());
 	
 	// Render the graphics scene.
 	result = Render(rotation, delta);
@@ -165,12 +166,27 @@ bool GraphicsClass::Frame()
 	return true;
 }
 
+bool GraphicsClass::AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFilename, WCHAR* textureFilename)
+{
+	modelList[modelCount] = new ModelClass;
+	bool result = modelList[modelCount]->Initialize(m_D3D->GetDevice(), modelFilename, textureFilename);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize model object.", L"Error", MB_OK);
+		return false;
+	}
+
+	model = modelList[modelCount];
+	modelCount++;
+
+	return true;
+}
+
 
 bool GraphicsClass::Render(float rotation, float deltavalue)
 {
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	bool result;
-
 
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
@@ -184,21 +200,14 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	//for (ModelClass* m_Model : m_Codex->modelList) {
-	for (int i = 0; i < m_Codex->modelCount; i++) {
-		D3DXMATRIX position = m_Codex->modelList[i]->GetPositionMatrix();
-		D3DXMATRIX rotation = m_Codex->modelList[i]->GetRotationMatrix();
-
-		// Rotate the world matrix by the rotation value so that the triangle will spin.
-		//D3DXMatrixRotationY(&worldMatrix, m_Codex->positionList[i]->w);
-
+	for (int i = 0; i < modelCount; i++) {
 		// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-		m_Codex->modelList[i]->Render(m_D3D->GetDeviceContext());
+		modelList[i]->Render(m_D3D->GetDeviceContext());
 
 		// Render the model using the light shader.
-		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Codex->modelList[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		result = m_LightShader->Render(m_D3D->GetDeviceContext(), modelList[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 			m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(),
-			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), position, rotation, m_Codex->modelList[i]->GetTexture());
+			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), modelList[i]->GetPositionMatrix(), modelList[i]->GetRotationMatrix(), modelList[i]->GetTexture());
 		if (!result)
 		{
 			return false;

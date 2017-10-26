@@ -39,12 +39,15 @@ public:
 	void Shutdown();
 	bool Frame();
 
-	ModelCodex* m_Codex;
+	bool AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFilename, WCHAR* textureFilename);
 
 private:
 	bool Render(float, float);
 
 private:
+	ModelClass* mainPlayer;
+	ModelClass* *modelList;
+	int modelCount;
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
 	LightShaderClass* m_LightShader;
