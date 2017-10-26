@@ -102,6 +102,13 @@ void ModelClass::SetPosition(float xPos, float yPos, float zPos)
 	gameObjectPosition.z = zPos;
 }
 
+D3DXMATRIX ModelClass::GetPositionMatrix()
+{
+	D3DXMATRIX toReturn;
+	D3DXMatrixTranslation(&toReturn, -gameObjectPosition.x, -gameObjectPosition.y, -gameObjectPosition.z);
+	return toReturn;
+}
+
 float ModelClass::GetRotation()
 {
 	return gameObjectPosition.w;
@@ -110,7 +117,7 @@ float ModelClass::GetRotation()
 D3DXMATRIX ModelClass::GetRotationMatrix()
 {
 	D3DXMATRIX toReturn;
-	D3DXMatrixRotationY(&toReturn, gameObjectPosition.w * 0.0174532925f);
+	D3DXMatrixRotationY(&toReturn, -gameObjectPosition.w * 0.0174532925f);
 	return toReturn;
 }
 

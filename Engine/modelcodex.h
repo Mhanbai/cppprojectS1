@@ -29,7 +29,6 @@ public:
 	static const int modelCount = 4;
 
 	ModelClass* modelList[modelCount];
-	D3DXMATRIX GetModelRotationMatrix(float rotation);
 };
 
 #endif

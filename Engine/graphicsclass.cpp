@@ -186,6 +186,9 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 
 	//for (ModelClass* m_Model : m_Codex->modelList) {
 	for (int i = 0; i < m_Codex->modelCount; i++) {
+		D3DXMATRIX position = m_Codex->modelList[i]->GetPositionMatrix();
+		D3DXMATRIX rotation = m_Codex->modelList[i]->GetRotationMatrix();
+
 		// Rotate the world matrix by the rotation value so that the triangle will spin.
 		//D3DXMatrixRotationY(&worldMatrix, m_Codex->positionList[i]->w);
 
@@ -195,7 +198,7 @@ bool GraphicsClass::Render(float rotation, float deltavalue)
 		// Render the model using the light shader.
 		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Codex->modelList[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 			m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(),
-			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), m_Codex->modelList[i]->GetPosition(), m_Codex->modelList[i]->GetRotationMatrix(), m_Codex->modelList[i]->GetTexture());
+			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), position, rotation, m_Codex->modelList[i]->GetTexture());
 		if (!result)
 		{
 			return false;

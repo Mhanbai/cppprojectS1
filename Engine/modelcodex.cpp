@@ -7,11 +7,13 @@ ModelCodex::ModelCodex()
 	modelList[2] = new ModelClass;
 	modelList[3] = new ModelClass;
 
-	modelList[1]->SetPosition(30.0f, 0.0f, 0.0f);
+	modelList[0]->SetPosition(0.0f, 0.0f, 0.0f);
 	modelList[1]->SetRotation(0.0f);
-	modelList[2]->SetPosition(60.0f, 0.0f, 0.0f);
+	modelList[1]->SetPosition(10.0f, 0.0f, 0.0f);
+	modelList[1]->SetRotation(0.0f);
+	modelList[2]->SetPosition(20.0f, 0.0f, 0.0f);
 	modelList[2]->SetRotation(0.0f);
-	modelList[3]->SetPosition(90.0f, 0.0f, 0.0f);
+	modelList[3]->SetPosition(30.0f, 0.0f, 0.0f);
 	modelList[3]->SetRotation(0.0f);
 }
 
@@ -75,10 +77,4 @@ void ModelCodex::Shutdown()
 void ModelCodex::Frame()
 {
 
-}
-
-D3DXMATRIX ModelCodex::GetModelRotationMatrix(float rotation) {
-	D3DXMATRIX toReturn;
-	D3DXMatrixRotationY(&toReturn, rotation * 0.0174532925f);
-	return toReturn;
 }

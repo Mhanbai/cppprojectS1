@@ -48,6 +48,7 @@ public:
 
 	D3DXVECTOR3 GetPosition();
 	void SetPosition(float xPos, float yPos, float zPos);
+	D3DXMATRIX GetPositionMatrix();
 	float GetRotation();
 	void SetRotation(float angle);
 	D3DXMATRIX GetRotationMatrix();

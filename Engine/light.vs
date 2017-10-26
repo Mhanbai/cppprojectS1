@@ -15,8 +15,7 @@ cbuffer MatrixBuffer
 
 cbuffer VariableBuffer
 {
-    float delta;
-	float3 modelPosition;
+	matrix modelPosition;
 	matrix rotate;
 };
 
@@ -57,15 +56,13 @@ PixelInputType LightVertexShader(VertexInputType input)
 	// Change the position vector to be 4 units for proper matrix calculations.
     input.position.w = 1.0f;
 
+	input.position = mul(rotate, input.position);
+	input.position = mul(modelPosition, input.position);
+
 	// Calculate the position of the vertex against the world, view, and projection matrices.
-    output.position = mul(input.position, worldMatrix);
-	output.position = mul(output.position, rotate);
+	output.position = mul(input.position, worldMatrix);
     output.position = mul(output.position, viewMatrix);
     output.position = mul(output.position, projectionMatrix);
-
-	output.position.x = output.position.x + modelPosition.x;
-	output.position.y = output.position.y + modelPosition.y;
-	output.position.z = output.position.z + modelPosition.z;
     
 	// Store the texture coordinates for the pixel shader.
 	output.tex = input.tex;
@@ -77,7 +74,7 @@ PixelInputType LightVertexShader(VertexInputType input)
     output.normal = normalize(output.normal);
 
 	// Calculate the position of the vertex in the world.
-    worldPosition = mul(input.position, viewMatrix);
+    worldPosition = mul(input.position, worldMatrix);
 
     // Determine the viewing direction based on the position of the camera and the position of the vertex in the world.
     output.viewDirection = cameraPosition.xyz - worldPosition.xyz;
