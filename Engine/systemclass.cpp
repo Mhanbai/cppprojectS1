@@ -78,6 +78,12 @@ bool SystemClass::Initialize()
 	{
 		return false;
 	}
+
+	m_Graphics->AddToPipeline(road, m_hwnd, "../Engine/data/r_straight.txt", L"../Engine/data/road.dds");
+	m_Graphics->AddToPipeline(road2, m_hwnd, "../Engine/data/r_sharpcurve.txt", L"../Engine/data/road.dds");
+	road->SetPosition(0.0f, 4.0f, 0.0f);
+	road2->SetPosition(23.2f, 4.0f, 66.6f);
+	road2->SetRotation(-90.0f);
 	
 	return true;
 }

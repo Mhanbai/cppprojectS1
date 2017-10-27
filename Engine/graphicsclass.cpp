@@ -52,7 +52,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 4.0f, 31.5f);
+
+	//m_Camera->SetPosition(0.0f, 170.0f, -30.0f);
+	//m_Camera->SetRotation(-90.0f, 0.0f, 0.0f);
+
+	m_Camera->SetPosition(0.0f, 7.0f, 10.0f);
+	m_Camera->SetRotation(-15.0f, 0.0f, 0.0f);
 
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;
@@ -145,13 +150,9 @@ void GraphicsClass::Shutdown()
 bool GraphicsClass::Frame()
 {
 	bool result;
-	static float rotation = 0.5f;
-	static float delta =0.0f;
-
-	m_Camera->Follow(modelList[0]->GetPosition());
 	
 	// Render the graphics scene.
-	result = Render(rotation, delta);
+	result = Render();
 	if(!result)
 	{
 		return false;
@@ -177,10 +178,12 @@ bool GraphicsClass::AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFile
 }
 
 
-bool GraphicsClass::Render(float rotation, float deltavalue)
+bool GraphicsClass::Render()
 {
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	bool result;
+
+	D3DXVECTOR3 test = m_Camera->GetPosition();
 
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);

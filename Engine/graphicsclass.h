@@ -41,7 +41,7 @@ public:
 	bool AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFilename, WCHAR* textureFilename);
 
 private:
-	bool Render(float, float);
+	bool Render();
 
 private:
 	ModelClass* *modelList;

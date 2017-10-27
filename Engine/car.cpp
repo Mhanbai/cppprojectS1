@@ -32,7 +32,7 @@ bool Car::Initialize(GraphicsClass *& graphics, HWND &hwnd, WCHAR* textureFilena
 	bool result;
 	m_Graphics = graphics;
 
-	result = m_Graphics->AddToPipeline(m_Model, hwnd, "../Engine/data/car.txt", textureFilename);
+	result = m_Graphics->AddToPipeline(m_Model, hwnd, "../Engine/data/c_main.txt", textureFilename);
 	if (!result) {
 		return false;
 	}
@@ -73,10 +73,12 @@ void Car::BreakReverse()
 
 void Car::TurnLeft()
 {
+	velAngle = velAngle + 0.5f;
 }
 
 void Car::TurnRight()
 {
+	velAngle = velAngle - 0.5f;
 }
 
 void Car::SetPosition(float xPos, float yPos, float zPos, float rotation)

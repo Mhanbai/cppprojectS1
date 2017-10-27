@@ -27,12 +27,12 @@ bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, HWND &hwnd)
 		return false;
 	}
 
-	result = mainPlayer->Initialize(m_Graphics, hwnd, L"../Engine/data/Car1Texture.dds");
+	result = mainPlayer->Initialize(m_Graphics, hwnd, L"../Engine/data/cars.dds");
 	if (!result) {
 		return false;
 	}
 
-	mainPlayer->SetPosition(0.0f, 0.0f, 0.0f, 0.0f);
+	mainPlayer->SetPosition(0.0f, 0.0f, 10.0f, 0.0f);
 
 	return true;
 }
@@ -61,6 +61,16 @@ bool Game::Frame()
 	if (m_Input->IsDownPressed() == true)
 	{
 		mainPlayer->BreakReverse();
+	}
+
+	if (m_Input->IsLeftPressed() == true)
+	{
+		mainPlayer->TurnLeft();
+	}
+
+	if (m_Input->IsRightPressed() == true)
+	{
+		mainPlayer->TurnRight();
 	}
 
 	return true;
