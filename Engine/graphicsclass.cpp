@@ -57,7 +57,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//m_Camera->SetRotation(-90.0f, 0.0f, 0.0f);
 
 	m_Camera->SetPosition(0.0f, 7.0f, 10.0f);
-	m_Camera->SetRotation(-15.0f, 0.0f, 0.0f);
+	m_Camera->SetRotation(-10.0f, 0.0f, 0.0f);
 
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;

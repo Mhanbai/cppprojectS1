@@ -31,6 +31,7 @@ public:
 	void TurnLeft();
 	void TurnRight();
 	void SetPosition(float xPos, float yPos, float zPos, float rotation);
+	D3DXVECTOR3 GetPosition();
 
 private:
 	GraphicsClass* m_Graphics;

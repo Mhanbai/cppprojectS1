@@ -88,3 +88,8 @@ void Car::SetPosition(float xPos, float yPos, float zPos, float rotation)
 	position.z = zPos;
 	velAngle = rotation;
 }
+
+D3DXVECTOR3 Car::GetPosition()
+{
+	return position;
+}

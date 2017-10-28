@@ -30,7 +30,7 @@ void CameraClass::SetPosition(float x, float y, float z)
 {
 	m_positionX = x;
 	m_positionY = y;
-	m_positionZ = z;
+	m_positionZ = -z;
 	return;
 }
 
@@ -103,4 +103,13 @@ void CameraClass::GetViewMatrix(D3DXMATRIX& viewMatrix)
 {
 	viewMatrix = m_viewMatrix;
 	return;
+}
+
+void CameraClass::Follow(D3DXVECTOR3 followTarget)
+{
+	D3DXVECTOR3 myTarget = followTarget;
+	myTarget.y = followTarget.y + 6.0f;
+	myTarget.z = followTarget.z - 23.0f;
+
+	SetPosition(myTarget.x, myTarget.y, myTarget.z);
 }

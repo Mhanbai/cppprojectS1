@@ -40,6 +40,8 @@ public:
 
 	bool AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFilename, WCHAR* textureFilename);
 
+	CameraClass* m_Camera;
+
 private:
 	bool Render();
 
@@ -47,7 +49,6 @@ private:
 	ModelClass* *modelList;
 	int modelCount;
 	D3DClass* m_D3D;
-	CameraClass* m_Camera;
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 };
