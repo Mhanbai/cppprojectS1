@@ -30,6 +30,7 @@ public:
 	void BreakReverse();
 	void TurnLeft();
 	void TurnRight();
+	void ApplyNewton();
 	void SetPosition(float xPos, float yPos, float zPos, float rotation);
 	D3DXVECTOR3 GetPosition();
 

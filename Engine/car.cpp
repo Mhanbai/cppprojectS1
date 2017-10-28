@@ -81,6 +81,35 @@ void Car::TurnRight()
 	velAngle = velAngle - 0.5f;
 }
 
+void Car::ApplyNewton()
+{
+	if (velocity.x > 0.0f) {
+		velocity.x = velocity.x - 0.01f;
+	}								 
+									 
+	if (velocity.x < 0.0f) {			 
+		velocity.x = velocity.x + 0.01f;
+	}								 
+									 
+	if (velocity.y > 0.0f) {			 
+		velocity.y = velocity.y - 0.01f;
+	}								  
+									  
+	if (velocity.y < 0.0f) {			  
+		velocity.y = velocity.y + 0.01f;
+	}								 
+									 
+	if (velocity.z > 0.0f) {			 
+		velocity.z = velocity.z - 0.01f;
+	}								 
+									 
+	if (velocity.z < 0.0f) {			 
+		velocity.z = velocity.z + 0.01f;
+	}
+}
+
+
+
 void Car::SetPosition(float xPos, float yPos, float zPos, float rotation)
 {
 	position.x = xPos;

@@ -58,11 +58,12 @@ bool Game::Frame()
 	if (m_Input->IsUpPressed() == true)
 	{
 		mainPlayer->Accelerate();
-	}
-
-	if (m_Input->IsDownPressed() == true)
+	} else if (m_Input->IsDownPressed() == true)
 	{
 		mainPlayer->BreakReverse();
+	}
+	else {
+		mainPlayer->ApplyNewton();
 	}
 
 	if (m_Input->IsLeftPressed() == true)
