@@ -27,12 +27,12 @@ Car::~Car()
 {
 }
 
-bool Car::Initialize(GraphicsClass *& graphics, HWND &hwnd, WCHAR* textureFilename)
+bool Car::Initialize(GraphicsClass *& graphics, HWND &hwnd, char* modelFilename, WCHAR* textureFilename)
 {
 	bool result;
 	m_Graphics = graphics;
 
-	result = m_Graphics->AddToPipeline(m_Model, hwnd, "../Engine/data/c_main.txt", textureFilename);
+	result = m_Graphics->AddToPipeline(m_Model, hwnd, modelFilename, textureFilename);
 	if (!result) {
 		return false;
 	}

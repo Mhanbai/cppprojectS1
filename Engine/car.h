@@ -22,7 +22,7 @@ public:
 	Car();
 	Car(const Car&);
 	~Car();
-	bool Initialize(GraphicsClass* &graphics, HWND &hwnd, WCHAR* textureFilename);
+	bool Initialize(GraphicsClass* &graphics, HWND &hwnd, char* modelFilename, WCHAR* textureFilename);
 	void Shutdown();
 	void Frame();
 

@@ -27,7 +27,7 @@ bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, HWND &hwnd)
 		return false;
 	}
 
-	result = mainPlayer->Initialize(m_Graphics, hwnd, L"../Engine/data/cars.dds");
+	result = mainPlayer->Initialize(m_Graphics, hwnd,  "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
 	if (!result) {
 		return false;
 	}
@@ -55,14 +55,11 @@ bool Game::Frame()
 
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition());
 
-	if (m_Input->IsUpPressed() == true)
-	{
+	if (m_Input->IsUpPressed() == true) {
 		mainPlayer->Accelerate();
-	} else if (m_Input->IsDownPressed() == true)
-	{
+	} else if (m_Input->IsDownPressed() == true) {
 		mainPlayer->BreakReverse();
-	}
-	else {
+	} else {
 		mainPlayer->ApplyNewton();
 	}
 
