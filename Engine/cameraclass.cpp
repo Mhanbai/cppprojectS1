@@ -28,7 +28,7 @@ CameraClass::~CameraClass()
 
 void CameraClass::SetPosition(float x, float y, float z)
 {
-	m_positionX = x;
+	m_positionX = -x;
 	m_positionY = -y;
 	m_positionZ = -z;
 	return;
@@ -107,9 +107,24 @@ void CameraClass::GetViewMatrix(D3DXMATRIX& viewMatrix)
 
 void CameraClass::Follow(D3DXVECTOR3 followTarget)
 {
-	D3DXVECTOR3 myTarget = followTarget;
-	myTarget.y = followTarget.y - 6.0f;
-	myTarget.z = followTarget.z - 23.0f;
+	float distance = -25.0f; //Distance to keep from car
+	float height = -4.0f; //Height from ground
+	D3DXVECTOR3 startingForwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f); //Inital forward vector to calculate new angle
+	D3DXVECTOR3 myTarget;
+	D3DXVECTOR3 myPosition = GetPosition();
 
-	SetPosition(-myTarget.x, myTarget.y, myTarget.z);
+	//Find vector between position and followtarget
+	D3DXVec3Subtract(&myTarget, &followTarget, &myPosition);
+
+	//Find angle followtarget vector and starting forward vector
+	float deltaAngle = atan2(myTarget.z, myTarget.x) - atan2(startingForwardVector.z, startingForwardVector.x);
+	deltaAngle = deltaAngle * 57.2958f;
+
+	D3DXVec3Normalize(&myTarget, &myTarget); //Normalise followtarget vector
+	myTarget = myTarget * distance; //Multiply by distance
+	myTarget.y = height; //Add height
+	D3DXVec3Add(&myTarget, &myTarget, &followTarget); //Add to followtarget position
+
+	SetPosition(myTarget.x, myTarget.y, myTarget.z); //Set position
+	SetRotation(0.0f, -deltaAngle, 0.0f);
 }

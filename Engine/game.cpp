@@ -32,6 +32,7 @@ bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, HWND &hwnd)
 		return false;
 	}
 
+	m_Graphics->m_Camera->SetPosition(0.0f, 0.0f, 0.0f);
 	mainPlayer->SetPosition(0.0f, 0.0f, 10.0f, 0.0f);
 
 	return true;

@@ -12,11 +12,11 @@ Car::Car()
 	forwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 	upVector = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	acceleration = D3DXVECTOR3 (0.0f, 0.0f, 0.0f);
-	accelerationFactor = 0.25f;
-	frictionFactor = 0.065f;
-	lateralFrictionFactor = 0.065f;
+	accelerationFactor = 0.75f;
+	frictionFactor = 0.00005f;
+	lateralFrictionFactor = 0.05f;
 	steerFactor = 0.03f;
-	maxSpeed = D3DXVECTOR3(2.0f, 0.0f, 2.0f);
+	maxSpeed = D3DXVECTOR3(10.0f, 0.0f, 10.0f);
 	velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
@@ -55,17 +55,27 @@ void Car::Frame()
 		accelerationInput = 1.0f;
 	}
 	else if (isBreakReversing) {
-		accelerationInput = -0.2f;
+		accelerationInput = -0.5f;
 	}
 	else {
 		accelerationInput = 0.0f;
 	} 
 
 	if (isTurningLeft) {
-		steerInput = -1.0f;
+		if (isBreakReversing) {
+			steerInput = 1.0f;
+		}
+		else {
+			steerInput = -1.0f;
+		}
 	}
 	else if (isTurningRight) {
-		steerInput = 1.0f;
+		if (isBreakReversing) {
+			steerInput = -1.0f;
+		}
+		else {
+			steerInput = 1.0f;
+		}
 	}
 	else {
 		steerInput = 0.0f;
@@ -94,7 +104,7 @@ void Car::Frame()
 
 	//Friction is equal to the reverse of velocity multiplied by how frictiony the surface is
 	friction = -velocity * frictionFactor;
-	velocity += friction;
+	velocity += friction + lateralFriction;
 
 	//Check that current speed is not higher than max speed
 	if (currentSpeed < maxSpeed) {
