@@ -11,6 +11,7 @@
 // MY CLASS INCLUDES //
 ///////////////////////
 #include <windows.h>
+#include <time.h>
 #include "graphicsclass.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,11 +27,10 @@ public:
 	void Shutdown();
 	void Frame();
 
-	void Accelerate();
-	void BreakReverse();
-	void TurnLeft();
-	void TurnRight();
-	void ApplyNewton();
+	void Accelerate(bool);
+	void BreakReverse(bool);
+	void TurnLeft(bool);
+	void TurnRight(bool);
 	void SetPosition(float xPos, float yPos, float zPos, float rotation);
 	D3DXVECTOR3 GetPosition();
 
@@ -38,15 +38,47 @@ private:
 	GraphicsClass* m_Graphics;
 	ModelClass* m_Model;
 
-	float velAngle;
-	float velLength;
-	float acceleration;
-	float maxForwardSpeed;
-	float reverseAcceleration;
-	float maxBackwardSpeed;
-	D3DXVECTOR3 velocity;
-	D3DXVECTOR3 position;
+	//Forward Vector, Up Vector & Right Vector + useful storage variables
+	D3DXVECTOR3 startingForwardVector;
+	D3DXVECTOR3 forwardVector;
+	D3DXVECTOR4 nextForwardVector;
+	D3DXVECTOR3 forwardVectorNormalized;
+	D3DXVECTOR3 rightVector;
+	D3DXVECTOR3 upVector;
 
+	//Rotation matrix
+	D3DXMATRIX rotation;
+
+	//Current Speed & Max Speed
+	D3DXVECTOR3 currentSpeed;
+	D3DXVECTOR3 maxSpeed;
+
+	//Position of model for graphics & game
+	D3DXVECTOR3 position;
+	float graphicsAngle;
+
+	//Velocity, friction, steering etc...
+	D3DXVECTOR3 velocity;
+	D3DXVECTOR3 friction;
+	D3DXVECTOR3 acceleration;
+	float accelerationFactor;
+	float frictionFactor;
+	float accelerationInput = 0.0f;
+	float steerInput;
+	float steerFactor;
+	float steerAngle;
+	float steeringScalar;
+
+	//Values for lateral velocity
+	D3DXVECTOR3 lateralVelocity;
+	D3DXVECTOR3 lateralFriction;
+	float lateralFrictionFactor;
+
+	//Booleans for user input
+	bool isAccelerating = false;
+	bool isTurningLeft = false;
+	bool isTurningRight = false;
+	bool isBreakReversing = false;
 };
 
 #endif

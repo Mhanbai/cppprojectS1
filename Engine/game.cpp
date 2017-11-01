@@ -56,21 +56,33 @@ bool Game::Frame()
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition());
 
 	if (m_Input->IsUpPressed() == true) {
-		mainPlayer->Accelerate();
-	} else if (m_Input->IsDownPressed() == true) {
-		mainPlayer->BreakReverse();
-	} else {
-		mainPlayer->ApplyNewton();
+		mainPlayer->Accelerate(true);
+	}
+	else {
+		mainPlayer->Accelerate(false);
+	}
+	
+	if (m_Input->IsDownPressed() == true) {
+		mainPlayer->BreakReverse(true);
+	}
+	else {
+		mainPlayer->BreakReverse(false);
 	}
 
 	if (m_Input->IsLeftPressed() == true)
 	{
-		mainPlayer->TurnLeft();
+		mainPlayer->TurnLeft(true);
+	}
+	else {
+		mainPlayer->TurnLeft(false);
 	}
 
 	if (m_Input->IsRightPressed() == true)
 	{
-		mainPlayer->TurnRight();
+		mainPlayer->TurnRight(true);
+	}
+	else {
+		mainPlayer->TurnRight(false);
 	}
 
 	return true;

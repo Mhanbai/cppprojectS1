@@ -111,5 +111,5 @@ void CameraClass::Follow(D3DXVECTOR3 followTarget)
 	myTarget.y = followTarget.y - 6.0f;
 	myTarget.z = followTarget.z - 23.0f;
 
-	SetPosition(myTarget.x, myTarget.y, myTarget.z);
+	SetPosition(-myTarget.x, myTarget.y, myTarget.z);
 }

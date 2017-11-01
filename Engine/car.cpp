@@ -6,15 +6,17 @@ Car::Car()
 	m_Model = 0;
 
 	// Set up gameplay variables
-	velAngle = 0.0f;
-	velLength = 0.0f;
-
-	acceleration = 0.1f;
-	maxForwardSpeed = 2.0f;
-
-	reverseAcceleration = 0.01f;
-	maxBackwardSpeed = -0.3f;
-
+	steerInput = 0.0f;
+	graphicsAngle = 0.0f;
+	startingForwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	forwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	upVector = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	acceleration = D3DXVECTOR3 (0.0f, 0.0f, 0.0f);
+	accelerationFactor = 0.25f;
+	frictionFactor = 0.065f;
+	lateralFrictionFactor = 0.065f;
+	steerFactor = 0.03f;
+	maxSpeed = D3DXVECTOR3(2.0f, 0.0f, 2.0f);
 	velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
@@ -48,74 +50,115 @@ void Car::Shutdown()
 
 void Car::Frame()
 {
+	// Change input values based on user input
+	if (isAccelerating) {
+		accelerationInput = 1.0f;
+	}
+	else if (isBreakReversing) {
+		accelerationInput = -0.2f;
+	}
+	else {
+		accelerationInput = 0.0f;
+	} 
+
+	if (isTurningLeft) {
+		steerInput = -1.0f;
+	}
+	else if (isTurningRight) {
+		steerInput = 1.0f;
+	}
+	else {
+		steerInput = 0.0f;
+	}
+
+	//Normalize the velocity to find the current speed
+	D3DXVec3Normalize(&currentSpeed, &velocity);
+
+	//Angle of steering equals user input multiplied by how well car handles
+	steerAngle = steerInput * steerFactor;
+
+	//Calculate new forward vector
+	D3DXMatrixRotationY(&rotation, steerAngle); //Create a matrix for rotation around Y from angle of steering
+	D3DXVec3Transform(&nextForwardVector, &forwardVector, &rotation); //Transform forward vector by rotation matrix
+	forwardVector = D3DXVECTOR3(nextForwardVector.x, nextForwardVector.y, nextForwardVector.z); //As Vec3Transform returns a Vector4, put these values into a Vector3
+
+	//Calculate new right vector from forward vector
+	D3DXVec3Normalize(&forwardVectorNormalized, &forwardVector);
+	D3DXVec3Cross(&rightVector, &forwardVectorNormalized, &upVector);
+
+	lateralVelocity = rightVector * D3DXVec3Dot(&velocity, &rightVector);
+	lateralFriction = -velocity * lateralFrictionFactor;
+
+	//Acceleration is equal to direction car is facing multiplied by the rate of acceleration multiplied by input
+	acceleration = forwardVector * accelerationInput * accelerationFactor;
+
+	//Friction is equal to the reverse of velocity multiplied by how frictiony the surface is
+	friction = -velocity * frictionFactor;
+	velocity += friction;
+
+	//Check that current speed is not higher than max speed
+	if (currentSpeed < maxSpeed) {
+		//Add acceleration to velocity
+		velocity += acceleration;
+	}
+
+	//Add velocity to position
 	position = position + velocity;
 
+	//Calculate angle car is facing for graphics
+	graphicsAngle = atan2(forwardVector.z, forwardVector.x) - atan2(startingForwardVector.z, startingForwardVector.x);
+
+	//Set the position of the cars model
 	m_Model->SetPosition(position.x, position.y, position.z);
-	m_Model->SetRotation(velAngle);
+	m_Model->SetRotation(graphicsAngle * 57.2958f);
 }
 
-void Car::Accelerate()
+void Car::Accelerate(bool set)
 {
-	if (velocity.z < maxForwardSpeed) {
-		velocity.z += acceleration;
+	if (set == true) {
+		isAccelerating = true;
+	}
+	else {
+		isAccelerating = false;
 	}
 }
 
-void Car::BreakReverse()
+void Car::BreakReverse(bool set)
 {
-	if (velocity.z > 0.1f) {
-		velocity.z -= acceleration;
+	if (set == true) {
+		isBreakReversing = true;
 	}
-	else if (velocity.z > maxBackwardSpeed) {
-		velocity.z -= reverseAcceleration;
-	}
-}
-
-void Car::TurnLeft()
-{
-	velAngle = velAngle + 0.5f;
-}
-
-void Car::TurnRight()
-{
-	velAngle = velAngle - 0.5f;
-}
-
-void Car::ApplyNewton()
-{
-	if (velocity.x > 0.0f) {
-		velocity.x = velocity.x - 0.01f;
-	}								 
-									 
-	if (velocity.x < 0.0f) {			 
-		velocity.x = velocity.x + 0.01f;
-	}								 
-									 
-	if (velocity.y > 0.0f) {			 
-		velocity.y = velocity.y - 0.01f;
-	}								  
-									  
-	if (velocity.y < 0.0f) {			  
-		velocity.y = velocity.y + 0.01f;
-	}								 
-									 
-	if (velocity.z > 0.0f) {			 
-		velocity.z = velocity.z - 0.01f;
-	}								 
-									 
-	if (velocity.z < 0.0f) {			 
-		velocity.z = velocity.z + 0.01f;
+	else {
+		isBreakReversing = false;
 	}
 }
 
+void Car::TurnLeft(bool set)
+{
+	if (set == true) {
+		isTurningLeft = true;
+	}
+	else {
+		isTurningLeft = false;
+	}
+}
 
+void Car::TurnRight(bool set)
+{
+	if (set == true) {
+		isTurningRight = true;
+	}
+	else {
+		isTurningRight = false;
+	}
+}
 
 void Car::SetPosition(float xPos, float yPos, float zPos, float rotation)
 {
 	position.x = xPos;
 	position.y = yPos;
 	position.z = zPos;
-	velAngle = rotation;
+	graphicsAngle = rotation;
 }
 
 D3DXVECTOR3 Car::GetPosition()
