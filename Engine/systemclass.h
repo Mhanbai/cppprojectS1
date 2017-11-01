@@ -56,6 +56,7 @@ private:
 	Game* m_Game;
 	ModelClass* road;
 	ModelClass* road2;
+	TextClass* m_Text;
 };
 
 

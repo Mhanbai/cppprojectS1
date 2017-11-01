@@ -15,11 +15,12 @@ Game::~Game()
 {
 }
 
-bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, HWND &hwnd)
+bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, TextClass* &text, HWND &hwnd)
 {
 	bool result;
 	m_Input = input;
 	m_Graphics = graphics;
+	m_Text = text;
 
 	mainPlayer = new Car();
 	if (!mainPlayer)

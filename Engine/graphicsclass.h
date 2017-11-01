@@ -36,13 +36,15 @@ public:
 	GraphicsClass(const GraphicsClass&);
 	~GraphicsClass();
 
-	bool Initialize(int, int, HWND);
+	bool Initialize(int, int, TextClass* &text, HWND);
 	void Shutdown();
 	bool Frame();
 
 	bool AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFilename, WCHAR* textureFilename);
 
 	CameraClass* m_Camera;
+	TextClass* m_Text;
+	D3DClass* m_D3D;
 
 private:
 	bool Render();
@@ -50,12 +52,11 @@ private:
 private:
 	ModelClass* *modelList;
 	int modelCount;
-	D3DClass* m_D3D;
 	LightShaderClass* m_LightShader;
 	TextureShaderClass* m_TextureShader;
 	LightClass* m_Light;
 	BitmapClass* m_Bitmap;
-	TextClass* m_Text;
+
 	D3DXMATRIX screenViewMatrix = D3DXMATRIX(1.0f, 0.0f, 0.0f, 0.0f, 
 												0.0f, 1.0f, 0.0f, 0.0f,
 												0.0f, 0.0f, 1.0f, 0.0f,

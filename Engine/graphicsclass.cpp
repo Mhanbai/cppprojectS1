@@ -28,7 +28,7 @@ GraphicsClass::~GraphicsClass()
 }
 
 
-bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
+bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &text, HWND hwnd)
 {
 	bool result;
 
@@ -47,12 +47,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Create the camera object.
-	m_Camera = new CameraClass;
-	if(!m_Camera)
-	{
-		return false;
-	}
+	m_Text = text;
 
 	// Create the text object.
 	m_Text = new TextClass;
@@ -66,6 +61,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the camera object.
+	m_Camera = new CameraClass(m_Text, m_D3D);
+	if (!m_Camera)
+	{
 		return false;
 	}
 
@@ -229,6 +231,8 @@ bool GraphicsClass::Frame()
 	{
 		return false;
 	}
+
+
 
 	return true;
 }

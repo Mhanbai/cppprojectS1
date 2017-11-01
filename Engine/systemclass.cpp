@@ -2,7 +2,6 @@
 // Filename: systemclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
 #include "systemclass.h"
-#include "modelcodex.h"
 
 
 SystemClass::SystemClass()
@@ -60,7 +59,7 @@ bool SystemClass::Initialize()
 	}
 
 	// Initialize the graphics object.
-	result = m_Graphics->Initialize(screenWidth, screenHeight, m_hwnd);
+	result = m_Graphics->Initialize(screenWidth, screenHeight, m_Text, m_hwnd);
 	if(!result)
 	{
 		return false;
@@ -73,7 +72,7 @@ bool SystemClass::Initialize()
 	}
 
 	// Initialize the game object.
-	result = m_Game->Initialize(m_Input, m_Graphics, m_hwnd);
+	result = m_Game->Initialize(m_Input, m_Graphics, m_Text, m_hwnd);
 	if (!result)
 	{
 		return false;

@@ -23,7 +23,7 @@ public:
 	Game();
 	Game(const Game&);
 	~Game();
-	bool Initialize(InputClass* &input, GraphicsClass* &graphics, HWND &hwnd);
+	bool Initialize(InputClass* &input, GraphicsClass* &graphics, TextClass* &text, HWND &hwnd);
 	void Shutdown();
 	bool Frame();
 
@@ -31,6 +31,7 @@ private:
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
 	Car* mainPlayer;
+	TextClass* m_Text;
 };
 
 #endif

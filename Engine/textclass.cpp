@@ -10,6 +10,10 @@ TextClass::TextClass()
 
 	m_sentence1 = 0;
 	m_sentence2 = 0;
+	m_sentence3 = 0;
+	m_sentence4 = 0;
+	m_sentence5 = 0;
+	m_sentence6 = 0;
 }
 
 
@@ -65,29 +69,43 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 		return false;
 	}
 
-	// Initialize the first sentence.
+	// Initialize the sentence.
 	result = InitializeSentence(&m_sentence1, 16, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	// Now update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence1, "Hello", 100, 100, 1.0f, 1.0f, 1.0f, deviceContext);
-	if (!result)
-	{
-		return false;
-	}
-
-	// Initialize the first sentence.
+	// Initialize the sentence.
 	result = InitializeSentence(&m_sentence2, 16, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	// Now update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence2, "Goodbye", 100, 200, 1.0f, 1.0f, 0.0f, deviceContext);
+	// Initialize the sentence.
+	result = InitializeSentence(&m_sentence3, 16, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Initialize the sentence.
+	result = InitializeSentence(&m_sentence4, 16, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Initialize the sentence.
+	result = InitializeSentence(&m_sentence5, 16, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Initialize the sentence.
+	result = InitializeSentence(&m_sentence6, 16, device);
 	if (!result)
 	{
 		return false;
@@ -98,11 +116,23 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 
 void TextClass::Shutdown()
 {
-	// Release the first sentence.
+	// Release the sentence.
 	ReleaseSentence(&m_sentence1);
 
-	// Release the second sentence.
+	// Release the sentence.
 	ReleaseSentence(&m_sentence2);
+
+	// Release the sentence.
+	ReleaseSentence(&m_sentence3);
+
+	// Release the sentence.
+	ReleaseSentence(&m_sentence4);
+
+	// Release the sentence.
+	ReleaseSentence(&m_sentence5);
+
+	// Release the sentence.
+	ReleaseSentence(&m_sentence6);
 
 	// Release the font shader object.
 	if (m_FontShader)
@@ -137,6 +167,34 @@ bool TextClass::Render(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatri
 
 	// Draw the second sentence.
 	result = RenderSentence(deviceContext, m_sentence2, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Draw the second sentence.
+	result = RenderSentence(deviceContext, m_sentence3, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Draw the second sentence.
+	result = RenderSentence(deviceContext, m_sentence4, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Draw the second sentence.
+	result = RenderSentence(deviceContext, m_sentence5, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Draw the second sentence.
+	result = RenderSentence(deviceContext, m_sentence6, worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;

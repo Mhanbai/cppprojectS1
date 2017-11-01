@@ -4,8 +4,11 @@
 #include "cameraclass.h"
 
 
-CameraClass::CameraClass()
+CameraClass::CameraClass(TextClass* &text, D3DClass* &d3d)
 {
+	m_Text = text;
+	m_D3D = d3d;
+
 	m_positionX = 0.0f;
 	m_positionY = 0.0f;
 	m_positionZ = 0.0f;
@@ -127,4 +130,12 @@ void CameraClass::Follow(D3DXVECTOR3 followTarget)
 
 	SetPosition(myTarget.x, myTarget.y, myTarget.z); //Set position
 	SetRotation(0.0f, -deltaAngle, 0.0f);
+
+	//Debug Info
+	m_Text->UpdateSentence(m_Text->m_sentence1, "2 : Test", 60, 50, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
+	m_Text->UpdateSentence(m_Text->m_sentence2, "3: Test", 60, 70, 1.0f, 1.0f, 1.0f,  m_D3D->GetDeviceContext());
+	m_Text->UpdateSentence(m_Text->m_sentence3, "4: Test", 60, 90, 1.0f, 1.0f, 1.0f,  m_D3D->GetDeviceContext());
+	m_Text->UpdateSentence(m_Text->m_sentence4, "5: Test", 60, 110, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
+	m_Text->UpdateSentence(m_Text->m_sentence5, "6: Test", 60, 130, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
+	m_Text->UpdateSentence(m_Text->m_sentence6, "7: Test", 60, 150, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
 }

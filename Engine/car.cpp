@@ -121,6 +121,14 @@ void Car::Frame()
 	//Set the position of the cars model
 	m_Model->SetPosition(position.x, position.y, position.z);
 	m_Model->SetRotation(graphicsAngle * 57.2958f);
+
+	//Debug Info
+	/*m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, "1 : Test" , 60, 50, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, "2: Test", 60, 70, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, "3: Test", 60, 90, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, "4: Test", 60, 110, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, "5: Test", 60, 130, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence6, "6: Test", 60, 150, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());*/
 }
 
 void Car::Accelerate(bool set)

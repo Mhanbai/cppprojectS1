@@ -8,7 +8,9 @@
 //////////////
 // INCLUDES //
 //////////////
+#include "d3dclass.h"
 #include <d3dx10math.h>
+#include "textclass.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,7 +19,7 @@
 class CameraClass
 {
 public:
-	CameraClass();
+	CameraClass(TextClass* &text, D3DClass* &d3d);
 	CameraClass(const CameraClass&);
 	~CameraClass();
 
@@ -31,6 +33,9 @@ public:
 	void GetViewMatrix(D3DXMATRIX&);
 
 	void Follow(D3DXVECTOR3 followTarget);
+
+	TextClass* m_Text;
+	D3DClass* m_D3D;
 
 private:
 	float m_positionX, m_positionY, m_positionZ;
