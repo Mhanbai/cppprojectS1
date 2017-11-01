@@ -15,6 +15,7 @@
 #include "textureshaderclass.h"
 #include "lightclass.h"
 #include "bitmapclass.h"
+#include "textclass.h"
 
 /////////////
 // GLOBALS //
@@ -54,7 +55,7 @@ private:
 	TextureShaderClass* m_TextureShader;
 	LightClass* m_Light;
 	BitmapClass* m_Bitmap;
-
+	TextClass* m_Text;
 	D3DXMATRIX screenViewMatrix = D3DXMATRIX(1.0f, 0.0f, 0.0f, 0.0f, 
 												0.0f, 1.0f, 0.0f, 0.0f,
 												0.0f, 0.0f, 1.0f, 0.0f,
