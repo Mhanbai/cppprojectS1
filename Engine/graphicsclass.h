@@ -12,8 +12,9 @@
 #include "cameraclass.h"
 #include "modelclass.h"
 #include "lightshaderclass.h"
+#include "textureshaderclass.h"
 #include "lightclass.h"
-
+#include "bitmapclass.h"
 
 /////////////
 // GLOBALS //
@@ -50,7 +51,14 @@ private:
 	int modelCount;
 	D3DClass* m_D3D;
 	LightShaderClass* m_LightShader;
+	TextureShaderClass* m_TextureShader;
 	LightClass* m_Light;
+	BitmapClass* m_Bitmap;
+
+	D3DXMATRIX screenViewMatrix = D3DXMATRIX(1.0f, 0.0f, 0.0f, 0.0f, 
+												0.0f, 1.0f, 0.0f, 0.0f,
+												0.0f, 0.0f, 1.0f, 0.0f,
+												0.0f, -4.0f, 4.0f, 1.0f);
 };
 
 #endif
