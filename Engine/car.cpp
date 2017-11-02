@@ -179,6 +179,11 @@ void Car::SetPosition(float xPos, float yPos, float zPos, float rotation)
 	graphicsAngle = rotation;
 }
 
+D3DXVECTOR3 Car::GetForwardVector()
+{
+	return forwardVector;
+}
+
 D3DXVECTOR3 Car::GetPosition()
 {
 	return position;

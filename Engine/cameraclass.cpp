@@ -108,34 +108,8 @@ void CameraClass::GetViewMatrix(D3DXMATRIX& viewMatrix)
 	return;
 }
 
-void CameraClass::Follow(D3DXVECTOR3 followTarget)
+void CameraClass::Follow(D3DXVECTOR3 followTarget, D3DXVECTOR3 targetForwardVector)
 {
-	float distance = -25.0f; //Distance to keep from car
-	float height = -4.0f; //Height from ground
-	D3DXVECTOR3 startingForwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f); //Inital forward vector to calculate new angle
-	D3DXVECTOR3 myTarget;
-	D3DXVECTOR3 myPosition = GetPosition();
-
-	//Find vector between position and followtarget
-	D3DXVec3Subtract(&myTarget, &followTarget, &myPosition);
-
-	//Find angle followtarget vector and starting forward vector
-	float deltaAngle = atan2(myTarget.z, myTarget.x) - atan2(startingForwardVector.z, startingForwardVector.x);
-	deltaAngle = deltaAngle * 57.2958f;
-
-	D3DXVec3Normalize(&myTarget, &myTarget); //Normalise followtarget vector
-	myTarget = myTarget * distance; //Multiply by distance
-	myTarget.y = height; //Add height
-	D3DXVec3Add(&myTarget, &myTarget, &followTarget); //Add to followtarget position
-
-	SetPosition(myTarget.x, myTarget.y, myTarget.z); //Set position
-	SetRotation(0.0f, -deltaAngle, 0.0f);
-
-	//Debug Info
-	m_Text->UpdateSentence(m_Text->m_sentence1, "2 : Test", 60, 50, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
-	m_Text->UpdateSentence(m_Text->m_sentence2, "3: Test", 60, 70, 1.0f, 1.0f, 1.0f,  m_D3D->GetDeviceContext());
-	m_Text->UpdateSentence(m_Text->m_sentence3, "4: Test", 60, 90, 1.0f, 1.0f, 1.0f,  m_D3D->GetDeviceContext());
-	m_Text->UpdateSentence(m_Text->m_sentence4, "5: Test", 60, 110, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
-	m_Text->UpdateSentence(m_Text->m_sentence5, "6: Test", 60, 130, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
-	m_Text->UpdateSentence(m_Text->m_sentence6, "7: Test", 60, 150, 1.0f, 1.0f, 1.0f, m_D3D->GetDeviceContext());
+	SetPosition(followTarget.x, -3.0f, followTarget.z); //Set position
+	SetRotation(0.0f, atan2(targetForwardVector.x, targetForwardVector.z) * 57.2958f, 0.0f);
 }

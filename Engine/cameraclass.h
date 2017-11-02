@@ -11,6 +11,7 @@
 #include "d3dclass.h"
 #include <d3dx10math.h>
 #include "textclass.h"
+#include <stdio.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +33,7 @@ public:
 	void Render();
 	void GetViewMatrix(D3DXMATRIX&);
 
-	void Follow(D3DXVECTOR3 followTarget);
+	void Follow(D3DXVECTOR3 followTarget, D3DXVECTOR3 targetForwardVector);
 
 	TextClass* m_Text;
 	D3DClass* m_D3D;

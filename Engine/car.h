@@ -32,6 +32,7 @@ public:
 	void TurnLeft(bool);
 	void TurnRight(bool);
 	void SetPosition(float xPos, float yPos, float zPos, float rotation);
+	D3DXVECTOR3 GetForwardVector();
 	D3DXVECTOR3 GetPosition();
 
 private:
