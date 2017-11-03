@@ -69,6 +69,12 @@
     <ClCompile Include="racetrack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="skydomeclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="skydomeshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -122,6 +128,12 @@
     <ClInclude Include="racetrack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="skydomeclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="skydomeshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="light.ps">
@@ -140,6 +152,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="font.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="skydome.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="skydome.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

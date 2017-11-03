@@ -15,6 +15,8 @@ GraphicsClass::GraphicsClass()
 	modelCount = 0;
 	m_Bitmap = 0;
 	m_Text = 0;
+	m_SkyDome = 0;
+	m_SkyDomeShader = 0;
 }
 
 
@@ -141,12 +143,58 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(10.0f);
 
+	// Create the sky dome object.
+	m_SkyDome = new SkyDomeClass;
+	if (!m_SkyDome)
+	{
+		return false;
+	}
+
+	// Initialize the sky dome object.
+	result = m_SkyDome->Initialize(m_D3D->GetDevice());
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the sky dome object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the sky dome shader object.
+	m_SkyDomeShader = new SkyDomeShaderClass;
+	if (!m_SkyDomeShader)
+	{
+		return false;
+	}
+
+	// Initialize the sky dome shader object.
+	result = m_SkyDomeShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the sky dome shader object.", L"Error", MB_OK);
+		return false;
+	}
+
 	return true;
 }
 
 
 void GraphicsClass::Shutdown()
 {
+	// Release the sky dome shader object.
+	if (m_SkyDomeShader)
+	{
+		m_SkyDomeShader->Shutdown();
+		delete m_SkyDomeShader;
+		m_SkyDomeShader = 0;
+	}
+
+	// Release the sky dome object.
+	if (m_SkyDome)
+	{
+		m_SkyDome->Shutdown();
+		delete m_SkyDome;
+		m_SkyDome = 0;
+	}
+
 	// Release the text object.
 	if (m_Text)
 	{
@@ -257,9 +305,8 @@ bool GraphicsClass::AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFile
 bool GraphicsClass::Render()
 {
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
+	D3DXVECTOR3 cameraPosition;
 	bool result;
-
-	D3DXVECTOR3 test = m_Camera->GetPosition();
 
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
@@ -274,8 +321,28 @@ bool GraphicsClass::Render()
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 
+	// Get the position of the camera.
+	cameraPosition = m_Camera->GetPosition();
+
+	// Translate the sky dome to be centered around the camera position.
+	D3DXMatrixTranslation(&worldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z);
+
+	// Turn off back face culling.
+	m_D3D->TurnOffCulling();
+
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();
+
+	// Render the sky dome using the sky dome shader.
+	m_SkyDome->Render(m_D3D->GetDeviceContext());
+	m_SkyDomeShader->Render(m_D3D->GetDeviceContext(), m_SkyDome->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_SkyDome->GetApexColor(), m_SkyDome->GetCenterColor());
+
+	// Turn back face culling back on.
+	m_D3D->TurnOnCulling();
+
+	// Reset the world matrix.
+	m_D3D->GetWorldMatrix(worldMatrix);
 
 	// Turn on the alpha blending before rendering the text.
 	m_D3D->TurnOnAlphaBlending();

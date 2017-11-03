@@ -16,6 +16,8 @@
 #include "lightclass.h"
 #include "bitmapclass.h"
 #include "textclass.h"
+#include "skydomeclass.h"
+#include "skydomeshaderclass.h"
 
 /////////////
 // GLOBALS //
@@ -56,7 +58,8 @@ private:
 	TextureShaderClass* m_TextureShader;
 	LightClass* m_Light;
 	BitmapClass* m_Bitmap;
-
+	SkyDomeClass* m_SkyDome;
+	SkyDomeShaderClass* m_SkyDomeShader;
 	D3DXMATRIX screenViewMatrix = D3DXMATRIX(1.0f, 0.0f, 0.0f, 0.0f, 
 												0.0f, 1.0f, 0.0f, 0.0f,
 												0.0f, 0.0f, 1.0f, 0.0f,

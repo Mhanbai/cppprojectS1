@@ -94,6 +94,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="racetrack.cpp" />
+    <ClCompile Include="skydomeclass.cpp" />
+    <ClCompile Include="skydomeshaderclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
@@ -113,6 +115,8 @@
     <ClInclude Include="lightshaderclass.h" />
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="racetrack.h" />
+    <ClInclude Include="skydomeclass.h" />
+    <ClInclude Include="skydomeshaderclass.h" />
     <ClInclude Include="systemclass.h" />
     <ClInclude Include="textclass.h" />
     <ClInclude Include="textureclass.h" />
@@ -123,6 +127,8 @@
     <None Include="font.vs" />
     <None Include="light.ps" />
     <None Include="light.vs" />
+    <None Include="skydome.ps" />
+    <None Include="skydome.vs" />
     <None Include="texture.ps" />
     <None Include="texture.vs" />
   </ItemGroup>
