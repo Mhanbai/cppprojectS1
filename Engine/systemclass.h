@@ -54,8 +54,6 @@ private:
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
 	Game* m_Game;
-	ModelClass* road;
-	ModelClass* road2;
 	TextClass* m_Text;
 };
 

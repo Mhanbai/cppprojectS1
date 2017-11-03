@@ -1,39 +1,36 @@
 #pragma once
 
 ////////////////////////////////////////////////////////////////////////////////
-// Filename: game.h
+// Filename: racetrack.h
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef _GAME_H_
-#define _GAME_H_
+#ifndef _RACETRACK_H_
+#define _RACETRACK_H_
 
 
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
-#include "inputclass.h"
 #include "graphicsclass.h"
-#include "car.h"
-#include "racetrack.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// Class name: Game
+// Class name: RaceTrack
 ////////////////////////////////////////////////////////////////////////////////
-class Game
+class RaceTrack
 {
 public:
-	Game();
-	Game(const Game&);
-	~Game();
-	bool Initialize(InputClass* &input, GraphicsClass* &graphics, TextClass* &text, HWND &hwnd);
+	RaceTrack();
+	RaceTrack(const RaceTrack&);
+	~RaceTrack();
+	bool Initialize(GraphicsClass* &graphics, HWND &hwnd);
 	void Shutdown();
-	bool Frame();
 
 private:
-	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
-	RaceTrack* m_raceTrack;
-	Car* mainPlayer;
-	TextClass* m_Text;
+	ModelClass* raceTrack[28];
+	int r_straightNo = 18;
+	int r_curveNo = 3;
+	int r_sharpCurveNo = 5;
+	int r_bendNo = 2;
 };
 
 #endif

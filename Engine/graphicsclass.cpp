@@ -76,8 +76,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	//m_Camera->SetPosition(0.0f, 170.0f, -30.0f);
 	//m_Camera->SetRotation(-90.0f, 0.0f, 0.0f);
 
-	//m_Camera->SetPosition(0.0f, -900.0f, 0.0f);
-	//m_Camera->SetRotation(-90.0f, 0.0f, 0.0f);
+	m_Camera->SetPosition(0.0f, -700.0f, 300.0f);
+	m_Camera->SetRotation(-90.0f, 0.0f, 0.0f);
 
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;
@@ -102,7 +102,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	}
 
 	// Create dynamic array of models
-	modelList = new ModelClass*[10];
+	modelList = new ModelClass*[40];
 
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;

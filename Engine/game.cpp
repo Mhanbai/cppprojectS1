@@ -5,6 +5,7 @@ Game::Game()
 	m_Input = 0;
 	m_Graphics = 0;
 	mainPlayer = 0;
+	m_raceTrack = 0;
 }
 
 Game::Game(const Game &)
@@ -33,7 +34,17 @@ bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, TextClass* &
 		return false;
 	}
 
-	m_Graphics->m_Camera->SetPosition(0.0f, -4.0f, -30.0f);
+	m_raceTrack = new RaceTrack();
+	if (!m_raceTrack)
+	{
+		return false;
+	}
+
+	result = m_raceTrack->Initialize(m_Graphics, hwnd);
+	if (!result) {
+		return false;
+	}
+
 	mainPlayer->SetPosition(0.0f, 0.0f, 10.0f, 0.0f);
 
 	return true;
