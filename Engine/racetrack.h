@@ -26,11 +26,7 @@ public:
 
 private:
 	GraphicsClass* m_Graphics;
-	ModelClass* raceTrack[28];
-	int r_straightNo = 18;
-	int r_curveNo = 3;
-	int r_sharpCurveNo = 5;
-	int r_bendNo = 2;
+	ModelClass* raceTrack;
 };
 
 #endif

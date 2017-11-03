@@ -45,7 +45,7 @@ bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, TextClass* &
 		return false;
 	}
 
-	mainPlayer->SetPosition(0.0f, 0.0f, 10.0f, 0.0f);
+	mainPlayer->SetPosition(-12.0f, 0.0f, 0.0f, 0.0f);
 
 	return true;
 }
