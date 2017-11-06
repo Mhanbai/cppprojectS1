@@ -43,21 +43,33 @@ public:
 	bool Frame();
 
 	bool AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFilename, WCHAR* textureFilename);
+	bool AddBitmapToPipeline(BitmapClass* &bitmap, HWND hwnd, WCHAR* bitmapFilename, int width, int height);
 
 	CameraClass* m_Camera;
 	TextClass* m_Text;
 	D3DClass* m_D3D;
 
+	void SetGameState(int gameState_in);
+	int GetScreenWidth();
+	int GetScreenHeight();
+
 private:
 	bool Render();
 
 private:
+	int gameState;
+
+	int m_screenWidth;
+	int m_screenHeight;
+
 	ModelClass* *modelList;
 	int modelCount;
+	BitmapClass* *bitmapList;
+	int bitmapCount;
+
 	LightShaderClass* m_LightShader;
 	TextureShaderClass* m_TextureShader;
 	LightClass* m_Light;
-	BitmapClass* m_Bitmap;
 	SkyDomeClass* m_SkyDome;
 	SkyDomeShaderClass* m_SkyDomeShader;
 	D3DXMATRIX screenViewMatrix = D3DXMATRIX(1.0f, 0.0f, 0.0f, 0.0f, 

@@ -13,7 +13,8 @@ GraphicsClass::GraphicsClass()
 	m_Light = 0;
 	modelList = 0;
 	modelCount = 0;
-	m_Bitmap = 0;
+	bitmapList = 0;
+	bitmapCount = 0;
 	m_Text = 0;
 	m_SkyDome = 0;
 	m_SkyDomeShader = 0;
@@ -33,6 +34,8 @@ GraphicsClass::~GraphicsClass()
 bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &text, HWND hwnd)
 {
 	bool result;
+	m_screenWidth = screenWidth;
+	m_screenHeight = screenHeight;
 
 	// Create the Direct3D object.
 	m_D3D = new D3DClass;
@@ -106,6 +109,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	// Create dynamic array of models
 	modelList = new ModelClass*[40];
 
+	// Create dynamic array of models
+	bitmapList = new BitmapClass*[8];
+
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
 	if (!m_TextureShader)
@@ -118,21 +124,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Create the bitmap object.
-	m_Bitmap = new BitmapClass;
-	if (!m_Bitmap)
-	{
-		return false;
-	}
-
-	// Initialize the bitmap object.
-	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/road.dds", 256, 256);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -211,14 +202,6 @@ void GraphicsClass::Shutdown()
 		m_TextureShader = 0;
 	}
 
-	// Release the bitmap object.
-	if (m_Bitmap)
-	{
-		m_Bitmap->Shutdown();
-		delete m_Bitmap;
-		m_Bitmap = 0;
-	}
-
 	// Release the light object.
 	if(m_Light)
 	{
@@ -248,6 +231,22 @@ void GraphicsClass::Shutdown()
 		// Release the model list
 		delete modelList;
 		modelList = 0;
+	}
+
+	// Release the bitmap objects.
+	if (bitmapList) {
+		for (int i = 0; i < bitmapCount; i++) {
+			if (bitmapList[i])
+			{
+				bitmapList[i]->Shutdown();
+				delete bitmapList[i];
+				bitmapList[i] = 0;
+			}
+		}
+
+		// Release the bitmap list
+		delete bitmapList;
+		bitmapList = 0;
 	}
 
 	// Release the camera object.
@@ -280,8 +279,6 @@ bool GraphicsClass::Frame()
 		return false;
 	}
 
-
-
 	return true;
 }
 
@@ -301,6 +298,38 @@ bool GraphicsClass::AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFile
 	return true;
 }
 
+bool GraphicsClass::AddBitmapToPipeline(BitmapClass* &bitmap, HWND hwnd, WCHAR* bitmapFilename, int width, int height)
+{
+	// Initialize the bitmap object.
+	bitmapList[bitmapCount] = new BitmapClass;
+	bool result = bitmapList[bitmapCount]->Initialize(m_D3D->GetDevice(), m_screenWidth, m_screenHeight, bitmapFilename, width, height);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+
+	bitmap = bitmapList[bitmapCount];
+	bitmapCount++;
+
+	return true;
+}
+
+
+void GraphicsClass::SetGameState(int gameState_in)
+{
+	gameState = gameState_in;
+}
+
+int GraphicsClass::GetScreenWidth()
+{
+	return m_screenWidth;
+}
+
+int GraphicsClass::GetScreenHeight()
+{
+	return m_screenHeight;
+}
 
 bool GraphicsClass::Render()
 {
@@ -354,37 +383,43 @@ bool GraphicsClass::Render()
 		return false;
 	}
 
+	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	if (gameState == 0) {
+		for (int i = 0; i < bitmapCount; i++) {
+			result = bitmapList[i]->Render(m_D3D->GetDeviceContext(), bitmapList[i]->width_in, bitmapList[i]->height_in);
+			if (!result)
+			{
+				return false;
+			}
+
+			// Render the bitmap with the texture shader.
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), bitmapList[i]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, bitmapList[i]->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+		}
+	}
+
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();
-
-	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 50, 50);
-	if (!result)
-	{
-		return false;
-	}
-
-	// Render the bitmap with the texture shader.
-	//result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, m_Bitmap->GetTexture());
-	if (!result)
-	{
-		return false;
-	}
 
 	// Turn the Z buffer back on now that all 2D rendering has completed.
 	m_D3D->TurnZBufferOn();
 
-	for (int i = 0; i < modelCount; i++) {
-		// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-		modelList[i]->Render(m_D3D->GetDeviceContext());
+	if ((gameState == 1) || (gameState == 2)) {
+		for (int i = 0; i < modelCount; i++) {
+			// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+			modelList[i]->Render(m_D3D->GetDeviceContext());
 
-		// Render the model using the light shader.
-		result = m_LightShader->Render(m_D3D->GetDeviceContext(), modelList[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-			m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(),
-			m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), modelList[i]->GetPositionMatrix(), modelList[i]->GetRotationMatrix(), modelList[i]->GetTexture());
-		if (!result)
-		{
-			return false;
+			// Render the model using the light shader.
+			result = m_LightShader->Render(m_D3D->GetDeviceContext(), modelList[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+				m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(),
+				m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), modelList[i]->GetPositionMatrix(), modelList[i]->GetRotationMatrix(), modelList[i]->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
 		}
 	}
 

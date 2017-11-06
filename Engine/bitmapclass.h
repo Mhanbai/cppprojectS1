@@ -42,6 +42,9 @@ public:
 	int GetIndexCount();
 	ID3D11ShaderResourceView* GetTexture();
 
+	int width_in = 0;
+	int height_in = 0;
+
 private:
 	bool InitializeBuffers(ID3D11Device*);
 	void ShutdownBuffers();
@@ -59,6 +62,7 @@ private:
 	int m_screenWidth, m_screenHeight;
 	int m_bitmapWidth, m_bitmapHeight;
 	int m_previousPosX, m_previousPosY;
+
 };
 
 #endif
