@@ -14,6 +14,7 @@
 #include "graphicsclass.h"
 #include "car.h"
 #include "racetrack.h"
+#include <time.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: Game
@@ -33,6 +34,11 @@ private:
 	int menuState = 0;
 	bool InitializeMenuScreen();
 	bool InitializeMainGame();
+	bool MenuFrame();
+	bool GameFrame();
+	bool CameraFrame();
+	bool menuWasUpPressed = false;
+	bool menuWasDownPressed = false;
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
 	RaceTrack* m_raceTrack;
@@ -43,6 +49,8 @@ private:
 	BitmapClass* menuScreen;
 	BitmapClass* menuBackground;
 	TextClass* m_Text;
+	time_t gameStart;
+	float timeSinceStart;
 };
 
 #endif

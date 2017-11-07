@@ -25,6 +25,7 @@ bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, TextClass* &
 	m_Text = text;
 	m_hwnd = hwnd;
 
+	m_Graphics->SetGameState(gameState);
 	result = InitializeMenuScreen();
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not initialize menu screen.", L"Error", MB_OK);
@@ -52,107 +53,17 @@ void Game::Shutdown()
 
 bool Game::Frame()
 {
+	bool result;
 	switch (gameState) {
-	case 0:
-		if (m_Input->IsUpPressed() == true) {
-			if (menuState < 3) {
-				menuState++;
-			}
-			else {
-				menuState = 0;
-			}
-		}
-		if (m_Input->IsDownPressed() == true) {
-			if (menuState > 0) {
-				menuState--;
-			}
-			else {
-				menuState = 3;
-			}
-		}
-		if (m_Input->IsEnterPressed() == true) {
-			if (menuState == 0) {
-				gameState = 1;
-			}
-			else if (menuState == 1) {
-
-			}
-			else if (menuState == 2) {
-				gameState = 2;
-			}
-			else if (menuState == 3) {
-				return false;
-			}
-		}
-
-		if (menuState == 0) {
-			pointer->height_in = menuScreen->height_in + 25;
-		}
-		else if (menuState == 1) {
-			pointer->height_in = menuScreen->height_in + 89;
-		}
-		else if (menuState == 2) {
-			pointer->height_in = menuScreen->height_in + 153;
-		}
-		else if (menuState == 3) {
-			pointer->height_in = menuScreen->height_in + 217;
-		}
-
-		m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
-		return true;
-	case 1:
-		mainPlayer->Frame();
-		m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector());
-
-		if (m_Input->IsUpPressed() == true) {
-			mainPlayer->Accelerate(true);
-		}
-		else {
-			mainPlayer->Accelerate(false);
-		}
-
-		if (m_Input->IsDownPressed() == true) {
-			mainPlayer->BreakReverse(true);
-		}
-		else {
-			mainPlayer->BreakReverse(false);
-		}
-
-		if (m_Input->IsLeftPressed() == true)
-		{
-			mainPlayer->TurnLeft(true);
-		}
-		else {
-			mainPlayer->TurnLeft(false);
-		}
-
-		if (m_Input->IsRightPressed() == true)
-		{
-			mainPlayer->TurnRight(true);
-		}
-		else {
-			mainPlayer->TurnRight(false);
-		}
-
-		m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
-		return true;
-	case 2:
-		m_Graphics->m_Camera->SetPosition(0.0f, -4.0f, 0.0f);
-		if (m_Input->IsUpPressed() == true) {
-
-		}
-		if (m_Input->IsDownPressed() == true) {
-
-		}
-		if (m_Input->IsLeftPressed() == true)
-		{
-
-		}
-		if (m_Input->IsRightPressed() == true)
-		{
-
-		}
-		return true;
+	case 0: //Call menu logic if gamestate is set to menu
+		result = MenuFrame();
+		return result;
+	case 1: //Call game logic if gamestate is set to game
+		result = GameFrame();
+		return result;
+	case 2: //Call camera logic if gamestate is set to camera mode
+		result = CameraFrame();
+		return result;
 	}
 }
 
@@ -219,4 +130,131 @@ bool Game::InitializeMainGame()
 	}
 
 	mainPlayer->SetPosition(-12.0f, 0.0f, 0.0f, 0.0f);
+}
+
+bool Game::MenuFrame()
+{
+	// Controls menustate - i.e. what the user currently has selected
+	if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
+		if (menuState < 3) {
+			menuState++;
+		}
+		else {
+			menuState = 0;
+		}
+		menuWasDownPressed = true;
+	} else if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
+		if (menuState > 0) {
+			menuState--;
+		}
+		else {
+			menuState = 3;
+		}
+		menuWasUpPressed = true;
+	}
+
+	if (m_Input->IsDownPressed() == false) {
+		menuWasDownPressed = false;
+	}
+	if (m_Input->IsUpPressed() == false) {
+		menuWasUpPressed = false;
+	}
+
+	// Updates the pointer
+	if (menuState == 0) {
+		pointer->height_in = menuScreen->height_in + 25;
+	}
+	else if (menuState == 1) {
+		pointer->height_in = menuScreen->height_in + 89;
+	}
+	else if (menuState == 2) {
+		pointer->height_in = menuScreen->height_in + 153;
+	}
+	else if (menuState == 3) {
+		pointer->height_in = menuScreen->height_in + 217;
+	}
+
+	// Changes the gamestate based on what the user has selected when enter is pressed
+	if (m_Input->IsEnterPressed() == true) {
+		if (menuState == 0) {
+			time(&gameStart);
+			gameState = 1; // Starts a normal game
+			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
+		}
+		else if (menuState == 1) {
+			//TODO: Starts a multiplayer game
+			//Ensure the correct graphics are rendering for the game state
+		}
+		else if (menuState == 2) {
+			m_Graphics->m_Camera->SetPosition(0.0f, -4.0f, 0.0f);
+			gameState = 2; // Enters 'scene mode'
+			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
+		}
+		else if (menuState == 3) {
+			return false; // Quits the game
+		}
+	}
+
+	return true;
+}
+
+bool Game::GameFrame()
+{
+	mainPlayer->Frame();
+	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector());
+
+	if (m_Input->IsUpPressed() == true) {
+		mainPlayer->Accelerate(true);
+	}
+	else {
+		mainPlayer->Accelerate(false);
+	}
+
+	if (m_Input->IsDownPressed() == true) {
+		mainPlayer->BreakReverse(true);
+	}
+	else {
+		mainPlayer->BreakReverse(false);
+	}
+
+	if (m_Input->IsLeftPressed() == true)
+	{
+		mainPlayer->TurnLeft(true);
+	}
+	else {
+		mainPlayer->TurnLeft(false);
+	}
+
+	if (m_Input->IsRightPressed() == true)
+	{
+		mainPlayer->TurnRight(true);
+	}
+	else {
+		mainPlayer->TurnRight(false);
+	}
+
+	timeSinceStart = difftime(time(NULL), gameStart);
+	char timeBuffer[20];
+	sprintf(timeBuffer, "%f", timeSinceStart);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	return true;
+}
+
+bool Game::CameraFrame()
+{
+	if (m_Input->IsUpPressed() == true) {
+
+	}
+	if (m_Input->IsDownPressed() == true) {
+
+	}
+	if (m_Input->IsLeftPressed() == true)
+	{
+
+	}
+	if (m_Input->IsRightPressed() == true)
+	{
+
+	}
+	return true;
 }

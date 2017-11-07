@@ -123,10 +123,13 @@ void Car::Frame()
 	m_Model->SetRotation(graphicsAngle * 57.2958f);
 
 	//Debug Info
-	/*m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, "1 : Test" , 60, 50, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, "2: Test", 60, 70, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, "3: Test", 60, 90, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, "4: Test", 60, 110, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	char posX[20];
+	sprintf(posX, "X: %f", position.x);
+	char posZ[20];
+	sprintf(posZ, "Z: %f", position.z);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, posX, 60, 70, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, posZ, 60, 90, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	/*m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, "4: Test", 60, 110, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, "5: Test", 60, 130, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence6, "6: Test", 60, 150, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());*/
 }
