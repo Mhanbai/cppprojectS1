@@ -333,7 +333,7 @@ int GraphicsClass::GetScreenHeight()
 
 bool GraphicsClass::Render()
 {
-	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	D3DXVECTOR3 cameraPosition;
 	bool result;
 
@@ -348,66 +348,25 @@ bool GraphicsClass::Render()
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
-	m_D3D->GetOrthoMatrix(orthoMatrix);
 
 	// Get the position of the camera.
 	cameraPosition = m_Camera->GetPosition();
 
-	// Translate the sky dome to be centered around the camera position.
-	D3DXMatrixTranslation(&worldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z);
-
-	// Turn off back face culling.
-	m_D3D->TurnOffCulling();
-
-	// Turn off the Z buffer to begin all 2D rendering.
-	m_D3D->TurnZBufferOff();
-
-	// Render the sky dome using the sky dome shader.
-	m_SkyDome->Render(m_D3D->GetDeviceContext());
-	m_SkyDomeShader->Render(m_D3D->GetDeviceContext(), m_SkyDome->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-		m_SkyDome->GetApexColor(), m_SkyDome->GetCenterColor());
-
-	// Turn back face culling back on.
-	m_D3D->TurnOnCulling();
-
-	// Reset the world matrix.
-	m_D3D->GetWorldMatrix(worldMatrix);
-
-	// Turn on the alpha blending before rendering the text.
-	m_D3D->TurnOnAlphaBlending();
-
 	// Render the text strings.
-	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+	/*result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;
-	}
+	}*/
 
 	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	if (gameState == 0) {
-		for (int i = 0; i < bitmapCount; i++) {
-			result = bitmapList[i]->Render(m_D3D->GetDeviceContext(), bitmapList[i]->width_in, bitmapList[i]->height_in);
-			if (!result)
-			{
-				return false;
-			}
-
-			// Render the bitmap with the texture shader.
-			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), bitmapList[i]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, bitmapList[i]->GetTexture());
-			if (!result)
-			{
-				return false;
-			}
-		}
-	}
-
-	// Turn off alpha blending after rendering the text.
-	m_D3D->TurnOffAlphaBlending();
-
-	// Turn the Z buffer back on now that all 2D rendering has completed.
-	m_D3D->TurnZBufferOn();
-
-	if ((gameState == 1) || (gameState == 2)) {
+	switch (gameState) {
+	case 0:
+		RenderMainMenu(worldMatrix, viewMatrix, projectionMatrix, cameraPosition);
+		break;
+	case 1:
+	case 2:
+		RenderSkyDome(worldMatrix, viewMatrix, projectionMatrix, cameraPosition);
 		for (int i = 0; i < modelCount; i++) {
 			// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 			modelList[i]->Render(m_D3D->GetDeviceContext());
@@ -421,9 +380,68 @@ bool GraphicsClass::Render()
 				return false;
 			}
 		}
+		break;
 	}
 
 	m_D3D->EndScene();
+
+	return true;
+}
+
+void GraphicsClass::RenderSkyDome(D3DXMATRIX &worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, D3DXVECTOR3 cameraPosition)
+{
+	m_D3D->TurnZBufferOff();
+
+	// Translate the sky dome to be centered around the camera position.
+	D3DXMatrixTranslation(&worldMatrix, cameraPosition.x, cameraPosition.y, cameraPosition.z);
+
+	// Turn off back face culling.
+	m_D3D->TurnOffCulling();
+
+	// Render the sky dome using the sky dome shader.
+	m_SkyDome->Render(m_D3D->GetDeviceContext());
+	m_SkyDomeShader->Render(m_D3D->GetDeviceContext(), m_SkyDome->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_SkyDome->GetApexColor(), m_SkyDome->GetCenterColor());
+
+	// Turn back face culling back on.
+	m_D3D->TurnOnCulling();
+
+	// Reset the world matrix.
+	m_D3D->GetWorldMatrix(worldMatrix);
+
+	m_D3D->TurnZBufferOn();
+}
+
+bool GraphicsClass::RenderMainMenu(D3DXMATRIX & worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, D3DXVECTOR3 cameraPosition)
+{
+	bool result;
+	D3DXMATRIX orthoMatrix;
+	m_D3D->GetOrthoMatrix(orthoMatrix);
+
+	m_D3D->TurnZBufferOff();
+
+	// Turn on the alpha blending before rendering the text.
+	m_D3D->TurnOnAlphaBlending();
+
+	for (int i = 0; i < bitmapCount; i++) {
+		result = bitmapList[i]->Render(m_D3D->GetDeviceContext(), bitmapList[i]->width_in, bitmapList[i]->height_in);
+		if (!result)
+		{
+			return false;
+		}
+
+		// Render the bitmap with the texture shader.
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), bitmapList[i]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, bitmapList[i]->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
+	}
+
+	// Turn off alpha blending after rendering the text.
+	m_D3D->TurnOffAlphaBlending();
+
+	m_D3D->TurnZBufferOn();
 
 	return true;
 }

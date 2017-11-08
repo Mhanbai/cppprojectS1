@@ -55,6 +55,8 @@ public:
 
 private:
 	bool Render();
+	void RenderSkyDome(D3DXMATRIX &worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, D3DXVECTOR3 cameraPosition);
+	bool RenderMainMenu(D3DXMATRIX &worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, D3DXVECTOR3 cameraPosition);
 
 private:
 	int gameState;
