@@ -18,6 +18,8 @@ GraphicsClass::GraphicsClass()
 	m_Text = 0;
 	m_SkyDome = 0;
 	m_SkyDomeShader = 0;
+	m_Terrain = 0;
+	m_TerrainShader = 0;
 }
 
 
@@ -84,10 +86,40 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	m_Camera->SetPosition(0.0f, -700.0f, 0.0f);
 	m_Camera->SetRotation(-90.0f, 0.0f, 0.0f);
 
+	// Create the terrain object.
+	m_Terrain = new TerrainClass;
+	if (!m_Terrain)
+	{
+		return false;
+	}
+
+	// Initialize the terrain object.
+	result = m_Terrain->Initialize(m_D3D->GetDevice());
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the terrain object.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;
 	if(!m_LightShader)
 	{
+		return false;
+	}
+
+	// Create the terrain shader object.
+	m_TerrainShader = new TerrainShaderClass;
+	if (!m_TerrainShader)
+	{
+		return false;
+	}
+
+	// Initialize the terrain shader object.
+	result = m_TerrainShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the terrain shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -170,6 +202,22 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 
 void GraphicsClass::Shutdown()
 {
+	// Release the terrain object.
+	if (m_Terrain)
+	{
+		m_Terrain->Shutdown();
+		delete m_Terrain;
+		m_Terrain = 0;
+	}
+
+	// Release the terrain shader object.
+	if (m_TerrainShader)
+	{
+		m_TerrainShader->Shutdown();
+		delete m_TerrainShader;
+		m_TerrainShader = 0;
+	}
+
 	// Release the sky dome shader object.
 	if (m_SkyDomeShader)
 	{
@@ -352,13 +400,6 @@ bool GraphicsClass::Render()
 	// Get the position of the camera.
 	cameraPosition = m_Camera->GetPosition();
 
-	// Render the text strings.
-	/*result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
-	if (!result)
-	{
-		return false;
-	}*/
-
 	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	switch (gameState) {
 	case 0:
@@ -367,6 +408,19 @@ bool GraphicsClass::Render()
 	case 1:
 	case 2:
 		RenderSkyDome(worldMatrix, viewMatrix, projectionMatrix, cameraPosition);
+		// Render the text strings.
+		RenderDebugText(worldMatrix);
+
+		// Render the terrain buffers.
+		m_Terrain->Render(m_D3D->GetDeviceContext());
+
+		// Render the model using the color shader.
+		result = m_TerrainShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+		if (!result)
+		{
+			return false;
+		}
+
 		for (int i = 0; i < modelCount; i++) {
 			// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 			modelList[i]->Render(m_D3D->GetDeviceContext());
@@ -444,4 +498,15 @@ bool GraphicsClass::RenderMainMenu(D3DXMATRIX & worldMatrix, D3DXMATRIX viewMatr
 	m_D3D->TurnZBufferOn();
 
 	return true;
+}
+
+void GraphicsClass::RenderDebugText(D3DXMATRIX &worldMatrix)
+{
+	D3DXMATRIX orthoMatrix;
+	m_D3D->GetOrthoMatrix(orthoMatrix);
+	m_D3D->TurnZBufferOff();
+	m_D3D->TurnOnAlphaBlending();
+	m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+	m_D3D->TurnOffAlphaBlending();
+	m_D3D->TurnZBufferOn();
 }

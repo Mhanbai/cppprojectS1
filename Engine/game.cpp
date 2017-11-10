@@ -64,6 +64,8 @@ bool Game::Frame()
 	case 2: //Call camera logic if gamestate is set to camera mode
 		result = CameraFrame();
 		return result;
+	default:
+		return false;
 	}
 }
 
@@ -130,6 +132,8 @@ bool Game::InitializeMainGame()
 	}
 
 	mainPlayer->SetPosition(-12.0f, 0.0f, 0.0f, 0.0f);
+
+	return true;
 }
 
 bool Game::MenuFrame()

@@ -18,6 +18,8 @@
 #include "textclass.h"
 #include "skydomeclass.h"
 #include "skydomeshaderclass.h"
+#include "terrainshaderclass.h"
+#include "terrainclass.h"
 
 /////////////
 // GLOBALS //
@@ -57,6 +59,7 @@ private:
 	bool Render();
 	void RenderSkyDome(D3DXMATRIX &worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, D3DXVECTOR3 cameraPosition);
 	bool RenderMainMenu(D3DXMATRIX &worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, D3DXVECTOR3 cameraPosition);
+	void RenderDebugText(D3DXMATRIX &worldMatrix);
 
 private:
 	int gameState;
@@ -74,6 +77,8 @@ private:
 	LightClass* m_Light;
 	SkyDomeClass* m_SkyDome;
 	SkyDomeShaderClass* m_SkyDomeShader;
+	TerrainShaderClass* m_TerrainShader;
+	TerrainClass* m_Terrain;
 	D3DXMATRIX screenViewMatrix = D3DXMATRIX(1.0f, 0.0f, 0.0f, 0.0f, 
 												0.0f, 1.0f, 0.0f, 0.0f,
 												0.0f, 0.0f, 1.0f, 0.0f,
