@@ -14,6 +14,7 @@
 #include "graphicsclass.h"
 #include "car.h"
 #include "racetrack.h"
+#include "networkclass.h"
 #include <time.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -25,7 +26,7 @@ public:
 	Game();
 	Game(const Game&);
 	~Game();
-	bool Initialize(InputClass* &input, GraphicsClass* &graphics, TextClass* &text, HWND &hwnd);
+	bool Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, TextClass* &text, HWND &hwnd);
 	void Shutdown();
 	bool Frame();
 	int gameState = 0;
@@ -41,6 +42,7 @@ private:
 	bool menuWasDownPressed = false;
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
+	NetworkClass* m_Network;
 	RaceTrack* m_raceTrack;
 	HWND m_hwnd;
 	Car* mainPlayer;
@@ -50,7 +52,7 @@ private:
 	BitmapClass* menuBackground;
 	TextClass* m_Text;
 	time_t gameStart;
-	float timeSinceStart;
+	double timeSinceStart;
 };
 
 #endif

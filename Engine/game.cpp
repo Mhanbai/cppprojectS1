@@ -17,13 +17,14 @@ Game::~Game()
 {
 }
 
-bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, TextClass* &text, HWND &hwnd)
+bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, TextClass* &text, HWND &hwnd)
 {
 	bool result;
 	m_Input = input;
 	m_Graphics = graphics;
 	m_Text = text;
 	m_hwnd = hwnd;
+	m_Network = network;
 
 	m_Graphics->SetGameState(gameState);
 	result = InitializeMenuScreen();
@@ -61,7 +62,10 @@ bool Game::Frame()
 	case 1: //Call game logic if gamestate is set to game
 		result = GameFrame();
 		return result;
-	case 2: //Call camera logic if gamestate is set to camera mode
+	case 2: //Call multiplayer logic if gamestate is set to multiplayer mode
+		result = GameFrame();
+		return result;
+	case 3: //Call camera logic if gamestate is set to camera mode
 		result = CameraFrame();
 		return result;
 	default:
@@ -239,8 +243,9 @@ bool Game::GameFrame()
 
 	timeSinceStart = difftime(time(NULL), gameStart);
 	char timeBuffer[20];
-	sprintf(timeBuffer, "%f", timeSinceStart);
+	sprintf_s(timeBuffer, "%f", timeSinceStart);
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, m_Network->FindIP(), 60, 110, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	return true;
 }
 

@@ -22,6 +22,7 @@
 ///////////////////////
 #include "inputclass.h"
 #include "graphicsclass.h"
+#include "networkclass.h"
 #include "game.h"
 
 
@@ -55,6 +56,7 @@ private:
 	GraphicsClass* m_Graphics;
 	Game* m_Game;
 	TextClass* m_Text;
+	NetworkClass* m_Network;
 };
 
 

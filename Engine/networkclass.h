@@ -1,0 +1,39 @@
+#pragma once
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "IPHLPAPI.lib")
+
+////////////////////////////////////////////////////////////////////////////////
+// Filename: networkclass.h
+////////////////////////////////////////////////////////////////////////////////
+#ifndef _NETWORKCLASS_H_
+#define _NERWORKCLASS_H_
+
+
+///////////////////////
+// MY CLASS INCLUDES //
+///////////////////////
+#include <winsock.h>
+#include <iphlpapi.h>
+
+////////////////////////////////////////////////////////////////////////////////
+// Class name: Network Class
+////////////////////////////////////////////////////////////////////////////////
+class NetworkClass
+{
+public:
+	NetworkClass();
+	NetworkClass(const NetworkClass&);
+	~NetworkClass();
+	bool Initialize(HWND &hwnd);
+	char* FindIP();
+
+private:
+	HWND m_hwnd;
+	//Network variables
+	WSADATA w;
+	SOCKET sock;
+	sockaddr_in serverAddr;
+
+};
+
+#endif
