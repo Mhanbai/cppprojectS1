@@ -144,14 +144,14 @@ bool NetworkClass::FindPublicIP(char* &publicIPHolder)
 	std::string stoken;
 
 	while (getline(ss, stoken, '\n')) {
-		strcpy(lineBuffer[lineIndex], stoken.c_str());
+		strcpy_s(lineBuffer[lineIndex], stoken.c_str());
 		int dot = 0;
-		for (int ii = 0; ii< strlen(lineBuffer[lineIndex]); ii++) {
+		for (unsigned int ii = 0; ii< strlen(lineBuffer[lineIndex]); ii++) {
 
 			if (lineBuffer[lineIndex][ii] == '.') dot++;
 			if (dot >= 3) {
 				dot = 0;
-				strcpy(szPublicIP, lineBuffer[lineIndex]); //If we're at the IP, copy it to variable
+				strcpy_s(szPublicIP, lineBuffer[lineIndex]); //If we're at the IP, copy it to variable
 			}
 		}
 

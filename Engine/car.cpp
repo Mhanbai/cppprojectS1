@@ -129,9 +129,9 @@ void Car::Frame()
 
 	//Debug Info
 	char posX[20];
-	sprintf(posX, "X: %f", position.x);
+	sprintf_s(posX, "X: %f", position.x);
 	char posZ[20];
-	sprintf(posZ, "Z: %f", position.z);
+	sprintf_s(posZ, "Z: %f", position.z);
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, posX, 60, 70, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, posZ, 60, 90, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	/*m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, "4: Test", 60, 110, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
