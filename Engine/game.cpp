@@ -9,6 +9,9 @@ Game::Game()
 	menuScreen = 0;
 	gameState = 0;
 	menuState = 0;
+
+	menuWasUpPressed = false;
+	menuWasDownPressed = false;
 }
 
 Game::Game(const Game &)

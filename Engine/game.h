@@ -39,8 +39,8 @@ private:
 	bool GameFrame();
 	bool MultiplayerGameFrame();
 	bool CameraFrame();
-	bool menuWasUpPressed = false;
-	bool menuWasDownPressed = false;
+	bool menuWasUpPressed;
+	bool menuWasDownPressed;
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
 	NetworkClass* m_Network;
