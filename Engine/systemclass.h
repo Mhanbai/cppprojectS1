@@ -24,6 +24,9 @@
 #include "graphicsclass.h"
 #include "networkclass.h"
 #include "game.h"
+#include "fpsclass.h"
+#include "cpuclass.h"
+#include "timerclass.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,6 +60,9 @@ private:
 	Game* m_Game;
 	TextClass* m_Text;
 	NetworkClass* m_Network;
+	FpsClass* m_Fps;
+	CpuClass* m_Cpu;
+	TimerClass* m_Timer;
 };
 
 

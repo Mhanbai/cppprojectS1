@@ -45,6 +45,7 @@ public:
 	SentenceType* m_sentence4;
 	SentenceType* m_sentence5;
 	SentenceType* m_sentence6;
+	SentenceType* m_sentence7;
 
 private:
 	bool InitializeSentence(SentenceType**, int, ID3D11Device*);

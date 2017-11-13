@@ -57,9 +57,14 @@ void Game::Shutdown()
 	}
 }
 
-bool Game::Frame()
+bool Game::Frame(int fpsOutput, int cpuOutput, float timerOutput)
 {
 	bool result;
+
+	framesPerSec = fpsOutput;
+	cpuUsage = cpuOutput;
+	totalGameTime += (timerOutput / 1000);
+
 	switch (gameState) {
 	case 0: //Call menu logic if gamestate is set to menu
 		result = MenuFrame();
@@ -190,7 +195,7 @@ bool Game::MenuFrame()
 	// Changes the gamestate based on what the user has selected when enter is pressed
 	if (m_Input->IsEnterPressed() == true) {
 		if (menuState == 0) {
-			time(&gameStart);
+			totalGameTime = 0.0f;
 			gameState = 1; // Starts a normal game
 			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
 		}
@@ -246,12 +251,21 @@ bool Game::GameFrame()
 		mainPlayer->TurnRight(false);
 	}
 
-	timeSinceStart = difftime(time(NULL), gameStart);
-	char timeBuffer[20];
-	sprintf_s(timeBuffer, "%f", timeSinceStart);
+	char timeBuffer[32];
+	sprintf_s(timeBuffer, "%f", totalGameTime);
+
+	char fpsBuffer[32];
+	sprintf_s(fpsBuffer, "FPS: %i", framesPerSec);
+
+	char cpuBuffer[32];
+	sprintf_s(cpuBuffer, "CPU: %i%%", cpuUsage);
+
+
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, m_Network->myLocalIP, 60, 110, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, m_Network->myPublicIP, 60, 130, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence6, fpsBuffer, 60, 150, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence7, cpuBuffer, 60, 170, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	return true;
 }
 
@@ -290,12 +304,21 @@ bool Game::MultiplayerGameFrame()
 		mainPlayer->TurnRight(false);
 	}
 
-	timeSinceStart = difftime(time(NULL), gameStart);
-	char timeBuffer[20];
-	sprintf_s(timeBuffer, "%f", timeSinceStart);
+	char timeBuffer[32];
+	sprintf_s(timeBuffer, "%f", totalGameTime);
+
+	char fpsBuffer[32];
+	sprintf_s(fpsBuffer, "FPS: %i", framesPerSec);
+
+	char cpuBuffer[32];
+	sprintf_s(cpuBuffer, "CPU: %i%%", cpuUsage);
+
+
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, m_Network->myLocalIP, 60, 110, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, m_Network->myPublicIP, 60, 130, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence6, fpsBuffer, 60, 150, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence7, cpuBuffer, 60, 170, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	return true;
 }
 

@@ -14,6 +14,7 @@ TextClass::TextClass()
 	m_sentence4 = 0;
 	m_sentence5 = 0;
 	m_sentence6 = 0;
+	m_sentence7 = 0;
 }
 
 
@@ -111,6 +112,13 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 		return false;
 	}
 
+	// Initialize the sentence.
+	result = InitializeSentence(&m_sentence7, 32, device);
+	if (!result)
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -133,6 +141,9 @@ void TextClass::Shutdown()
 
 	// Release the sentence.
 	ReleaseSentence(&m_sentence6);
+
+	// Release the sentence.
+	ReleaseSentence(&m_sentence7);
 
 	// Release the font shader object.
 	if (m_FontShader)
@@ -195,6 +206,13 @@ bool TextClass::Render(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatri
 
 	// Draw the second sentence.
 	result = RenderSentence(deviceContext, m_sentence6, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Draw the second sentence.
+	result = RenderSentence(deviceContext, m_sentence7, worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;

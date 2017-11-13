@@ -28,7 +28,7 @@ public:
 	~Game();
 	bool Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, TextClass* &text, HWND &hwnd);
 	void Shutdown();
-	bool Frame();
+	bool Frame(int fpsOutput, int cpuOutput, float timerOutput);
 	int gameState;
 
 private:
@@ -52,8 +52,9 @@ private:
 	BitmapClass* menuScreen;
 	BitmapClass* menuBackground;
 	TextClass* m_Text;
-	time_t gameStart;
-	double timeSinceStart;
+	int framesPerSec;
+	int cpuUsage;
+	float totalGameTime;
 };
 
 #endif
