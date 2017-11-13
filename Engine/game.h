@@ -37,6 +37,7 @@ private:
 	bool InitializeMainGame();
 	bool MenuFrame();
 	bool GameFrame();
+	bool MultiplayerGameFrame();
 	bool CameraFrame();
 	bool menuWasUpPressed = false;
 	bool menuWasDownPressed = false;

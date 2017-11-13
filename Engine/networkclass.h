@@ -14,6 +14,11 @@
 ///////////////////////
 #include <winsock.h>
 #include <iphlpapi.h>
+#include <wininet.h> 
+#include <string>
+#include <string.h>
+#include <locale>
+#include <sstream>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: Network Class
@@ -24,8 +29,12 @@ public:
 	NetworkClass();
 	NetworkClass(const NetworkClass&);
 	~NetworkClass();
+	void Shutdown();
 	bool Initialize(HWND &hwnd);
-	char* FindIP();
+	bool FindLocalIP(char* &localIPHolder);
+	bool FindPublicIP(char* &publicIPHolder);
+	char* myLocalIP;
+	char* myPublicIP;
 
 private:
 	HWND m_hwnd;

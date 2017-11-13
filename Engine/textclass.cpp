@@ -70,42 +70,42 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	// Initialize the sentence.
-	result = InitializeSentence(&m_sentence1, 16, device);
+	result = InitializeSentence(&m_sentence1, 32, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Initialize the sentence.
-	result = InitializeSentence(&m_sentence2, 16, device);
+	result = InitializeSentence(&m_sentence2, 32, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Initialize the sentence.
-	result = InitializeSentence(&m_sentence3, 16, device);
+	result = InitializeSentence(&m_sentence3, 32, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Initialize the sentence.
-	result = InitializeSentence(&m_sentence4, 16, device);
+	result = InitializeSentence(&m_sentence4, 32, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Initialize the sentence.
-	result = InitializeSentence(&m_sentence5, 16, device);
+	result = InitializeSentence(&m_sentence5, 32, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Initialize the sentence.
-	result = InitializeSentence(&m_sentence6, 16, device);
+	result = InitializeSentence(&m_sentence6, 32, device);
 	if (!result)
 	{
 		return false;

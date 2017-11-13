@@ -407,6 +407,7 @@ bool GraphicsClass::Render()
 		break;
 	case 1:
 	case 2:
+	case 3:
 		RenderSkyDome(worldMatrix, viewMatrix, projectionMatrix, cameraPosition);
 		// Render the text strings.
 		RenderDebugText(worldMatrix);

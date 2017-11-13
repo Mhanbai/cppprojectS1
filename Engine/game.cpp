@@ -63,7 +63,7 @@ bool Game::Frame()
 		result = GameFrame();
 		return result;
 	case 2: //Call multiplayer logic if gamestate is set to multiplayer mode
-		result = GameFrame();
+		result = MultiplayerGameFrame();
 		return result;
 	case 3: //Call camera logic if gamestate is set to camera mode
 		result = CameraFrame();
@@ -195,7 +195,7 @@ bool Game::MenuFrame()
 		}
 		else if (menuState == 2) {
 			m_Graphics->m_Camera->SetPosition(0.0f, -4.0f, 0.0f);
-			gameState = 2; // Enters 'scene mode'
+			gameState = 3; // Enters 'scene mode'
 			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
 		}
 		else if (menuState == 3) {
@@ -245,7 +245,52 @@ bool Game::GameFrame()
 	char timeBuffer[20];
 	sprintf_s(timeBuffer, "%f", timeSinceStart);
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, m_Network->FindIP(), 60, 110, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, m_Network->myLocalIP, 60, 110, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, m_Network->myPublicIP, 60, 130, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	return true;
+}
+
+bool Game::MultiplayerGameFrame()
+{
+	mainPlayer->Frame();
+	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector());
+
+	if (m_Input->IsUpPressed() == true) {
+		mainPlayer->Accelerate(true);
+	}
+	else {
+		mainPlayer->Accelerate(false);
+	}
+
+	if (m_Input->IsDownPressed() == true) {
+		mainPlayer->BreakReverse(true);
+	}
+	else {
+		mainPlayer->BreakReverse(false);
+	}
+
+	if (m_Input->IsLeftPressed() == true)
+	{
+		mainPlayer->TurnLeft(true);
+	}
+	else {
+		mainPlayer->TurnLeft(false);
+	}
+
+	if (m_Input->IsRightPressed() == true)
+	{
+		mainPlayer->TurnRight(true);
+	}
+	else {
+		mainPlayer->TurnRight(false);
+	}
+
+	timeSinceStart = difftime(time(NULL), gameStart);
+	char timeBuffer[20];
+	sprintf_s(timeBuffer, "%f", timeSinceStart);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, m_Network->myLocalIP, 60, 110, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, m_Network->myPublicIP, 60, 130, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	return true;
 }
 

@@ -50,17 +50,6 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
-	m_Network = new NetworkClass;
-	if (!m_Network) {
-		return false;
-	}
-
-	result = m_Network->Initialize(m_hwnd);
-	if (!result)
-	{
-		return false;
-	}
-
 
 	// Create the graphics object.  This object will handle rendering all the graphics for this application.
 	m_Graphics = new GraphicsClass;
@@ -76,6 +65,20 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
+	// Create the network object
+	m_Network = new NetworkClass;
+	if (!m_Network) {
+		return false;
+	}
+
+	// Initialize the network object.
+	result = m_Network->Initialize(m_hwnd);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Create the game object
 	m_Game = new Game;
 	if (!m_Game)
 	{
@@ -109,6 +112,14 @@ void SystemClass::Shutdown()
 		m_Graphics->Shutdown();
 		delete m_Graphics;
 		m_Graphics = 0;
+	}
+
+	// Release the network object.
+	if (m_Network)
+	{
+		m_Network->Shutdown();
+		delete m_Network;
+		m_Network = 0;
 	}
 
 	// Release the input object.
