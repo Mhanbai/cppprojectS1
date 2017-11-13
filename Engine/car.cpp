@@ -12,6 +12,7 @@ Car::Car()
 	forwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 	upVector = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	acceleration = D3DXVECTOR3 (0.0f, 0.0f, 0.0f);
+	accelerationInput = 0.0f;
 	accelerationFactor = 0.75f;
 	frictionFactor = 0.00005f;
 	lateralFrictionFactor = 0.05f;
@@ -19,6 +20,10 @@ Car::Car()
 	maxSpeed = D3DXVECTOR3(10.0f, 0.0f, 10.0f);
 	velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	isAccelerating = false;
+	isTurningLeft = false;
+	isTurningRight = false;
+	isBreakReversing = false;
 }
 
 Car::Car(const Car &)

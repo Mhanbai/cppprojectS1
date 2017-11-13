@@ -29,10 +29,10 @@ public:
 	bool Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, TextClass* &text, HWND &hwnd);
 	void Shutdown();
 	bool Frame();
-	int gameState = 0;
+	int gameState;
 
 private:
-	int menuState = 0;
+	int menuState;
 	bool InitializeMenuScreen();
 	bool InitializeMainGame();
 	bool MenuFrame();

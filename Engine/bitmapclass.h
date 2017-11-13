@@ -42,8 +42,8 @@ public:
 	int GetIndexCount();
 	ID3D11ShaderResourceView* GetTexture();
 
-	int width_in = 0;
-	int height_in = 0;
+	int width_in;
+	int height_in;
 
 private:
 	bool InitializeBuffers(ID3D11Device*);

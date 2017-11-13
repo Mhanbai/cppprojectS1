@@ -20,6 +20,10 @@ GraphicsClass::GraphicsClass()
 	m_SkyDomeShader = 0;
 	m_Terrain = 0;
 	m_TerrainShader = 0;
+	screenViewMatrix = D3DXMATRIX(1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, -4.0f, 4.0f, 1.0f);
 }
 
 

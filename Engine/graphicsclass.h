@@ -79,10 +79,7 @@ private:
 	SkyDomeShaderClass* m_SkyDomeShader;
 	TerrainShaderClass* m_TerrainShader;
 	TerrainClass* m_Terrain;
-	D3DXMATRIX screenViewMatrix = D3DXMATRIX(1.0f, 0.0f, 0.0f, 0.0f, 
-												0.0f, 1.0f, 0.0f, 0.0f,
-												0.0f, 0.0f, 1.0f, 0.0f,
-												0.0f, -4.0f, 4.0f, 1.0f);
+	D3DXMATRIX screenViewMatrix;
 };
 
 #endif

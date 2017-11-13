@@ -8,6 +8,9 @@ BitmapClass::BitmapClass()
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
 	m_Texture = 0;
+
+	width_in = 0;
+	height_in = 0;
 }
 
 

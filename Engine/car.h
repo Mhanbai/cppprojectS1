@@ -64,7 +64,7 @@ private:
 	D3DXVECTOR3 acceleration;
 	float accelerationFactor;
 	float frictionFactor;
-	float accelerationInput = 0.0f;
+	float accelerationInput;
 	float steerInput;
 	float steerFactor;
 	float steerAngle;
@@ -76,10 +76,10 @@ private:
 	float lateralFrictionFactor;
 
 	//Booleans for user input
-	bool isAccelerating = false;
-	bool isTurningLeft = false;
-	bool isTurningRight = false;
-	bool isBreakReversing = false;
+	bool isAccelerating;
+	bool isTurningLeft;
+	bool isTurningRight;
+	bool isBreakReversing;
 };
 
 #endif

@@ -7,6 +7,8 @@ Game::Game()
 	mainPlayer = 0;
 	m_raceTrack = 0;
 	menuScreen = 0;
+	gameState = 0;
+	menuState = 0;
 }
 
 Game::Game(const Game &)
