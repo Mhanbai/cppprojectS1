@@ -108,6 +108,10 @@ bool NetworkClass::FindPublicIP(char* &publicIPHolder)
 	//Create a new socket to connect to 'Find My IP Service' and connect
 	Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	host = gethostbyname(url.c_str());
+	if (host == NULL) {
+		MessageBox(m_hwnd, L"Could not connect to external host.", L"Error", MB_OK);
+		return false;
+	}
 
 	SockAddr.sin_port = htons(80);
 	SockAddr.sin_family = AF_INET;

@@ -8,6 +8,9 @@ TextClass::TextClass()
 	m_Font = 0;
 	m_FontShader = 0;
 
+	displayIP = 0;
+	acceptInput = 0;
+
 	m_sentence1 = 0;
 	m_sentence2 = 0;
 	m_sentence3 = 0;
@@ -70,49 +73,56 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 		return false;
 	}
 
-	// Initialize the sentence.
+	// Initialize sentences used for menu
+	result = InitializeSentence(&displayIP, 32, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	result = InitializeSentence(&acceptInput, 32, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Initialize sentences used for debug
 	result = InitializeSentence(&m_sentence1, 32, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	// Initialize the sentence.
 	result = InitializeSentence(&m_sentence2, 32, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	// Initialize the sentence.
 	result = InitializeSentence(&m_sentence3, 32, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	// Initialize the sentence.
 	result = InitializeSentence(&m_sentence4, 32, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	// Initialize the sentence.
 	result = InitializeSentence(&m_sentence5, 32, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	// Initialize the sentence.
 	result = InitializeSentence(&m_sentence6, 32, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	// Initialize the sentence.
 	result = InitializeSentence(&m_sentence7, 32, device);
 	if (!result)
 	{
@@ -124,6 +134,12 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 
 void TextClass::Shutdown()
 {
+	// Release the sentence.
+	ReleaseSentence(&displayIP);
+
+	// Release the sentence.
+	ReleaseSentence(&acceptInput);
+
 	// Release the sentence.
 	ReleaseSentence(&m_sentence1);
 
@@ -164,7 +180,7 @@ void TextClass::Shutdown()
 	return;
 }
 
-bool TextClass::Render(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix)
+bool TextClass::RenderDebugText(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix)
 {
 	bool result;
 
@@ -213,6 +229,27 @@ bool TextClass::Render(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatri
 
 	// Draw the second sentence.
 	result = RenderSentence(deviceContext, m_sentence7, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool TextClass::RenderMenuText(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix)
+{
+	bool result;
+
+	// Draw the first sentence.
+	result = RenderSentence(deviceContext, displayIP, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Draw the second sentence.
+	result = RenderSentence(deviceContext, acceptInput, worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;

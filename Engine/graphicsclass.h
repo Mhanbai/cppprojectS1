@@ -45,13 +45,14 @@ public:
 	bool Frame();
 
 	bool AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFilename, WCHAR* textureFilename);
-	bool AddBitmapToPipeline(BitmapClass* &bitmap, HWND hwnd, WCHAR* bitmapFilename, int width, int height);
+	bool AddBitmapToPipeline(int screenNo, BitmapClass* &bitmap, HWND hwnd, WCHAR* bitmapFilename, int width, int height);
 
 	CameraClass* m_Camera;
 	TextClass* m_Text;
 	D3DClass* m_D3D;
 
 	void SetGameState(int gameState_in);
+	void SetMenuState(int menuState_in);
 	int GetScreenWidth();
 	int GetScreenHeight();
 
@@ -59,18 +60,21 @@ private:
 	bool Render();
 	void RenderSkyDome(D3DXMATRIX &worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, D3DXVECTOR3 cameraPosition);
 	bool RenderMainMenu(D3DXMATRIX &worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, D3DXVECTOR3 cameraPosition);
-	void RenderDebugText(D3DXMATRIX &worldMatrix);
+	void RenderText(int mode, D3DXMATRIX &worldMatrix);
 
 private:
 	int gameState;
+	int menuState;
 
 	int m_screenWidth;
 	int m_screenHeight;
 
-	ModelClass* *modelList;
-	int modelCount;
-	BitmapClass* *bitmapList;
-	int bitmapCount;
+	ModelClass* mainGameAssets[20];
+	BitmapClass* menuScreenOneAssets[10];
+	BitmapClass* menuScreenTwoAssets[10];
+	int mainGameAssetCount;
+	int menuScreenOneAssetCount;
+	int menuScreenTwoAssetCount;
 
 	LightShaderClass* m_LightShader;
 	TextureShaderClass* m_TextureShader;

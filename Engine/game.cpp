@@ -6,12 +6,21 @@ Game::Game()
 	m_Graphics = 0;
 	mainPlayer = 0;
 	m_raceTrack = 0;
-	menuScreen = 0;
 	gameState = 0;
 	menuState = 0;
+	pointer = 0;
+	menuBackground = 0;
+	menuTitle = 0;
+	menuScreen = 0;
+	pointer2 = 0;
+	menuBackground2 = 0;
+	acceptButton2 = 0;
+	backButton2 = 0;
+	enterIP2 = 0;
 
 	menuWasUpPressed = false;
 	menuWasDownPressed = false;
+	menuWasEnterPressed = false;
 }
 
 Game::Game(const Game &)
@@ -86,36 +95,91 @@ bool Game::Frame(int fpsOutput, int cpuOutput, float timerOutput)
 bool Game::InitializeMenuScreen()
 {
 	bool result;
-	result = m_Graphics->AddBitmapToPipeline(menuBackground, m_hwnd, L"../Engine/data/mainmenubackground.dds", m_Graphics->GetScreenWidth(), m_Graphics->GetScreenHeight());
+
+	// Set up Menu Screen 1 assets
+
+	result = m_Graphics->AddBitmapToPipeline(0, menuBackground, m_hwnd, L"../Engine/data/mainmenubackground.dds", m_Graphics->GetScreenWidth(), m_Graphics->GetScreenHeight());
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
 	}
 
-	result = m_Graphics->AddBitmapToPipeline(menuScreen, m_hwnd, L"../Engine/data/mainmenu.dds", 256, 256);
+	result = m_Graphics->AddBitmapToPipeline(0, menuScreen, m_hwnd, L"../Engine/data/mainmenu.dds", 256, 256);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
 	}
 
-	result = m_Graphics->AddBitmapToPipeline(menuTitle, m_hwnd, L"../Engine/data/title.dds", 1008, 114);
-	if (!result) {
-		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
-		return false;
-	}
-
-	result = m_Graphics->AddBitmapToPipeline(pointer, m_hwnd, L"../Engine/data/pointer.dds", 19, 14);
-	if (!result) {
-		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
-		return false;
-	}
-
+	//Set Initial position of buttons
 	menuScreen->width_in = (m_Graphics->GetScreenWidth() / 2) - 128;
 	menuScreen->height_in = (m_Graphics->GetScreenHeight() / 2);
+
+	result = m_Graphics->AddBitmapToPipeline(0, menuTitle, m_hwnd, L"../Engine/data/title.dds", 1008, 114);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	//Set Initial position of title
 	menuTitle->width_in = (m_Graphics->GetScreenWidth() / 2) - 504;
 	menuTitle->height_in = ((m_Graphics->GetScreenHeight() / 2) / 2);
+
+	result = m_Graphics->AddBitmapToPipeline(0, pointer, m_hwnd, L"../Engine/data/pointer.dds", 19, 14);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	//Set Initial position of pointer
 	pointer->width_in = menuScreen->width_in - 25;
 	pointer->height_in = menuScreen->height_in + 25;
+
+	// Set up Menu Screen 2 assets
+
+	result = m_Graphics->AddBitmapToPipeline(1, menuBackground2, m_hwnd, L"../Engine/data/mainmenubackground.dds", m_Graphics->GetScreenWidth(), m_Graphics->GetScreenHeight());
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	result = m_Graphics->AddBitmapToPipeline(1, enterIP2, m_hwnd, L"../Engine/data/enterip.dds", 512, 106);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	//Set Initial position of input field
+	enterIP2->width_in = (m_Graphics->GetScreenWidth() / 2) - 256;
+	enterIP2->height_in = (m_Graphics->GetScreenHeight() / 2) - 118;
+
+	result = m_Graphics->AddBitmapToPipeline(1, acceptButton2, m_hwnd, L"../Engine/data/accept.dds", 256, 64);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	//Set Initial position of accept button
+	acceptButton2->width_in = (m_Graphics->GetScreenWidth() / 2) - 128;
+	acceptButton2->height_in = (m_Graphics->GetScreenHeight() / 2) + 96;
+
+	result = m_Graphics->AddBitmapToPipeline(1, backButton2, m_hwnd, L"../Engine/data/back.dds", 256, 64);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	//Set Initial position of back button
+	backButton2->width_in = acceptButton2->width_in;
+	backButton2->height_in = acceptButton2->height_in + 64;
+
+	result = m_Graphics->AddBitmapToPipeline(1, pointer2, m_hwnd, L"../Engine/data/pointer.dds", 19, 14);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	//Set Initial position of pointer
+	pointer2->height_in = backButton2->height_in + 25;
 
 	return true;
 }
@@ -152,33 +216,64 @@ bool Game::InitializeMainGame()
 
 bool Game::MenuFrame()
 {
-	// Controls menustate - i.e. what the user currently has selected
-	if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
-		if (menuState < 3) {
-			menuState++;
+	// Controls menustate - i.e. what the user currently has selected for menu screen 1
+	if (menuState < 4) {
+		if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
+			if (menuState < 3) {
+				menuState++;
+			}
+			else {
+				menuState = 0;
+			}
+			menuWasDownPressed = true;
 		}
-		else {
-			menuState = 0;
+		else if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
+			if (menuState > 0) {
+				menuState--;
+			}
+			else {
+				menuState = 3;
+			}
+			menuWasUpPressed = true;
 		}
-		menuWasDownPressed = true;
-	} else if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
-		if (menuState > 0) {
-			menuState--;
+
+		if (m_Input->IsDownPressed() == false) {
+			menuWasDownPressed = false;
 		}
-		else {
-			menuState = 3;
+		if (m_Input->IsUpPressed() == false) {
+			menuWasUpPressed = false;
 		}
-		menuWasUpPressed = true;
+	} 
+
+	if (menuState >= 4) {
+		if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
+			if (menuState < 6) {
+				menuState++;
+			}
+			else {
+				menuState = 4;
+			}
+			menuWasDownPressed = true;
+		}
+		else if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
+			if (menuState > 4) {
+				menuState--;
+			}
+			else {
+				menuState = 6;
+			}
+			menuWasUpPressed = true;
+		}
+
+		if (m_Input->IsDownPressed() == false) {
+			menuWasDownPressed = false;
+		}
+		if (m_Input->IsUpPressed() == false) {
+			menuWasUpPressed = false;
+		}
 	}
 
-	if (m_Input->IsDownPressed() == false) {
-		menuWasDownPressed = false;
-	}
-	if (m_Input->IsUpPressed() == false) {
-		menuWasUpPressed = false;
-	}
-
-	// Updates the pointer
+	// Updates menu assets
 	if (menuState == 0) {
 		pointer->height_in = menuScreen->height_in + 25;
 	}
@@ -191,17 +286,33 @@ bool Game::MenuFrame()
 	else if (menuState == 3) {
 		pointer->height_in = menuScreen->height_in + 217;
 	}
+	else if (menuState == 4) {
+		pointer2->height_in = enterIP2->height_in + 68;
+		pointer2->width_in = enterIP2->width_in - 19;
+		MultiplayerSetUoFrame();
+	}
+	else if (menuState == 5) {
+		pointer2->height_in = acceptButton2->height_in + 25;
+		pointer2->width_in = acceptButton2->width_in - 19;
+	}
+	else if (menuState == 6) {
+		pointer2->height_in = backButton2->height_in + 25;
+		pointer2->width_in = backButton2->width_in - 19;
+	}
 
 	// Changes the gamestate based on what the user has selected when enter is pressed
-	if (m_Input->IsEnterPressed() == true) {
+	if ((m_Input->IsEnterPressed() == true) && (menuWasEnterPressed == false)) {
+
+		menuWasEnterPressed = true;
+
 		if (menuState == 0) {
 			totalGameTime = 0.0f;
 			gameState = 1; // Starts a normal game
 			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
 		}
 		else if (menuState == 1) {
-			//TODO: Starts a multiplayer game
-			//Ensure the correct graphics are rendering for the game state
+			m_Graphics->SetMenuState(1);
+			menuState = 4;
 		}
 		else if (menuState == 2) {
 			m_Graphics->m_Camera->SetPosition(0.0f, -4.0f, 0.0f);
@@ -211,6 +322,23 @@ bool Game::MenuFrame()
 		else if (menuState == 3) {
 			return false; // Quits the game
 		}
+		else if (menuState == 4) {
+			//Accept input
+			menuState = 5;
+		}
+		else if (menuState == 5) {
+			//Start Multiplayer game
+
+		}
+		else if (menuState == 6) {
+			// Go back to main menu
+			m_Graphics->SetMenuState(0);
+			menuState = 1;
+		}
+	}
+
+	if (m_Input->IsEnterPressed() == false) {
+		menuWasEnterPressed = false;
 	}
 
 	return true;
@@ -320,6 +448,19 @@ bool Game::MultiplayerGameFrame()
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence6, fpsBuffer, 60, 150, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence7, cpuBuffer, 60, 170, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
 	return true;
+}
+
+bool Game::MultiplayerSetUoFrame()
+{
+	char displayIPBuffer[32];
+	sprintf_s(displayIPBuffer, "Your IP = %s", m_Network->myPublicIP);
+
+	sprintf_s(acceptInputBuffer, "87.1");
+
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->displayIP, displayIPBuffer, enterIP2->width_in + 196, enterIP2->height_in + 156, 1.0f, 1.0f, 0.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->acceptInput, acceptInputBuffer, enterIP2->width_in + 196, pointer2->height_in + 2, 0.0f, 1.0f, 0.0f, m_Graphics->m_D3D->GetDeviceContext());
+
+	return false;
 }
 
 bool Game::CameraFrame()

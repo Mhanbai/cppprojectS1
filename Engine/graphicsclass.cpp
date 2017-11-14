@@ -11,10 +11,6 @@ GraphicsClass::GraphicsClass()
 	m_LightShader = 0;
 	m_TextureShader = 0;
 	m_Light = 0;
-	modelList = 0;
-	modelCount = 0;
-	bitmapList = 0;
-	bitmapCount = 0;
 	m_Text = 0;
 	m_SkyDome = 0;
 	m_SkyDomeShader = 0;
@@ -24,6 +20,11 @@ GraphicsClass::GraphicsClass()
 		0.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
 		0.0f, -4.0f, 4.0f, 1.0f);
+	mainGameAssetCount = 0;
+	menuScreenOneAssetCount = 0;
+	menuScreenTwoAssetCount = 0;
+	gameState = 0;
+	menuState = 0;
 }
 
 
@@ -141,12 +142,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	{
 		return false;
 	}
-
-	// Create dynamic array of models
-	modelList = new ModelClass*[40];
-
-	// Create dynamic array of models
-	bitmapList = new BitmapClass*[8];
 
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
@@ -269,36 +264,34 @@ void GraphicsClass::Shutdown()
 		m_LightShader = 0;
 	}
 
-	// Release the model objects.
-	if (modelList) {
-		for (int i = 0; i < modelCount; i++) {
-			if (modelList[i])
-			{
-				modelList[i]->Shutdown();
-				delete modelList[i];
-				modelList[i] = 0;
-			}
+	// Release models used for the main game loop.
+	for (int i = 0; i < mainGameAssetCount; i++) {
+		if (mainGameAssets[i])
+		{
+			mainGameAssets[i]->Shutdown();
+			delete mainGameAssets[i];
+			mainGameAssets[i] = 0;
 		}
-
-		// Release the model list
-		delete modelList;
-		modelList = 0;
 	}
 
-	// Release the bitmap objects.
-	if (bitmapList) {
-		for (int i = 0; i < bitmapCount; i++) {
-			if (bitmapList[i])
-			{
-				bitmapList[i]->Shutdown();
-				delete bitmapList[i];
-				bitmapList[i] = 0;
-			}
+	// Release bitmaps used for the first menu screen.
+	for (int i = 0; i < menuScreenOneAssetCount; i++) {
+		if (menuScreenOneAssets[i])
+		{
+			menuScreenOneAssets[i]->Shutdown();
+			delete menuScreenOneAssets[i];
+			menuScreenOneAssets[i] = 0;
 		}
+	}
 
-		// Release the bitmap list
-		delete bitmapList;
-		bitmapList = 0;
+	// Release bitmaps used for the second menu screen.
+	for (int i = 0; i < menuScreenTwoAssetCount; i++) {
+		if (menuScreenTwoAssets[i])
+		{
+			menuScreenTwoAssets[i]->Shutdown();
+			delete menuScreenTwoAssets[i];
+			menuScreenTwoAssets[i] = 0;
+		}
 	}
 
 	// Release the camera object.
@@ -336,33 +329,52 @@ bool GraphicsClass::Frame()
 
 bool GraphicsClass::AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFilename, WCHAR* textureFilename)
 {
-	modelList[modelCount] = new ModelClass;
-	bool result = modelList[modelCount]->Initialize(m_D3D->GetDevice(), modelFilename, textureFilename);
+	mainGameAssets[mainGameAssetCount] = new ModelClass;
+	bool result = mainGameAssets[mainGameAssetCount]->Initialize(m_D3D->GetDevice(), modelFilename, textureFilename);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize model object.", L"Error", MB_OK);
 		return false;
 	}
 
-	model = modelList[modelCount];
-	modelCount++;
+	model = mainGameAssets[mainGameAssetCount];
+	mainGameAssetCount++;
 
 	return true;
 }
 
-bool GraphicsClass::AddBitmapToPipeline(BitmapClass* &bitmap, HWND hwnd, WCHAR* bitmapFilename, int width, int height)
+bool GraphicsClass::AddBitmapToPipeline(int screenNo, BitmapClass* &bitmap, HWND hwnd, WCHAR* bitmapFilename, int width, int height)
 {
-	// Initialize the bitmap object.
-	bitmapList[bitmapCount] = new BitmapClass;
-	bool result = bitmapList[bitmapCount]->Initialize(m_D3D->GetDevice(), m_screenWidth, m_screenHeight, bitmapFilename, width, height);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
-		return false;
-	}
+	bool result;
 
-	bitmap = bitmapList[bitmapCount];
-	bitmapCount++;
+	switch (screenNo) {
+	case 0:
+		// Initialize the bitmap object.
+		menuScreenOneAssets[menuScreenOneAssetCount] = new BitmapClass;
+		result = menuScreenOneAssets[menuScreenOneAssetCount]->Initialize(m_D3D->GetDevice(), m_screenWidth, m_screenHeight, bitmapFilename, width, height);
+		if (!result)
+		{
+			MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+			return false;
+		}
+
+		bitmap = menuScreenOneAssets[menuScreenOneAssetCount];
+		menuScreenOneAssetCount++;
+		break;
+	case 1:
+		// Initialize the bitmap object.
+		menuScreenTwoAssets[menuScreenTwoAssetCount] = new BitmapClass;
+		result = menuScreenTwoAssets[menuScreenTwoAssetCount]->Initialize(m_D3D->GetDevice(), m_screenWidth, m_screenHeight, bitmapFilename, width, height);
+		if (!result)
+		{
+			MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+			return false;
+		}
+
+		bitmap = menuScreenTwoAssets[menuScreenTwoAssetCount];
+		menuScreenTwoAssetCount++;
+		break;
+	}
 
 	return true;
 }
@@ -371,6 +383,11 @@ bool GraphicsClass::AddBitmapToPipeline(BitmapClass* &bitmap, HWND hwnd, WCHAR* 
 void GraphicsClass::SetGameState(int gameState_in)
 {
 	gameState = gameState_in;
+}
+
+void GraphicsClass::SetMenuState(int menuState_in)
+{
+	menuState = menuState_in;
 }
 
 int GraphicsClass::GetScreenWidth()
@@ -414,7 +431,9 @@ bool GraphicsClass::Render()
 	case 3:
 		RenderSkyDome(worldMatrix, viewMatrix, projectionMatrix, cameraPosition);
 		// Render the text strings.
-		RenderDebugText(worldMatrix);
+		m_D3D->TurnOnAlphaBlending();
+		RenderText(1, worldMatrix);
+		m_D3D->TurnOffAlphaBlending();
 
 		// Render the terrain buffers.
 		m_Terrain->Render(m_D3D->GetDeviceContext());
@@ -426,14 +445,14 @@ bool GraphicsClass::Render()
 			return false;
 		}
 
-		for (int i = 0; i < modelCount; i++) {
+		for (int i = 0; i < mainGameAssetCount; i++) {
 			// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-			modelList[i]->Render(m_D3D->GetDeviceContext());
+			mainGameAssets[i]->Render(m_D3D->GetDeviceContext());
 
 			// Render the model using the light shader.
-			result = m_LightShader->Render(m_D3D->GetDeviceContext(), modelList[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			result = m_LightShader->Render(m_D3D->GetDeviceContext(), mainGameAssets[i]->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 				m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(),
-				m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), modelList[i]->GetPositionMatrix(), modelList[i]->GetRotationMatrix(), modelList[i]->GetTexture());
+				m_Light->GetSpecularColor(), m_Light->GetSpecularPower(), mainGameAssets[i]->GetPositionMatrix(), mainGameAssets[i]->GetRotationMatrix(), mainGameAssets[i]->GetTexture());
 			if (!result)
 			{
 				return false;
@@ -482,19 +501,41 @@ bool GraphicsClass::RenderMainMenu(D3DXMATRIX & worldMatrix, D3DXMATRIX viewMatr
 	// Turn on the alpha blending before rendering the text.
 	m_D3D->TurnOnAlphaBlending();
 
-	for (int i = 0; i < bitmapCount; i++) {
-		result = bitmapList[i]->Render(m_D3D->GetDeviceContext(), bitmapList[i]->width_in, bitmapList[i]->height_in);
-		if (!result)
-		{
-			return false;
-		}
+	switch (menuState) {
+	case 0:
+		for (int i = 0; i < menuScreenOneAssetCount; i++) {
+			result = menuScreenOneAssets[i]->Render(m_D3D->GetDeviceContext(), menuScreenOneAssets[i]->width_in, menuScreenOneAssets[i]->height_in);
+			if (!result)
+			{
+				return false;
+			}
 
-		// Render the bitmap with the texture shader.
-		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), bitmapList[i]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, bitmapList[i]->GetTexture());
-		if (!result)
-		{
-			return false;
+			// Render the bitmap with the texture shader.
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), menuScreenOneAssets[i]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, menuScreenOneAssets[i]->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
 		}
+		break;
+	case 1:
+		for (int i = 0; i < menuScreenTwoAssetCount; i++) {
+			result = menuScreenTwoAssets[i]->Render(m_D3D->GetDeviceContext(), menuScreenTwoAssets[i]->width_in, menuScreenTwoAssets[i]->height_in);
+			if (!result)
+			{
+				return false;
+			}
+
+			// Render the bitmap with the texture shader.
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), menuScreenTwoAssets[i]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, menuScreenTwoAssets[i]->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+
+			RenderText(0, worldMatrix);
+		}
+		break;
 	}
 
 	// Turn off alpha blending after rendering the text.
@@ -505,13 +546,15 @@ bool GraphicsClass::RenderMainMenu(D3DXMATRIX & worldMatrix, D3DXMATRIX viewMatr
 	return true;
 }
 
-void GraphicsClass::RenderDebugText(D3DXMATRIX &worldMatrix)
+void GraphicsClass::RenderText(int mode, D3DXMATRIX &worldMatrix)
 {
 	D3DXMATRIX orthoMatrix;
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 	m_D3D->TurnZBufferOff();
-	m_D3D->TurnOnAlphaBlending();
-	m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
-	m_D3D->TurnOffAlphaBlending();
+	if (mode == 0) {
+		m_Text->RenderMenuText(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+	} else if (mode == 1) {
+		m_Text->RenderDebugText(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+	}
 	m_D3D->TurnZBufferOn();
 }
