@@ -54,12 +54,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>T:\Projects\CPPProjectFinal\Engine\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\amg\Desktop\CPPProject\Engine\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>T:\Projects\CPPProjectFinal\Engine\Lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\amg\Desktop\CPPProject\Engine\Lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

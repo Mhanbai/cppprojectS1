@@ -436,14 +436,14 @@ bool GraphicsClass::Render()
 		m_D3D->TurnOffAlphaBlending();
 
 		// Render the terrain buffers.
-		m_Terrain->Render(m_D3D->GetDeviceContext());
+		/*m_Terrain->Render(m_D3D->GetDeviceContext());
 
 		// Render the model using the color shader.
 		result = m_TerrainShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 		if (!result)
 		{
 			return false;
-		}
+		}*/
 
 		for (int i = 0; i < mainGameAssetCount; i++) {
 			// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
