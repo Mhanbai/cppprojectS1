@@ -43,6 +43,7 @@ private:
 	bool menuWasUpPressed;
 	bool menuWasDownPressed;
 	bool menuWasEnterPressed;
+	bool menuWasNumPressed;
 	int framesPerSec;
 	int cpuUsage;
 	float totalGameTime;
@@ -71,6 +72,7 @@ private:
 	BitmapClass* backButton2;
 	BitmapClass* enterIP2;
 	char acceptInputBuffer[32];
+	unsigned long bufferSize;
 };
 
 #endif

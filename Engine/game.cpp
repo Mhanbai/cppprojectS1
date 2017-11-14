@@ -21,6 +21,7 @@ Game::Game()
 	menuWasUpPressed = false;
 	menuWasDownPressed = false;
 	menuWasEnterPressed = false;
+	menuWasNumPressed = false;
 }
 
 Game::Game(const Game &)
@@ -39,6 +40,8 @@ bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass
 	m_Text = text;
 	m_hwnd = hwnd;
 	m_Network = network;
+	sprintf_s(acceptInputBuffer, "");
+	bufferSize = sizeof(acceptInputBuffer);
 
 	m_Graphics->SetGameState(gameState);
 	result = InitializeMenuScreen();
@@ -452,13 +455,20 @@ bool Game::MultiplayerGameFrame()
 
 bool Game::MultiplayerSetUoFrame()
 {
+	if (menuWasNumPressed == false) {
+		m_Input->CheckNumKeyPress(*acceptInputBuffer, bufferSize);
+		menuWasNumPressed = true;
+	} 
+
+	if (m_Input->CheckNumKeyUp() == false) {
+		menuWasNumPressed = false;
+	}
+
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->acceptInput, acceptInputBuffer, enterIP2->width_in + 196, pointer2->height_in + 2, 0.0f, 1.0f, 0.0f, m_Graphics->m_D3D->GetDeviceContext());
+
 	char displayIPBuffer[32];
 	sprintf_s(displayIPBuffer, "Your IP = %s", m_Network->myPublicIP);
-
-	sprintf_s(acceptInputBuffer, "87.1");
-
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->displayIP, displayIPBuffer, enterIP2->width_in + 196, enterIP2->height_in + 156, 1.0f, 1.0f, 0.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->acceptInput, acceptInputBuffer, enterIP2->width_in + 196, pointer2->height_in + 2, 0.0f, 1.0f, 0.0f, m_Graphics->m_D3D->GetDeviceContext());
 
 	return false;
 }

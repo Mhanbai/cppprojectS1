@@ -22,6 +22,7 @@
 // INCLUDES //
 //////////////
 #include <dinput.h>
+#include <stdio.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,6 +45,8 @@ public:
 	bool IsLeftPressed();
 	bool IsRightPressed();
 	bool IsEnterPressed();
+	void CheckNumKeyPress(char &toUpdate, unsigned long size);
+	bool CheckNumKeyUp();
 	void GetMouseLocation(int&, int&);
 
 private:

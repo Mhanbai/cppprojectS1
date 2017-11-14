@@ -287,6 +287,89 @@ bool InputClass::IsEnterPressed()
 	return false;
 }
 
+void InputClass::CheckNumKeyPress(char &toUpdate, unsigned long size)
+{
+	if (m_keyboardState[DIK_0] & 0x80) {
+		strcat_s(&toUpdate, size, "0");
+	} 
+	else if (m_keyboardState[DIK_1] & 0x80) {
+		strcat_s(&toUpdate, size, "1");
+	}
+	else if (m_keyboardState[DIK_2] & 0x80) {
+		strcat_s(&toUpdate, size, "2");
+	}
+	else if (m_keyboardState[DIK_3] & 0x80) {
+		strcat_s(&toUpdate, size, "3");
+	}
+	else if (m_keyboardState[DIK_4] & 0x80) {
+		strcat_s(&toUpdate, size, "4");
+	}
+	else if (m_keyboardState[DIK_5] & 0x80) {
+		strcat_s(&toUpdate, size, "5");
+	}
+	else if (m_keyboardState[DIK_6] & 0x80) {
+		strcat_s(&toUpdate, size, "6");
+	}
+	else if (m_keyboardState[DIK_7] & 0x80) {
+		strcat_s(&toUpdate, size, "7");
+	}
+	else if (m_keyboardState[DIK_8] & 0x80) {
+		strcat_s(&toUpdate, size, "8");
+	}
+	else if (m_keyboardState[DIK_9] & 0x80) {
+		strcat_s(&toUpdate, size, "9");
+	}
+	else if (m_keyboardState[DIK_PERIOD] & 0x80) {
+		strcat_s(&toUpdate, size, ".");
+	}
+	else if (m_keyboardState[DIK_BACK] & 0x80) {
+		//TODO: Take last char off string
+	}
+}
+
+bool InputClass::CheckNumKeyUp()
+{
+	if (m_keyboardState[DIK_0] & 0x80) {
+		return true;
+	}
+	else if (m_keyboardState[DIK_1] & 0x80) {
+		return true;
+	}
+	else if (m_keyboardState[DIK_2] & 0x80) {
+		return true;
+	}
+	else if (m_keyboardState[DIK_3] & 0x80) {
+		return true;
+	}
+	else if (m_keyboardState[DIK_4] & 0x80) {
+		return true;
+	}
+	else if (m_keyboardState[DIK_5] & 0x80) {
+		return true;
+	}
+	else if (m_keyboardState[DIK_6] & 0x80) {
+		return true;
+	}
+	else if (m_keyboardState[DIK_7] & 0x80) {
+		return true;
+	}
+	else if (m_keyboardState[DIK_8] & 0x80) {
+		return true;
+	}
+	else if (m_keyboardState[DIK_9] & 0x80) {
+		return true;
+	}
+	else if (m_keyboardState[DIK_PERIOD] & 0x80) {
+		return true;
+	}
+	else if (m_keyboardState[DIK_BACK] & 0x80) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 
 void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 {
