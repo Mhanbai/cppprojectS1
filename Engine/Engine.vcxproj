@@ -113,6 +113,7 @@
     <ClInclude Include="car.h" />
     <ClInclude Include="cpuclass.h" />
     <ClInclude Include="fpsclass.h" />
+    <ClInclude Include="netprotocol.h" />
     <ClInclude Include="networkclass.h" />
     <ClInclude Include="terrainshaderclass.h" />
     <ClInclude Include="d3dclass.h" />

@@ -38,7 +38,7 @@ private:
 	bool MenuFrame();
 	bool GameFrame();
 	bool MultiplayerGameFrame();
-	bool MultiplayerSetUoFrame();
+	bool MultiplayerSetUpFrame();
 	bool CameraFrame();
 	bool menuWasUpPressed;
 	bool menuWasDownPressed;
@@ -73,6 +73,7 @@ private:
 	BitmapClass* enterIP2;
 	char acceptInputBuffer[32];
 	unsigned long bufferSize;
+	bool typing;
 };
 
 #endif

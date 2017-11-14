@@ -18,6 +18,7 @@ Game::Game()
 	backButton2 = 0;
 	enterIP2 = 0;
 
+	typing = false;
 	menuWasUpPressed = false;
 	menuWasDownPressed = false;
 	menuWasEnterPressed = false;
@@ -292,7 +293,7 @@ bool Game::MenuFrame()
 	else if (menuState == 4) {
 		pointer2->height_in = enterIP2->height_in + 68;
 		pointer2->width_in = enterIP2->width_in - 19;
-		MultiplayerSetUoFrame();
+		MultiplayerSetUpFrame();
 	}
 	else if (menuState == 5) {
 		pointer2->height_in = acceptButton2->height_in + 25;
@@ -330,8 +331,12 @@ bool Game::MenuFrame()
 			menuState = 5;
 		}
 		else if (menuState == 5) {
-			//Start Multiplayer game
-
+			//if (NetworkClass.EstablishConnection(acceptInputBuffer) == true) {
+			//	Start Multiplayer game;
+			//} else {
+			//  Update text "Could not establish connection!"
+			//}
+			//}
 		}
 		else if (menuState == 6) {
 			// Go back to main menu
@@ -453,12 +458,12 @@ bool Game::MultiplayerGameFrame()
 	return true;
 }
 
-bool Game::MultiplayerSetUoFrame()
+bool Game::MultiplayerSetUpFrame()
 {
 	if (menuWasNumPressed == false) {
 		m_Input->CheckNumKeyPress(*acceptInputBuffer, bufferSize);
 		menuWasNumPressed = true;
-	} 
+	}
 
 	if (m_Input->CheckNumKeyUp() == false) {
 		menuWasNumPressed = false;

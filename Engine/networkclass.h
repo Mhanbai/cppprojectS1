@@ -12,13 +12,14 @@
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
-#include <winsock.h>
+#include <winsock2.h>
 #include <iphlpapi.h>
 #include <wininet.h> 
 #include <string>
 #include <string.h>
 #include <locale>
 #include <sstream>
+#include "netprotocol.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: Network Class
@@ -30,9 +31,12 @@ public:
 	NetworkClass(const NetworkClass&);
 	~NetworkClass();
 	void Shutdown();
+	bool Frame();
 	bool Initialize(HWND &hwnd);
 	bool FindLocalIP(char* &localIPHolder);
 	bool FindPublicIP(char* &publicIPHolder);
+	bool EstablishConnection(char* opponentAddress);
+	bool SendMessage(const NetMessage *message);
 	char* myLocalIP;
 	char* myPublicIP;
 
@@ -41,8 +45,16 @@ private:
 	//Network variables
 	WSADATA w;
 	SOCKET sock;
-	sockaddr_in serverAddr;
-
+	sockaddr_in listenAddr;
+	sockaddr_in sendAddr;
+	bool connectedMode;
+	int count;
+	// Data we need to send to the client.
+	char writeBuffer_[100 * sizeof NetMessage];
+	int writeCount_;
+	// The data we've read from the client.
+	char readBuffer_[sizeof NetMessage];
+	int readCount_;
 };
 
 #endif

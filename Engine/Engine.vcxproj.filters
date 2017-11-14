@@ -170,6 +170,9 @@
     <ClInclude Include="timerclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="netprotocol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="light.ps">
