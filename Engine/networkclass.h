@@ -12,7 +12,7 @@
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
-#include <winsock2.h>
+#include <winsock.h>
 #include <iphlpapi.h>
 #include <wininet.h> 
 #include <string>

@@ -64,6 +64,7 @@ private:
 
 	int m_screenWidth, m_screenHeight;
 	int m_mouseX, m_mouseY;
+	int inputCount;
 };
 
 #endif

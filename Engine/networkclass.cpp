@@ -44,7 +44,7 @@ bool NetworkClass::Frame()
 
 		// Receive data needing recieved
 		int spaceLeft = (sizeof readBuffer_) - readCount_;
-		int count = recv(sock, readBuffer_ + readCount_, spaceLeft, 0);
+		count = recv(sock, readBuffer_ + readCount_, spaceLeft, 0);
 		if (count <= 0)
 		{
 			printf("Client connection closed or broken\n");
@@ -62,7 +62,7 @@ bool NetworkClass::Frame()
 		}
 
 		// We've got a complete message.
-		processMessage((const NetMessage *)readBuffer_);
+		//processMessage((const NetMessage *)readBuffer_);
 
 		// Clear the buffer, ready for the next message.
 		readCount_ = 0;

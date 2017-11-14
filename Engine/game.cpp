@@ -469,7 +469,7 @@ bool Game::MultiplayerSetUpFrame()
 		menuWasNumPressed = false;
 	}
 
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->acceptInput, acceptInputBuffer, enterIP2->width_in + 196, pointer2->height_in + 2, 0.0f, 1.0f, 0.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->acceptInput, acceptInputBuffer, enterIP2->width_in + 216, pointer2->height_in + 2, 0.0f, 1.0f, 0.0f, m_Graphics->m_D3D->GetDeviceContext());
 
 	char displayIPBuffer[32];
 	sprintf_s(displayIPBuffer, "Your IP = %s", m_Network->myPublicIP);
