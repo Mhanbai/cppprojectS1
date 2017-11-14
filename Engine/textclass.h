@@ -39,11 +39,15 @@ public:
 	void Shutdown();
 	bool RenderDebugText(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX);
 	bool RenderMenuText(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX);
-	bool UpdateSentence(SentenceType*, char*, int, int, float, float, float, ID3D11DeviceContext*);
+	bool RenderNetworkText(ID3D11DeviceContext*, D3DXMATRIX, D3DXMATRIX);
+	bool UpdateSentence(SentenceType*, char*, int, int, float, float, float);
 
 	//Sentences for menu screen
 	SentenceType* displayIP;
 	SentenceType* acceptInput;
+
+	//Sentence for network status
+	SentenceType* networkStatus;
 
 	//Sentences for debug text
 	SentenceType* m_sentence1;
@@ -64,6 +68,7 @@ private:
 	FontShaderClass* m_FontShader;
 	int m_screenWidth, m_screenHeight;
 	D3DXMATRIX m_baseViewMatrix;
+	ID3D11DeviceContext* m_deviceContext;
 };
 
 #endif

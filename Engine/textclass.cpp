@@ -11,6 +11,8 @@ TextClass::TextClass()
 	displayIP = 0;
 	acceptInput = 0;
 
+	networkStatus = 0;
+
 	m_sentence1 = 0;
 	m_sentence2 = 0;
 	m_sentence3 = 0;
@@ -35,6 +37,8 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	D3DXMATRIX baseViewMatrix)
 {
 	bool result;
+
+	m_deviceContext = deviceContext;
 
 	// Store the screen width and height.
 	m_screenWidth = screenWidth;
@@ -81,6 +85,12 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	result = InitializeSentence(&acceptInput, 32, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	result = InitializeSentence(&networkStatus, 64, device);
 	if (!result)
 	{
 		return false;
@@ -139,6 +149,8 @@ void TextClass::Shutdown()
 
 	// Release the sentence.
 	ReleaseSentence(&acceptInput);
+
+	ReleaseSentence(&networkStatus);
 
 	// Release the sentence.
 	ReleaseSentence(&m_sentence1);
@@ -258,6 +270,22 @@ bool TextClass::RenderMenuText(ID3D11DeviceContext* deviceContext, D3DXMATRIX wo
 	return true;
 }
 
+bool TextClass::RenderNetworkText(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX orthoMatrix)
+{
+	bool result;
+
+	// Draw the first sentence.
+	result = RenderSentence(deviceContext, networkStatus, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+
+
 bool TextClass::InitializeSentence(SentenceType** sentence, int maxLength, ID3D11Device* device)
 {
 	VertexType* vertices;
@@ -362,8 +390,7 @@ bool TextClass::InitializeSentence(SentenceType** sentence, int maxLength, ID3D1
 	return true;
 }
 
-bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX, int positionY, float red, float green, float blue,
-	ID3D11DeviceContext* deviceContext)
+bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX, int positionY, float red, float green, float blue)
 {
 	int numLetters;
 	VertexType* vertices;
@@ -404,7 +431,7 @@ bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX
 	m_Font->BuildVertexArray((void*)vertices, text, drawX, drawY);
 
 	// Lock the vertex buffer so it can be written to.
-	result = deviceContext->Map(sentence->vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = m_deviceContext->Map(sentence->vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		return false;
@@ -417,7 +444,7 @@ bool TextClass::UpdateSentence(SentenceType* sentence, char* text, int positionX
 	memcpy(verticesPtr, (void*)vertices, (sizeof(VertexType) * sentence->vertexCount));
 
 	// Unlock the vertex buffer.
-	deviceContext->Unmap(sentence->vertexBuffer, 0);
+	m_deviceContext->Unmap(sentence->vertexBuffer, 0);
 
 	// Release the vertex array as it is no longer needed.
 	delete[] vertices;

@@ -33,16 +33,16 @@ Game::~Game()
 {
 }
 
-bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, TextClass* &text, HWND &hwnd)
+bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, bool connected, TextClass* &text, HWND &hwnd)
 {
 	bool result;
 	m_Input = input;
 	m_Graphics = graphics;
-	m_Text = text;
 	m_hwnd = hwnd;
 	m_Network = network;
 	sprintf_s(acceptInputBuffer, "");
 	bufferSize = sizeof(acceptInputBuffer);
+	onlineMode = connected;
 
 	m_Graphics->SetGameState(gameState);
 	result = InitializeMenuScreen();
@@ -68,6 +68,11 @@ void Game::Shutdown()
 		delete mainPlayer;
 		mainPlayer = 0;
 	}
+}
+
+void Game::SetOnlineMode(bool mode)
+{
+	onlineMode = mode;
 }
 
 bool Game::Frame(int fpsOutput, int cpuOutput, float timerOutput)
@@ -397,11 +402,11 @@ bool Game::GameFrame()
 	sprintf_s(cpuBuffer, "CPU: %i%%", cpuUsage);
 
 
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, m_Network->myLocalIP, 60, 110, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, m_Network->myPublicIP, 60, 130, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence6, fpsBuffer, 60, 150, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence7, cpuBuffer, 60, 170, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, m_Network->myLocalIP, 60, 110, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, m_Network->myPublicIP, 60, 130, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence6, fpsBuffer, 60, 150, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence7, cpuBuffer, 60, 170, 1.0f, 1.0f, 1.0f);
 	return true;
 }
 
@@ -450,11 +455,11 @@ bool Game::MultiplayerGameFrame()
 	sprintf_s(cpuBuffer, "CPU: %i%%", cpuUsage);
 
 
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, m_Network->myLocalIP, 60, 110, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, m_Network->myPublicIP, 60, 130, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence6, fpsBuffer, 60, 150, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence7, cpuBuffer, 60, 170, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, m_Network->myLocalIP, 60, 110, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, m_Network->myPublicIP, 60, 130, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence6, fpsBuffer, 60, 150, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence7, cpuBuffer, 60, 170, 1.0f, 1.0f, 1.0f);
 	return true;
 }
 
@@ -469,11 +474,11 @@ bool Game::MultiplayerSetUpFrame()
 		menuWasNumPressed = false;
 	}
 
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->acceptInput, acceptInputBuffer, enterIP2->width_in + 216, pointer2->height_in + 2, 0.0f, 1.0f, 0.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->acceptInput, acceptInputBuffer, enterIP2->width_in + 216, pointer2->height_in + 2, 0.0f, 1.0f, 0.0f);
 
 	char displayIPBuffer[32];
 	sprintf_s(displayIPBuffer, "Your IP = %s", m_Network->myPublicIP);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->displayIP, displayIPBuffer, enterIP2->width_in + 196, enterIP2->height_in + 156, 1.0f, 1.0f, 0.0f, m_Graphics->m_D3D->GetDeviceContext());
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->displayIP, displayIPBuffer, enterIP2->width_in + 196, enterIP2->height_in + 156, 1.0f, 1.0f, 0.0f);
 
 	return false;
 }

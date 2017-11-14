@@ -14,12 +14,7 @@ NetworkClass::~NetworkClass()
 
 void NetworkClass::Shutdown()
 {
-	m_hwnd = 0;
-
-	if (closesocket(sock) == SOCKET_ERROR) {
-		MessageBox(m_hwnd, L"Failed to close socket", L"Error", MB_OK);
-	}
-
+	closesocket(sock);
 	WSACleanup();
 
 	return;
@@ -27,64 +22,68 @@ void NetworkClass::Shutdown()
 
 bool NetworkClass::Frame()
 {
-	if (connectedMode) {
-		int count;
-		// Send data needed sent
-		count = send(sock, writeBuffer_, writeCount_, 0);
-		if (count <= 0)
-		{
-			MessageBox(m_hwnd, L"Connection lost or broken.", L"Error", MB_OK);
-			return false;
-		}
-
-		writeCount_ -= count;
-
-		// Remove the sent data from the start of the buffer.
-		memmove(writeBuffer_, writeBuffer_ + count, writeCount_);
-
-		// Receive data needing recieved
-		int spaceLeft = (sizeof readBuffer_) - readCount_;
-		count = recv(sock, readBuffer_ + readCount_, spaceLeft, 0);
-		if (count <= 0)
-		{
-			printf("Client connection closed or broken\n");
-			return true;
-		}
-
-		// We've successfully read some more data into the buffer.
-		readCount_ += count;
-
-		if (readCount_ < sizeof NetMessage)
-		{
-			// ... but we've not received a complete message yet.
-			// So we can't do anything until we receive some more.
-			return false;
-		}
-
-		// We've got a complete message.
-		//processMessage((const NetMessage *)readBuffer_);
-
-		// Clear the buffer, ready for the next message.
-		readCount_ = 0;
+	//int count;
+	/*// Send data needed sent
+	count = send(sock, writeBuffer_, writeCount_, 0);
+	if (count <= 0)
+	{
+		//TO DO: Say "Warning: Experiencing network difficulties"
+		return false;
 	}
+
+	writeCount_ -= count;
+
+	// Remove the sent data from the start of the buffer.
+	memmove(writeBuffer_, writeBuffer_ + count, writeCount_);
+
+	// Receive data needing recieved
+	int spaceLeft = (sizeof readBuffer_) - readCount_;
+	count = recv(sock, readBuffer_ + readCount_, spaceLeft, 0);
+	if (count <= 0)
+	{
+		//TO DO: Say "Warning: Experiencing network difficulties"
+		return true;
+	}
+
+	// We've successfully read some more data into the buffer.
+	readCount_ += count;
+
+	if (readCount_ < sizeof NetMessage)
+	{
+		// ... but we've not received a complete message yet.
+		// So we can't do anything until we receive some more.
+		return false;
+	}
+
+	// We've got a complete message.
+	//processMessage((const NetMessage *)readBuffer_);
+
+	// Clear the buffer, ready for the next message.
+	readCount_ = 0;*/
 
 	return true;
 }
 
-bool NetworkClass::Initialize(HWND &hwnd)
+bool NetworkClass::Initialize(GraphicsClass* &graphics)
 {
-	m_hwnd = hwnd;
+	connected = true;
+	m_graphics = graphics;
+	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Attempting to establish connection...", 10, 10, 1.0f, 1.0f, 1.0f);
 
 	//Initialize WinSock and check for correct version
 	int error = WSAStartup(0x0202, &w);
+
 	if (error != 0)
 	{
-		MessageBox(m_hwnd, L"WSA Startup failed.", L"Error", MB_OK);
+		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not start WinSock", 10, 10, 1.0f, 1.0f, 1.0f);
+		connected = false;
 		return false;
 	}
+
 	if (w.wVersion != 0x0202)
 	{
-		MessageBox(m_hwnd, L"Wrong WinSock version.", L"Error", MB_OK);
+		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Wrong WinSock version", 10, 10, 1.0f, 1.0f, 1.0f);
+		connected = false;
 		return false;
 	}
 
@@ -92,7 +91,8 @@ bool NetworkClass::Initialize(HWND &hwnd)
 	sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock == INVALID_SOCKET)
 	{
-		MessageBox(m_hwnd, L"Socket Failed.", L"Error", MB_OK);
+		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not create UDP socket", 10, 10, 1.0f, 1.0f, 1.0f);
+		connected = false;
 		return false;
 	}
 
@@ -100,13 +100,9 @@ bool NetworkClass::Initialize(HWND &hwnd)
 	unsigned long value = 1;
 	ioctlsocket(sock, FIONBIO, &value);
 
-	if (FindPublicIP(myPublicIP) == false) {
-		MessageBox(m_hwnd, L"Error finding public IP.", L"Error", MB_OK);
-		return false;
-	}
-
-	if (FindLocalIP(myLocalIP) == false) {
-		MessageBox(m_hwnd, L"Error finding local IP.", L"Error", MB_OK);
+	//Check to see if connected to internet - if not return false with WinSock set up aleady complete
+	if (CheckNetwork(myLocalIP, myPublicIP) == false) {
+		connected = false;
 		return false;
 	}
 
@@ -116,34 +112,31 @@ bool NetworkClass::Initialize(HWND &hwnd)
 	// htons converts the port number to network byte order (big-endian).
 	listenAddr.sin_port = htons(4444);
 
+	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connected!", 10, 10, 1.0f, 1.0f, 1.0f);
 	return true;
 }
 
-bool NetworkClass::FindLocalIP(char* &localIPHolder)
+// This class can be used to complete initialization if CheckNetwork returns false
+bool NetworkClass::RecheckNetwork()
 {
-	// Get the local hostname
-	char szHostName[255];
-	if (gethostname(szHostName, 255) == SOCKET_ERROR) {
-		MessageBox(m_hwnd, L"Error getting local host name.", L"Error", MB_OK);
+	if (CheckNetwork(myLocalIP, myPublicIP) == false) {
+		connected = false;
 		return false;
 	}
 
-	//Populate a host entry structure which will contain all the IP related information for this machine:
-	struct hostent *host_entry;
-	host_entry = gethostbyname(szHostName);
-	if (host_entry == NULL) {
-		MessageBox(m_hwnd, L"Error finding host address.", L"Error", MB_OK);
-		return false;
-	}
+	// Fill out a sockaddr_in structure to describe the address we'll listen on.
+	listenAddr.sin_family = AF_INET;
+	listenAddr.sin_addr.s_addr = inet_addr(myLocalIP);
+	// htons converts the port number to network byte order (big-endian).
+	listenAddr.sin_port = htons(4444);
 
-	//Take first entry and convert to string using inet_ntoa
-	localIPHolder = inet_ntoa(*(struct in_addr *)*host_entry->h_addr_list);
-
+	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connected!", 10, 10, 1.0f, 1.0f, 1.0f);
 	return true;
 }
 
-bool NetworkClass::FindPublicIP(char* &publicIPHolder)
+bool NetworkClass::CheckNetwork(char* &localIPHolder, char* &publicIPHolder)
 {
+	// This function should attempt to find local IP and public IP addresses. If it failed, it should return false to indicate there is something wrong with the connection.
 	struct hostent *host;
 	char buffer[10000];
 	char lineBuffer[200][80] = { ' ' };
@@ -157,80 +150,104 @@ bool NetworkClass::FindPublicIP(char* &publicIPHolder)
 	SOCKADDR_IN SockAddr;
 	connectedMode = true;
 
+	///////////////////////////////////////////////////////////////
+	/////******Find Local IP Address******************************
+	///////////////////////////////////////////////////////////////
+
+	// Get the local hostname
+	char szHostName[255];
+	if (gethostname(szHostName, 255) == SOCKET_ERROR) {
+		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not find Local Host", 10, 10, 1.0f, 1.0f, 1.0f);
+
+		connected = false;
+		return false;
+	}
+
+	//Populate a host entry structure which will contain all the IP related information for this machine:
+	struct hostent *host_entry;
+	host_entry = gethostbyname(szHostName);
+	if (host_entry == NULL) {
+		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not find Local Host address", 10, 10, 1.0f, 1.0f, 1.0f);
+
+		connected = false;
+		return false;
+	}
+
+	//Assign converted string to external 'LocalIP' holder
+	localIPHolder = inet_ntoa(*(struct in_addr *)*host_entry->h_addr_list);
+
+	///////////////////////////////////////////////////////////////
+	/////******Find Public IP Address******************************
+	///////////////////////////////////////////////////////////////
+
 	//Create a new socket to connect to 'Find My IP Service' and connect
 	Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	host = gethostbyname(url.c_str());
 	if (host == NULL) {
-		MessageBox(m_hwnd, L"Could not connect to external host.", L"Error", MB_OK);
-		connectedMode = false;
+		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not find external host name", 10, 10, 1.0f, 1.0f, 1.0f);
+
+		connected = false;
+		return false;
 	}
 
-	if (connectedMode == true) {
-		SockAddr.sin_port = htons(80);
-		SockAddr.sin_family = AF_INET;
-		SockAddr.sin_addr.s_addr = *((unsigned long*)host->h_addr);
+	SockAddr.sin_port = htons(80);
+	SockAddr.sin_family = AF_INET;
+	SockAddr.sin_addr.s_addr = *((unsigned long*)host->h_addr);
 
-		if (connect(Socket, (SOCKADDR*)(&SockAddr), sizeof(SockAddr)) != 0) {
-			MessageBox(m_hwnd, L"Could not connect.", L"Error", MB_OK);
-			return false;
+	if (connect(Socket, (SOCKADDR*)(&SockAddr), sizeof(SockAddr)) != 0) {
+		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not connect to external host", 10, 10, 1.0f, 1.0f, 1.0f);
+		connected = false;
+		return false;
+	}
+
+	//Sent HTTP request
+	if (send(Socket, getHTTP.c_str(), strlen(getHTTP.c_str()), 0) == SOCKET_ERROR)
+	{
+		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not send message to external host", 10, 10, 1.0f, 1.0f, 1.0f);
+		connected = false;
+		return false;
+	}
+
+	//Recieve response with IP on end
+	int nDataLength;
+	while ((nDataLength = recv(Socket, buffer, 10000, 0)) > 0) {
+		int i = 0;
+		while (buffer[i] >= 32 || buffer[i] == '\n' || buffer[i] == '\r') {
+			websiteHTML += buffer[i];
+			i += 1;
 		}
+	}
 
-		//Sent HTTP request
-		if (send(Socket, getHTTP.c_str(), strlen(getHTTP.c_str()), 0) == SOCKET_ERROR)
-		{
-			MessageBox(m_hwnd, L"Could not send.", L"Error", MB_OK);
-			return false;
-		}
+	// Sort response into lines
+	for (size_t i = 0; i < websiteHTML.length(); ++i) {
+		websiteHTML[i] = tolower(websiteHTML[i], local);
+	}
 
-		//Recieve response with IP on end
-		int nDataLength;
-		while ((nDataLength = recv(Socket, buffer, 10000, 0)) > 0) {
-			int i = 0;
-			while (buffer[i] >= 32 || buffer[i] == '\n' || buffer[i] == '\r') {
-				websiteHTML += buffer[i];
-				i += 1;
+	std::istringstream ss(websiteHTML);
+	std::string stoken;
+
+	while (getline(ss, stoken, '\n')) {
+		strcpy_s(lineBuffer[lineIndex], stoken.c_str());
+		int dot = 0;
+		for (unsigned int ii = 0; ii < strlen(lineBuffer[lineIndex]); ii++) {
+
+			if (lineBuffer[lineIndex][ii] == '.') dot++;
+			if (dot >= 3) {
+				dot = 0;
+				strcpy_s(szPublicIP, lineBuffer[lineIndex]); //If we're at the IP, copy it to variable
 			}
 		}
 
-		// Sort response into lines
-		for (size_t i = 0; i < websiteHTML.length(); ++i) {
-			websiteHTML[i] = tolower(websiteHTML[i], local);
-		}
-
-		std::istringstream ss(websiteHTML);
-		std::string stoken;
-
-		while (getline(ss, stoken, '\n')) {
-			strcpy_s(lineBuffer[lineIndex], stoken.c_str());
-			int dot = 0;
-			for (unsigned int ii = 0; ii < strlen(lineBuffer[lineIndex]); ii++) {
-
-				if (lineBuffer[lineIndex][ii] == '.') dot++;
-				if (dot >= 3) {
-					dot = 0;
-					strcpy_s(szPublicIP, lineBuffer[lineIndex]); //If we're at the IP, copy it to variable
-				}
-			}
-
-			lineIndex++;
-		}
-
-		if (szPublicIP == "") {
-			FindPublicIP(publicIPHolder); //If this didnt work (due to no response, etc) run the Function again.
-		}
-		else {
-			publicIPHolder = szPublicIP; //Assign IP value to in_variable
-		}
-
-		if (closesocket(Socket) == SOCKET_ERROR) {
-			MessageBox(m_hwnd, L"Failed to close socket", L"Error", MB_OK);
-			return false;
-		}
-
-		return true;
+		lineIndex++;
 	}
 
-	return false;
+	publicIPHolder = szPublicIP;
+
+	if (closesocket(Socket) == SOCKET_ERROR) {
+		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Warning: Failed to close socket", 10, 10, 1.0f, 1.0f, 1.0f);
+	}
+
+	return true;
 }
 
 bool NetworkClass::EstablishConnection(char * opponentAddress)
@@ -255,7 +272,7 @@ bool NetworkClass::SendMessage(const NetMessage * message)
 {
 	if (writeCount_ + sizeof(NetMessage) > sizeof(writeBuffer_))
 	{
-		MessageBox(m_hwnd, L"Write Buffer Full", L"Error", MB_OK);
+		//TO DO: Say "Connection Disabled: Write Buffer Full"
 		return false;
 	}
 

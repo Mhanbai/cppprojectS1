@@ -517,6 +517,8 @@ bool GraphicsClass::RenderMainMenu(D3DXMATRIX & worldMatrix, D3DXMATRIX viewMatr
 				return false;
 			}
 		}
+
+		m_Text->RenderNetworkText(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
 		break;
 	case 1:
 		for (int i = 0; i < menuScreenTwoAssetCount; i++) {
@@ -553,8 +555,10 @@ void GraphicsClass::RenderText(int mode, D3DXMATRIX &worldMatrix)
 	m_D3D->TurnZBufferOff();
 	if (mode == 0) {
 		m_Text->RenderMenuText(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+		m_Text->RenderNetworkText(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
 	} else if (mode == 1) {
 		m_Text->RenderDebugText(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+		m_Text->RenderNetworkText(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
 	}
 	m_D3D->TurnZBufferOn();
 }

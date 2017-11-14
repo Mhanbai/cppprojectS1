@@ -26,8 +26,9 @@ public:
 	Game();
 	Game(const Game&);
 	~Game();
-	bool Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, TextClass* &text, HWND &hwnd);
+	bool Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, bool connected, TextClass* &text, HWND &hwnd);
 	void Shutdown();
+	void SetOnlineMode(bool mode);
 	bool Frame(int fpsOutput, int cpuOutput, float timerOutput);
 	int gameState;
 
@@ -48,11 +49,12 @@ private:
 	int cpuUsage;
 	float totalGameTime;
 
+	bool onlineMode;
+
 	// References to System Objects
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
 	NetworkClass* m_Network;
-	TextClass* m_Text;
 	HWND m_hwnd;
 
 	// References to Main Game Assets

@@ -20,6 +20,7 @@
 #include <locale>
 #include <sstream>
 #include "netprotocol.h"
+#include "graphicsclass.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: Network Class
@@ -32,16 +33,15 @@ public:
 	~NetworkClass();
 	void Shutdown();
 	bool Frame();
-	bool Initialize(HWND &hwnd);
-	bool FindLocalIP(char* &localIPHolder);
-	bool FindPublicIP(char* &publicIPHolder);
+	bool Initialize(GraphicsClass* &graphics);
+	bool CheckNetwork(char* &localIPHolder, char* &publicIPHolder);
+	bool RecheckNetwork();
 	bool EstablishConnection(char* opponentAddress);
 	bool SendMessage(const NetMessage *message);
 	char* myLocalIP;
 	char* myPublicIP;
 
 private:
-	HWND m_hwnd;
 	//Network variables
 	WSADATA w;
 	SOCKET sock;
@@ -55,6 +55,9 @@ private:
 	// The data we've read from the client.
 	char readBuffer_[sizeof NetMessage];
 	int readCount_;
+	bool connected;
+
+	GraphicsClass* m_graphics;
 };
 
 #endif

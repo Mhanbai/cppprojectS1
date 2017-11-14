@@ -75,11 +75,7 @@ bool SystemClass::Initialize()
 	}
 
 	// Initialize the network object.
-	result = m_Network->Initialize(m_hwnd);
-	if (!result)
-	{
-		return false;
-	}
+	connected = m_Network->Initialize(m_Graphics);
 
 	// Create the game object
 	m_Game = new Game;
@@ -89,7 +85,7 @@ bool SystemClass::Initialize()
 	}
 
 	// Initialize the game object.
-	result = m_Game->Initialize(m_Input, m_Graphics, m_Network, m_Text, m_hwnd);
+	result = m_Game->Initialize(m_Input, m_Graphics, m_Network, connected, m_Text, m_hwnd);
 	if (!result)
 	{
 		return false;
@@ -251,6 +247,13 @@ bool SystemClass::Frame()
 	m_Timer->Frame();
 	m_Fps->Frame();
 	m_Cpu->Frame();
+
+	// Update network methods
+	if (connected == false) {
+		connected = m_Network->RecheckNetwork();
+		m_Game->SetOnlineMode(connected);
+	}
+	m_Network->Frame();
 
 	// Do the input frame processing.
 	result = m_Input->Frame();
