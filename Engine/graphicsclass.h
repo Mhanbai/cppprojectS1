@@ -20,6 +20,8 @@
 #include "skydomeshaderclass.h"
 #include "terrainshaderclass.h"
 #include "terrainclass.h"
+#include "foliageclass.h"
+#include "foliageshaderclass.h"
 
 /////////////
 // GLOBALS //
@@ -84,6 +86,8 @@ private:
 	TerrainShaderClass* m_TerrainShader;
 	TerrainClass* m_Terrain;
 	D3DXMATRIX screenViewMatrix;
+	FoliageClass* m_Foliage;
+	FoliageShaderClass* m_FoliageShader;
 };
 
 #endif

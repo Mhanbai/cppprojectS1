@@ -84,6 +84,8 @@
     <ClCompile Include="cameraclass.cpp" />
     <ClCompile Include="car.cpp" />
     <ClCompile Include="cpuclass.cpp" />
+    <ClCompile Include="foliageclass.cpp" />
+    <ClCompile Include="foliageshaderclass.cpp" />
     <ClCompile Include="fpsclass.cpp" />
     <ClCompile Include="networkclass.cpp" />
     <ClCompile Include="terrainshaderclass.cpp" />
@@ -112,6 +114,8 @@
     <ClInclude Include="cameraclass.h" />
     <ClInclude Include="car.h" />
     <ClInclude Include="cpuclass.h" />
+    <ClInclude Include="foliageclass.h" />
+    <ClInclude Include="foliageshaderclass.h" />
     <ClInclude Include="fpsclass.h" />
     <ClInclude Include="netprotocol.h" />
     <ClInclude Include="networkclass.h" />
@@ -136,6 +140,8 @@
     <ClInclude Include="timerclass.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="foliage.ps" />
+    <None Include="foliage.vs" />
     <None Include="font.ps" />
     <None Include="font.vs" />
     <None Include="light.ps" />

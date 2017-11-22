@@ -25,6 +25,8 @@ GraphicsClass::GraphicsClass()
 	menuScreenTwoAssetCount = 0;
 	gameState = 0;
 	menuState = 0;
+	m_Foliage = 0;
+	m_FoliageShader = 0;
 }
 
 
@@ -195,12 +197,58 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 		return false;
 	}
 
+	// Create the foliage object.
+	m_Foliage = new FoliageClass;
+	if (!m_Foliage)
+	{
+		return false;
+	}
+
+	// Initialize the foliage object.
+	result = m_Foliage->Initialize(m_D3D->GetDevice(), L"../Engine/data/grass.dds", 500);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the foliage object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the foliage object.
+	m_FoliageShader = new FoliageShaderClass;
+	if (!m_FoliageShader)
+	{
+		return false;
+	}
+
+	// Initialize the foliage object.
+	result = m_FoliageShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the foliage shader object.", L"Error", MB_OK);
+		return false;
+	}
+
 	return true;
 }
 
 
 void GraphicsClass::Shutdown()
 {
+	// Release the foliage shader object.
+	if (m_FoliageShader)
+	{
+		m_FoliageShader->Shutdown();
+		delete m_FoliageShader;
+		m_FoliageShader = 0;
+	}
+
+	// Release the foliage object.
+	if (m_Foliage)
+	{
+		m_Foliage->Shutdown();
+		delete m_Foliage;
+		m_Foliage = 0;
+	}
+
 	// Release the terrain object.
 	if (m_Terrain)
 	{
@@ -433,7 +481,7 @@ bool GraphicsClass::Render()
 		// Render the text strings.
 		m_D3D->TurnOnAlphaBlending();
 		RenderText(1, worldMatrix);
-		m_D3D->TurnOffAlphaBlending();
+
 
 		// Render the terrain buffers.
 		m_Terrain->Render(m_D3D->GetDeviceContext());
@@ -459,6 +507,19 @@ bool GraphicsClass::Render()
 				return false;
 			}
 		}
+
+		// Do the frame processing for the foliage.
+		result = m_Foliage->Frame(cameraPosition, m_D3D->GetDeviceContext());
+		if (!result)
+		{
+			return false;
+		}
+
+		// Render the foliage.
+		m_Foliage->Render(m_D3D->GetDeviceContext());
+		result = m_FoliageShader->Render(m_D3D->GetDeviceContext(), m_Foliage->GetVertexCount(), m_Foliage->GetInstanceCount(), viewMatrix, projectionMatrix, m_Foliage->GetTexture());
+
+		m_D3D->TurnOffAlphaBlending();
 		break;
 	}
 
