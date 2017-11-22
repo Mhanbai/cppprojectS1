@@ -361,6 +361,7 @@ bool Game::GameFrame()
 {
 	mainPlayer->Frame();
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector());
+	//m_Graphics->m_Camera->SetPosition(mainPlayer->GetPosition().x, -750.0f, mainPlayer->GetPosition().z);
 
 	if (m_Input->IsUpPressed() == true) {
 		mainPlayer->Accelerate(true);

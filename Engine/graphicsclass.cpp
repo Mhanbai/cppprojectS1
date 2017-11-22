@@ -88,7 +88,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	//m_Camera->SetPosition(0.0f, 170.0f, -30.0f);
 	//m_Camera->SetRotation(-90.0f, 0.0f, 0.0f);
 
-	m_Camera->SetPosition(0.0f, -700.0f, 0.0f);
+	m_Camera->SetPosition(0.0f, -850.0f, 0.0f);
 	m_Camera->SetRotation(-90.0f, 0.0f, 0.0f);
 
 	// Create the terrain object.
@@ -99,7 +99,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	}
 
 	// Initialize the terrain object.
-	result = m_Terrain->Initialize(m_D3D->GetDevice());
+	result = m_Terrain->Initialize(m_D3D->GetDevice(), "../Engine/data/heightmap01.bmp", L"../Engine/data/dirt01.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the terrain object.", L"Error", MB_OK);
@@ -159,11 +159,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	}
 
 	// Initialize the light object.
-	m_Light->SetAmbientColor(0.4f, 0.4f, 0.4f, 1.0f);
+	m_Light->SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(1.0f, -1.0f, 0.0f);
+	m_Light->SetDirection(-0.5f, -0.5f, 0.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetSpecularPower(10.0f);
+	//m_Light->SetSpecularPower(10.0f);
 
 	// Create the sky dome object.
 	m_SkyDome = new SkyDomeClass;
@@ -438,8 +438,9 @@ bool GraphicsClass::Render()
 		// Render the terrain buffers.
 		m_Terrain->Render(m_D3D->GetDeviceContext());
 
-		// Render the model using the color shader.
-		result = m_TerrainShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+		// Render the terrain using the terrain shader.
+		result = m_TerrainShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(), m_Light->GetDirection(), m_Terrain->GetTexture());
 		if (!result)
 		{
 			return false;

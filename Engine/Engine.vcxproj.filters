@@ -199,10 +199,10 @@
     <None Include="skydome.ps">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="color.ps">
+    <None Include="terrain.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="color.vs">
+    <None Include="terrain.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

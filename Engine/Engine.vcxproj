@@ -136,14 +136,14 @@
     <ClInclude Include="timerclass.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="color.ps" />
-    <None Include="color.vs" />
     <None Include="font.ps" />
     <None Include="font.vs" />
     <None Include="light.ps" />
     <None Include="light.vs" />
     <None Include="skydome.ps" />
     <None Include="skydome.vs" />
+    <None Include="terrain.ps" />
+    <None Include="terrain.vs" />
     <None Include="texture.ps" />
     <None Include="texture.vs" />
   </ItemGroup>
