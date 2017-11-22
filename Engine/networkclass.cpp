@@ -56,11 +56,19 @@ bool NetworkClass::Initialize(GraphicsClass* &graphics)
 
 	// Fill out a sockaddr_in structure to describe the address we'll listen on.
 	listenAddr.sin_family = AF_INET;
-	listenAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	listenAddr.sin_addr.s_addr = inet_addr(myLocalIP);
 	// htons converts the port number to network byte order (big-endian).
 	listenAddr.sin_port = htons(4444);
 
-	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connected to Internet!", 10, 10, 1.0f, 1.0f, 1.0f);
+	if (bind(sock, (const sockaddr *)&listenAddr, sizeof(listenAddr)) != 0)
+	{
+		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Bind Failed!", 10, 10, 1.0f, 1.0f, 1.0f);
+		return false;
+	}
+	else
+	{
+		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connected to Internet!", 10, 10, 1.0f, 1.0f, 1.0f);
+	}
 	return true;
 }
 
@@ -100,12 +108,12 @@ void NetworkClass::Frame(float time)
 		writeCount_ -= count;
 
 		// Remove the sent data from the start of the buffer.
-		memmove(writeBuffer_, writeBuffer_ + count, writeCount_);
+		//memmove(writeBuffer_, writeBuffer_ + count, writeCount_);
 	}
 
 	// Receive data needing recieved
 	int spaceLeft = (sizeof readBuffer_) - readCount_;
-	count = recvfrom(sock, readBuffer_, sizeof(NetMessage), 0, (sockaddr *)&sendAddr, (int*)sizeof(sendAddr));
+	count = recvfrom(sock, readBuffer_, sizeof(NetMessage), 0, &from, &fromlen);
 	if (count <= 0) {
 		//m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Cannot recieve messages!", 10, 10, 1.0f, 1.0f, 1.0f);
 	}

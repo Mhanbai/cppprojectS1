@@ -50,6 +50,8 @@ private:
 	SOCKET sock;
 	sockaddr_in listenAddr;
 	sockaddr_in sendAddr;
+	sockaddr from;
+	int fromlen;
 	bool connectedMode;
 	int count;
 	// Data we need to send to the client.
