@@ -477,9 +477,14 @@ bool Game::MultiplayerSetUpFrame()
 
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->acceptInput, acceptInputBuffer, enterIP2->width_in + 216, pointer2->height_in + 2, 0.0f, 1.0f, 0.0f);
 
-	char displayIPBuffer[32];
-	sprintf_s(displayIPBuffer, "Your IP = %s", m_Network->myPublicIP);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->displayIP, displayIPBuffer, enterIP2->width_in + 196, enterIP2->height_in + 156, 1.0f, 1.0f, 0.0f);
+	char displayLocalIPBuffer[32];
+	sprintf_s(displayLocalIPBuffer, "Your Local IP = %s", m_Network->myLocalIP);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->displayLocalIP, displayLocalIPBuffer, enterIP2->width_in + 196, enterIP2->height_in + 156, 1.0f, 1.0f, 0.0f);
+
+	char displayPublicIPBuffer[32];
+	sprintf_s(displayPublicIPBuffer, "Your Public IP = %s", m_Network->myPublicIP);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->displayPublicIP, displayPublicIPBuffer, enterIP2->width_in + 181, enterIP2->height_in + 176, 1.0f, 1.0f, 0.0f);
+
 
 	return false;
 }

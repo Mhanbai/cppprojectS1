@@ -8,7 +8,8 @@ TextClass::TextClass()
 	m_Font = 0;
 	m_FontShader = 0;
 
-	displayIP = 0;
+	displayLocalIP = 0;
+	displayPublicIP = 0;
 	acceptInput = 0;
 
 	networkStatus = 0;
@@ -78,7 +79,13 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	// Initialize sentences used for menu
-	result = InitializeSentence(&displayIP, 32, device);
+	result = InitializeSentence(&displayLocalIP, 32, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	result = InitializeSentence(&displayPublicIP, 32, device);
 	if (!result)
 	{
 		return false;
@@ -145,7 +152,10 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 void TextClass::Shutdown()
 {
 	// Release the sentence.
-	ReleaseSentence(&displayIP);
+	ReleaseSentence(&displayLocalIP);
+
+	// Release the sentence.
+	ReleaseSentence(&displayPublicIP);
 
 	// Release the sentence.
 	ReleaseSentence(&acceptInput);
@@ -254,7 +264,14 @@ bool TextClass::RenderMenuText(ID3D11DeviceContext* deviceContext, D3DXMATRIX wo
 	bool result;
 
 	// Draw the first sentence.
-	result = RenderSentence(deviceContext, displayIP, worldMatrix, orthoMatrix);
+	result = RenderSentence(deviceContext, displayLocalIP, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Draw the first sentence.
+	result = RenderSentence(deviceContext, displayPublicIP, worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;

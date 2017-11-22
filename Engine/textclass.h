@@ -43,7 +43,8 @@ public:
 	bool UpdateSentence(SentenceType*, char*, int, int, float, float, float);
 
 	//Sentences for menu screen
-	SentenceType* displayIP;
+	SentenceType* displayPublicIP;
+	SentenceType* displayLocalIP;
 	SentenceType* acceptInput;
 
 	//Sentence for network status

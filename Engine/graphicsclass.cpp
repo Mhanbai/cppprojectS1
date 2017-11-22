@@ -101,7 +101,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	}
 
 	// Initialize the terrain object.
-	result = m_Terrain->Initialize(m_D3D->GetDevice(), "../Engine/data/heightmap01.bmp", L"../Engine/data/dirt01.dds");
+	//result = m_Terrain->Initialize(m_D3D->GetDevice(), "../Engine/data/heightmap01.bmp", L"../Engine/data/dirt01.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the terrain object.", L"Error", MB_OK);
@@ -484,7 +484,7 @@ bool GraphicsClass::Render()
 
 
 		// Render the terrain buffers.
-		m_Terrain->Render(m_D3D->GetDeviceContext());
+		/*m_Terrain->Render(m_D3D->GetDeviceContext());
 
 		// Render the terrain using the terrain shader.
 		result = m_TerrainShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
@@ -492,7 +492,7 @@ bool GraphicsClass::Render()
 		if (!result)
 		{
 			return false;
-		}
+		}*/
 
 		for (int i = 0; i < mainGameAssetCount; i++) {
 			// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.

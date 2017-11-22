@@ -14,7 +14,7 @@ NetworkClass::~NetworkClass()
 
 void NetworkClass::Shutdown()
 {
-	closesocket(sock);
+	//closesocket(sock);
 	WSACleanup();
 
 	return;
