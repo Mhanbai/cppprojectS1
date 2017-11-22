@@ -254,7 +254,7 @@ bool Game::MenuFrame()
 		}
 	} 
 
-	if (menuState >= 4) {
+	if ((menuState >= 4) && (menuState < 7)){
 		if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
 			if (menuState < 6) {
 				menuState++;
@@ -336,25 +336,28 @@ bool Game::MenuFrame()
 			menuState = 5;
 		}
 		else if (menuState == 5) {
-			if (m_Network->attemptingToEstablish == false) {
-				m_Network->EstablishConnection(acceptInputBuffer);
-			}
-			else {
-				if (m_Network->twoWayConnection == true) {
-					opponent->Initialize(m_Graphics, m_hwnd, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
-					gameState = 2; //Start a multiplayer game
-				}
-			}
+			m_Network->EstablishConnection(acceptInputBuffer);
+			menuState = 7;
 		}
 		else if (menuState == 6) {
 			// Go back to main menu
 			m_Graphics->SetMenuState(0);
 			menuState = 1;
 		}
+		else if (menuState == 7) {
+			m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->networkStatus, "Connection attempt cancelled", 10, 10, 1.0f, 1.0f, 1.0f);
+			m_Network->attemptingToEstablish = false;
+			menuState = 5;
+		}
 	}
 
 	if (m_Input->IsEnterPressed() == false) {
 		menuWasEnterPressed = false;
+	}
+
+	if ((menuState == 7) && (m_Network->twoWayConnection == true)) {
+		opponent->Initialize(m_Graphics, m_hwnd, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
+		gameState = 2;
 	}
 
 	return true;

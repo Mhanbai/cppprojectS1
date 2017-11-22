@@ -20,7 +20,6 @@ bool NetworkClass::Initialize(GraphicsClass* &graphics)
 
 	//Initialize WinSock and check for correct version
 	int error = WSAStartup(0x0202, &w);
-
 	if (error != 0)
 	{
 		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not start WinSock", 10, 10, 1.0f, 1.0f, 1.0f);
@@ -74,7 +73,7 @@ bool NetworkClass::Initialize(GraphicsClass* &graphics)
 
 void NetworkClass::Shutdown()
 {
-	//closesocket(sock);
+	closesocket(sock);
 	WSACleanup();
 
 	return;
@@ -85,15 +84,10 @@ void NetworkClass::Frame(float time)
 	totalGameTime = totalGameTime + (time / 1000);
 
 	if (attemptingToEstablish == true) {
-		if ((totalGameTime - startTime) < 3.0f) {
-			if (messageFromOpponent) {
-				m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Successfully established a connection!", 10, 10, 1.0f, 1.0f, 1.0f);
-				twoWayConnection = true;
-			}
-		}
-		else {
-			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Failed to establish a connection", 10, 10, 1.0f, 1.0f, 1.0f);
-			attemptingToEstablish = false;
+		if (messageFromOpponent) {
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Successfully established a connection!", 10, 10, 1.0f, 1.0f, 1.0f);
+			twoWayConnection = true;
+			totalGameTime = 0.0f;
 		}
 	}
 
@@ -101,9 +95,9 @@ void NetworkClass::Frame(float time)
 	// Send data needed sent
 	count = sendto(sock, writeBuffer_, sizeof(NetMessage), 0, (const sockaddr *)&sendAddr, sizeof(sendAddr));
 	if (count <= 0) {
-		//m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Cannot connect to opponent!", 10, 10, 1.0f, 1.0f, 1.0f);
+		
 	}
-	else 
+	else
 	{
 		writeCount_ -= count;
 
@@ -117,7 +111,7 @@ void NetworkClass::Frame(float time)
 	if (count <= 0) {
 		//m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Cannot recieve messages!", 10, 10, 1.0f, 1.0f, 1.0f);
 	}
-	else 
+	else
 	{
 		// We've successfully read some more data into the buffer.
 		readCount_ += count;
@@ -127,10 +121,9 @@ void NetworkClass::Frame(float time)
 			// ... but we've not received a complete message yet.
 			// So we can't do anything until we receive some more.
 			return;
-		} 
+		}
 		else
 		{
-
 			// We've got a complete message.
 			ProcessMessage((const NetMessage *)readBuffer_);
 
