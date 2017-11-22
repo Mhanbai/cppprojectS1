@@ -8,7 +8,8 @@ enum MessageType
 {
 	MT_UNKNOWN = 0,
 	MT_WELCOME = 1,
-	MT_POSITIONUPDATE = 2
+	MT_POSITIONUPDATE = 2,
+	MT_RACEFINISHED = 3
 };
 
 // The message structure.
@@ -19,9 +20,10 @@ struct NetMessage
 	MessageType type;
 	float posX;
 	float posZ;
+	float timeStamp;
 
 	NetMessage()
-		: type(MT_UNKNOWN), posX(0.0f), posZ(0.0f)
+		: type(MT_UNKNOWN), timeStamp(-1.0f), posX(0.0f), posZ(0.0f)
 	{
 	}
 };

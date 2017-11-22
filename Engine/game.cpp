@@ -336,12 +336,15 @@ bool Game::MenuFrame()
 			menuState = 5;
 		}
 		else if (menuState == 5) {
-			//if (NetworkClass.EstablishConnection(acceptInputBuffer) == true) {
-			//	Start Multiplayer game;
-			//} else {
-			//  Update text "Could not establish connection!"
-			//}
-			//}
+			if (m_Network->attemptingToEstablish == false) {
+				m_Network->EstablishConnection(acceptInputBuffer);
+			}
+			else {
+				if (m_Network->twoWayConnection == true) {
+					opponent->Initialize(m_Graphics, m_hwnd, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
+					gameState = 2; //Start a multiplayer game
+				}
+			}
 		}
 		else if (menuState == 6) {
 			// Go back to main menu

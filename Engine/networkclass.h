@@ -32,14 +32,17 @@ public:
 	NetworkClass(const NetworkClass&);
 	~NetworkClass();
 	void Shutdown();
-	bool Frame();
+	void Frame(float time);
 	bool Initialize(GraphicsClass* &graphics);
 	bool CheckNetwork(char* &localIPHolder, char* &publicIPHolder);
 	bool RecheckNetwork();
-	bool EstablishConnection(char* opponentAddress);
-	bool SendMessage(const NetMessage *message);
+	void EstablishConnection(char* opponentAddress);
+	void SendMessage(const NetMessage *message);
 	char* myLocalIP;
 	char* myPublicIP;
+	void ProcessMessage(const NetMessage *message);
+	bool twoWayConnection = false;
+	bool attemptingToEstablish = false;
 
 private:
 	//Network variables
@@ -51,11 +54,14 @@ private:
 	int count;
 	// Data we need to send to the client.
 	char writeBuffer_[100 * sizeof NetMessage];
-	int writeCount_;
+	int writeCount_ = 0;
 	// The data we've read from the client.
 	char readBuffer_[sizeof NetMessage];
-	int readCount_;
+	int readCount_ = 0;
 	bool connected;
+	bool messageFromOpponent = false;
+	float totalGameTime = 0.0f;
+	float startTime = 0.0f;
 
 	GraphicsClass* m_graphics;
 };

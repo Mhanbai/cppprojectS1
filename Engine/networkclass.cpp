@@ -12,58 +12,6 @@ NetworkClass::~NetworkClass()
 {
 }
 
-void NetworkClass::Shutdown()
-{
-	//closesocket(sock);
-	WSACleanup();
-
-	return;
-}
-
-bool NetworkClass::Frame()
-{
-	//int count;
-	/*// Send data needed sent
-	count = send(sock, writeBuffer_, writeCount_, 0);
-	if (count <= 0)
-	{
-		//TO DO: Say "Warning: Experiencing network difficulties"
-		return false;
-	}
-
-	writeCount_ -= count;
-
-	// Remove the sent data from the start of the buffer.
-	memmove(writeBuffer_, writeBuffer_ + count, writeCount_);
-
-	// Receive data needing recieved
-	int spaceLeft = (sizeof readBuffer_) - readCount_;
-	count = recv(sock, readBuffer_ + readCount_, spaceLeft, 0);
-	if (count <= 0)
-	{
-		//TO DO: Say "Warning: Experiencing network difficulties"
-		return true;
-	}
-
-	// We've successfully read some more data into the buffer.
-	readCount_ += count;
-
-	if (readCount_ < sizeof NetMessage)
-	{
-		// ... but we've not received a complete message yet.
-		// So we can't do anything until we receive some more.
-		return false;
-	}
-
-	// We've got a complete message.
-	//processMessage((const NetMessage *)readBuffer_);
-
-	// Clear the buffer, ready for the next message.
-	readCount_ = 0;*/
-
-	return true;
-}
-
 bool NetworkClass::Initialize(GraphicsClass* &graphics)
 {
 	connected = true;
@@ -114,6 +62,76 @@ bool NetworkClass::Initialize(GraphicsClass* &graphics)
 
 	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connected!", 10, 10, 1.0f, 1.0f, 1.0f);
 	return true;
+}
+
+void NetworkClass::Shutdown()
+{
+	//closesocket(sock);
+	WSACleanup();
+
+	return;
+}
+
+void NetworkClass::Frame(float time)
+{
+	totalGameTime = totalGameTime + (time / 1000);
+
+	if (attemptingToEstablish == true) {
+		if ((totalGameTime - startTime) < 3.0f) {
+			if (messageFromOpponent) {
+				m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Successfully established a connection!", 10, 10, 1.0f, 1.0f, 1.0f);
+				twoWayConnection = true;
+			}
+		}
+		else {
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Failed to establish a connection", 10, 10, 1.0f, 1.0f, 1.0f);
+			attemptingToEstablish = false;
+		}
+	}
+
+	int count;
+	// Send data needed sent
+	count = send(sock, writeBuffer_, writeCount_, 0);
+	if (count <= 0) {
+		//m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Cannot connect to opponent!", 10, 10, 1.0f, 1.0f, 1.0f);
+	}
+	else 
+	{
+		writeCount_ -= count;
+
+		// Remove the sent data from the start of the buffer.
+		memmove(writeBuffer_, writeBuffer_ + count, writeCount_);
+	}
+
+	// Receive data needing recieved
+	int spaceLeft = (sizeof readBuffer_) - readCount_;
+	count = recv(sock, readBuffer_ + readCount_, spaceLeft, 0);
+	if (count <= 0) {
+		//m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Cannot recieve messages!", 10, 10, 1.0f, 1.0f, 1.0f);
+	}
+	else 
+	{
+		// We've successfully read some more data into the buffer.
+		readCount_ += count;
+
+		if (readCount_ < sizeof NetMessage)
+		{
+			// ... but we've not received a complete message yet.
+			// So we can't do anything until we receive some more.
+			return;
+		} 
+		else
+		{
+
+			// We've got a complete message.
+			ProcessMessage((const NetMessage *)readBuffer_);
+
+			// Clear the buffer, ready for the next message.
+			readCount_ = 0;
+		}
+	}
+
+	return;
 }
 
 // This class can be used to complete initialization if CheckNetwork returns false
@@ -250,32 +268,43 @@ bool NetworkClass::CheckNetwork(char* &localIPHolder, char* &publicIPHolder)
 	return true;
 }
 
-bool NetworkClass::EstablishConnection(char * opponentAddress)
+void NetworkClass::EstablishConnection(char * opponentAddress)
 {
 	sendAddr.sin_family = AF_INET;
 	sendAddr.sin_port = htons(4444);
 	sendAddr.sin_addr.s_addr = inet_addr(opponentAddress);
 
-	/*NetMessage welcomeMessage;
+	NetMessage welcomeMessage;
 	welcomeMessage.type = MT_WELCOME;
 
-	if (sendto(sock, welcomeMessage, MESSAGESIZE, 0, (const sockaddr *)&sendAddr, sizeof(sendAddr)) == SOCKET_ERROR)
-	{
-		return false;
-	}*/
+	SendMessage(&welcomeMessage);
 
+	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Attempting to establish a connection...", 10, 10, 1.0f, 1.0f, 1.0f);
 
-	return true;
+	startTime = totalGameTime;
+	attemptingToEstablish = true;
 }
 
-bool NetworkClass::SendMessage(const NetMessage * message)
+void NetworkClass::SendMessage(const NetMessage * message)
 {
 	if (writeCount_ + sizeof(NetMessage) > sizeof(writeBuffer_))
 	{
-		//TO DO: Say "Connection Disabled: Write Buffer Full"
-		return false;
+		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Write buffer full!", 10, 10, 1.0f, 1.0f, 1.0f);
 	}
 
 	memcpy(writeBuffer_ + writeCount_, message, sizeof(NetMessage));
 	writeCount_ += sizeof(NetMessage);
+}
+
+void NetworkClass::ProcessMessage(const NetMessage * message)
+{
+	if (message->type == MT_WELCOME) {
+		messageFromOpponent = true;
+	}
+	else if (message->type == MT_POSITIONUPDATE) {
+		//Update something somewhere with new position
+	}
+	else if (message->type == MT_RACEFINISHED) {
+		//Update something somewhere with fact race is finished
+	}
 }

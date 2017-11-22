@@ -59,6 +59,7 @@ private:
 
 	// References to Main Game Assets
 	Car* mainPlayer;
+	Car* opponent;
 	RaceTrack* m_raceTrack;
 
 	// References to Menu Screen One Assets

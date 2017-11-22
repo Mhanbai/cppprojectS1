@@ -12,6 +12,7 @@ SystemClass::SystemClass()
 	m_Fps = 0;
 	m_Cpu = 0;
 	m_Timer = 0;
+	m_Network = 0;
 }
 
 
@@ -253,7 +254,7 @@ bool SystemClass::Frame()
 		connected = m_Network->RecheckNetwork();
 		m_Game->SetOnlineMode(connected);
 	}
-	m_Network->Frame();
+	m_Network->Frame(m_Timer->GetTime());
 
 	// Do the input frame processing.
 	result = m_Input->Frame();
