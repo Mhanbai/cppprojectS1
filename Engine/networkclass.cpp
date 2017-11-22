@@ -14,8 +14,9 @@ NetworkClass::~NetworkClass()
 
 bool NetworkClass::Initialize(GraphicsClass* &graphics)
 {
-	connected = true;
-	m_graphics = graphics;
+	netConnected = true; //Default connected to internet as 'true'
+	m_graphics = graphics; //Fill reference to graphics
+
 	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Attempting to establish connection...", 10, 10, 1.0f, 1.0f, 1.0f);
 
 	//Initialize WinSock and check for correct version
@@ -23,14 +24,14 @@ bool NetworkClass::Initialize(GraphicsClass* &graphics)
 	if (error != 0)
 	{
 		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not start WinSock", 10, 10, 1.0f, 1.0f, 1.0f);
-		connected = false;
+		netConnected = false;
 		return false;
 	}
 
 	if (w.wVersion != 0x0202)
 	{
 		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Wrong WinSock version", 10, 10, 1.0f, 1.0f, 1.0f);
-		connected = false;
+		netConnected = false;
 		return false;
 	}
 
@@ -39,7 +40,7 @@ bool NetworkClass::Initialize(GraphicsClass* &graphics)
 	if (sock == INVALID_SOCKET)
 	{
 		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not create UDP socket", 10, 10, 1.0f, 1.0f, 1.0f);
-		connected = false;
+		netConnected = false;
 		return false;
 	}
 
@@ -49,13 +50,13 @@ bool NetworkClass::Initialize(GraphicsClass* &graphics)
 
 	//Check to see if connected to internet - if not return false with WinSock set up aleady complete
 	if (CheckNetwork(myLocalIP, myPublicIP) == false) {
-		connected = false;
+		netConnected = false;
 		return false;
 	}
 
 	// Fill out a sockaddr_in structure to describe the address we'll listen on.
 	listenAddr.sin_family = AF_INET;
-	listenAddr.sin_addr.s_addr = inet_addr(myLocalIP);
+	listenAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	// htons converts the port number to network byte order (big-endian).
 	listenAddr.sin_port = htons(4444);
 
@@ -81,24 +82,32 @@ void NetworkClass::Shutdown()
 
 void NetworkClass::Frame(float time)
 {
+	//Game time equals the sum of the frame timer output divided by 1000 
 	totalGameTime = totalGameTime + (time / 1000);
 
-	if (attemptingToEstablish == true) {
-		if (messageFromOpponent) {
+	//If the game is trying to establish a connection...
+	if (establishingConnection == true) {
+		//And a message has been recieved...
+		if (messageReceived) {
+			//Set connectionEstablished variable to true so game.cpp knows to start a game
 			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Successfully established a connection!", 10, 10, 1.0f, 1.0f, 1.0f);
-			twoWayConnection = true;
-			totalGameTime = 0.0f;
+			connectionEstablished = true;
+			totalGameTime = 0.0f; // Reset timer to 0 for lap timing/timestamps
+		}
+		else if ((totalGameTime - startTime) > 3) {
+			//If we've been trying to establish a connection for over 3 seconds, send the message again
+			EstablishConnection();
+			startTime = totalGameTime;
 		}
 	}
 
 	int count;
 	// Send data needed sent
 	count = sendto(sock, writeBuffer_, sizeof(NetMessage), 0, (const sockaddr *)&sendAddr, sizeof(sendAddr));
-	if (count <= 0) {
-		
-	}
+	if (count <= 0) {} // If there's nothing to be sent, skip and keep going
 	else
 	{
+		//Deduct the sum of the data thats just been sent from writeCount
 		writeCount_ -= count;
 
 		// Remove the sent data from the start of the buffer.
@@ -107,10 +116,9 @@ void NetworkClass::Frame(float time)
 
 	// Receive data needing recieved
 	int spaceLeft = (sizeof readBuffer_) - readCount_;
+
 	count = recvfrom(sock, readBuffer_, sizeof(NetMessage), 0, &from, &fromlen);
-	if (count <= 0) {
-		//m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Cannot recieve messages!", 10, 10, 1.0f, 1.0f, 1.0f);
-	}
+	if (count <= 0) {} // If there's nothing to be recieved, skip and keep going
 	else
 	{
 		// We've successfully read some more data into the buffer.
@@ -139,13 +147,13 @@ void NetworkClass::Frame(float time)
 bool NetworkClass::RecheckNetwork()
 {
 	if (CheckNetwork(myLocalIP, myPublicIP) == false) {
-		connected = false;
+		netConnected = false;
 		return false;
 	}
 
 	// Fill out a sockaddr_in structure to describe the address we'll listen on.
 	listenAddr.sin_family = AF_INET;
-	listenAddr.sin_addr.s_addr = inet_addr(myLocalIP);
+	listenAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 	// htons converts the port number to network byte order (big-endian).
 	listenAddr.sin_port = htons(4444);
 
@@ -167,7 +175,6 @@ bool NetworkClass::CheckNetwork(char* &localIPHolder, char* &publicIPHolder)
 	char szPublicIP[16];
 	SOCKET Socket;
 	SOCKADDR_IN SockAddr;
-	connectedMode = true;
 
 	///////////////////////////////////////////////////////////////
 	/////******Find Local IP Address******************************
@@ -178,7 +185,7 @@ bool NetworkClass::CheckNetwork(char* &localIPHolder, char* &publicIPHolder)
 	if (gethostname(szHostName, 255) == SOCKET_ERROR) {
 		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not find Local Host", 10, 10, 1.0f, 1.0f, 1.0f);
 
-		connected = false;
+		netConnected = false;
 		return false;
 	}
 
@@ -188,7 +195,7 @@ bool NetworkClass::CheckNetwork(char* &localIPHolder, char* &publicIPHolder)
 	if (host_entry == NULL) {
 		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not find Local Host address", 10, 10, 1.0f, 1.0f, 1.0f);
 
-		connected = false;
+		netConnected = false;
 		return false;
 	}
 
@@ -205,7 +212,7 @@ bool NetworkClass::CheckNetwork(char* &localIPHolder, char* &publicIPHolder)
 	if (host == NULL) {
 		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not find external host name", 10, 10, 1.0f, 1.0f, 1.0f);
 
-		connected = false;
+		netConnected = false;
 		return false;
 	}
 
@@ -215,7 +222,7 @@ bool NetworkClass::CheckNetwork(char* &localIPHolder, char* &publicIPHolder)
 
 	if (connect(Socket, (SOCKADDR*)(&SockAddr), sizeof(SockAddr)) != 0) {
 		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not connect to external host", 10, 10, 1.0f, 1.0f, 1.0f);
-		connected = false;
+		netConnected = false;
 		return false;
 	}
 
@@ -223,7 +230,7 @@ bool NetworkClass::CheckNetwork(char* &localIPHolder, char* &publicIPHolder)
 	if (send(Socket, getHTTP.c_str(), strlen(getHTTP.c_str()), 0) == SOCKET_ERROR)
 	{
 		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection Disabled: Could not send message to external host", 10, 10, 1.0f, 1.0f, 1.0f);
-		connected = false;
+		netConnected = false;
 		return false;
 	}
 
@@ -271,10 +278,28 @@ bool NetworkClass::CheckNetwork(char* &localIPHolder, char* &publicIPHolder)
 
 void NetworkClass::EstablishConnection(char * opponentAddress)
 {
+	//Set address data to what is input by the user on the main menu
 	sendAddr.sin_family = AF_INET;
 	sendAddr.sin_port = htons(4444);
 	sendAddr.sin_addr.s_addr = inet_addr(opponentAddress);
 
+	//Create a new message of type 'Welcome'
+	NetMessage welcomeMessage;
+	welcomeMessage.type = MT_WELCOME;
+
+	//Send that message to the write queue
+	SendMessage(&welcomeMessage);
+
+	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Attempting to establish a connection...", 10, 10, 1.0f, 1.0f, 1.0f);
+
+	//Set the current start time to the current time, so Frame() knows when to resend the message
+	startTime = totalGameTime;
+	establishingConnection = true;
+}
+
+//Same function as above, just doesnt need to take an addres variable as that's already stored
+void NetworkClass::EstablishConnection()
+{
 	NetMessage welcomeMessage;
 	welcomeMessage.type = MT_WELCOME;
 
@@ -283,16 +308,18 @@ void NetworkClass::EstablishConnection(char * opponentAddress)
 	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Attempting to establish a connection...", 10, 10, 1.0f, 1.0f, 1.0f);
 
 	startTime = totalGameTime;
-	attemptingToEstablish = true;
+	establishingConnection = true;
 }
 
 void NetworkClass::SendMessage(const NetMessage * message)
 {
+	//If theres more messages on the write buffer than it can handle, complain to the user
 	if (writeCount_ + sizeof(NetMessage) > sizeof(writeBuffer_))
 	{
 		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Write buffer full!", 10, 10, 1.0f, 1.0f, 1.0f);
 	}
 
+	//Copy the message needing sent to the write buffer, and increase the number we have to represent its size.
 	memcpy(writeBuffer_ + writeCount_, message, sizeof(NetMessage));
 	writeCount_ += sizeof(NetMessage);
 }
@@ -300,7 +327,7 @@ void NetworkClass::SendMessage(const NetMessage * message)
 void NetworkClass::ProcessMessage(const NetMessage * message)
 {
 	if (message->type == MT_WELCOME) {
-		messageFromOpponent = true;
+		bool messageReceived = true;
 	}
 	else if (message->type == MT_POSITIONUPDATE) {
 		//Update something somewhere with new position

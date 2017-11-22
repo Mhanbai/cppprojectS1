@@ -28,43 +28,67 @@
 class NetworkClass
 {
 public:
+	//Basic functionality
 	NetworkClass();
 	NetworkClass(const NetworkClass&);
 	~NetworkClass();
+	bool Initialize(GraphicsClass* &graphics);
 	void Shutdown();
 	void Frame(float time);
-	bool Initialize(GraphicsClass* &graphics);
+
+	//Check computer is connected to internet, and recheck if previous check failed
 	bool CheckNetwork(char* &localIPHolder, char* &publicIPHolder);
 	bool RecheckNetwork();
+
+	//Establish a connection to an opponent, and retry if first attempt failed
 	void EstablishConnection(char* opponentAddress);
+	void EstablishConnection();
+
+	//Send messages
 	void SendMessage(const NetMessage *message);
+
+	//Process recieved messages
+	void ProcessMessage(const NetMessage *message);
+
+	//Logic for connecting to another player
+	bool netConnected = true;
+	bool establishingConnection = false;
+	bool messageReceived = false;
+	bool connectionEstablished = false;
+
+	//Variables that store public and local IPs
 	char* myLocalIP;
 	char* myPublicIP;
-	void ProcessMessage(const NetMessage *message);
-	bool twoWayConnection = false;
-	bool attemptingToEstablish = false;
 
 private:
 	//Network variables
 	WSADATA w;
 	SOCKET sock;
+
+	//Address to listen on
 	sockaddr_in listenAddr;
+
+	//Address to send to & address recieved back
 	sockaddr_in sendAddr;
 	sockaddr from;
 	int fromlen;
-	bool connectedMode;
+
+	//Variable to store amount of data recieved and sent
 	int count;
+
 	// Data we need to send to the client.
 	char writeBuffer_[100 * sizeof NetMessage];
 	int writeCount_ = 0;
+
 	// The data we've read from the client.
 	char readBuffer_[sizeof NetMessage];
 	int readCount_ = 0;
-	bool connected;
-	bool messageFromOpponent = false;
+
+	// Timer
 	float totalGameTime = 0.0f;
 	float startTime = 0.0f;
 
+	// Reference to Graphics so network status text can be updated
 	GraphicsClass* m_graphics;
 };
 

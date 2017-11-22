@@ -225,7 +225,9 @@ bool Game::InitializeMainGame()
 
 bool Game::MenuFrame()
 {
-	// Controls menustate - i.e. what the user currently has selected for menu screen 1
+	////////////////////////////////////////////////////////////////////////////////////
+	// ARROW KEY CONTROL //////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////
 	if (menuState < 4) {
 		if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
 			if (menuState < 3) {
@@ -252,9 +254,9 @@ bool Game::MenuFrame()
 		if (m_Input->IsUpPressed() == false) {
 			menuWasUpPressed = false;
 		}
-	} 
+	}
 
-	if ((menuState >= 4) && (menuState < 7)){
+	if ((menuState >= 4) && (menuState < 7)) {
 		if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
 			if (menuState < 6) {
 				menuState++;
@@ -282,72 +284,82 @@ bool Game::MenuFrame()
 		}
 	}
 
-	// Updates menu assets
-	if (menuState == 0) {
+	////////////////////////////////////////////////////////////////////////////////////
+	// UPDATE MENU ASSETS /////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////
+
+	switch (menuState) {
+	case 0:
 		pointer->height_in = menuScreen->height_in + 25;
-	}
-	else if (menuState == 1) {
+		break;
+	case 1:
 		pointer->height_in = menuScreen->height_in + 89;
-	}
-	else if (menuState == 2) {
+		break;
+	case 2:
 		pointer->height_in = menuScreen->height_in + 153;
-	}
-	else if (menuState == 3) {
+		break;
+	case 3:
 		pointer->height_in = menuScreen->height_in + 217;
-	}
-	else if (menuState == 4) {
+		break;
+	case 4:
 		pointer2->height_in = enterIP2->height_in + 68;
 		pointer2->width_in = enterIP2->width_in - 19;
 		MultiplayerSetUpFrame();
-	}
-	else if (menuState == 5) {
+		break;
+	case 5:
 		pointer2->height_in = acceptButton2->height_in + 25;
 		pointer2->width_in = acceptButton2->width_in - 19;
-	}
-	else if (menuState == 6) {
+		break;
+	case 6:
 		pointer2->height_in = backButton2->height_in + 25;
 		pointer2->width_in = backButton2->width_in - 19;
+		break;
+	default:
+		break;
 	}
+
+	////////////////////////////////////////////////////////////////////////////////////
+	// BUTTON FUNCTIONALITY ON ENTER PRESS/////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////
 
 	// Changes the gamestate based on what the user has selected when enter is pressed
 	if ((m_Input->IsEnterPressed() == true) && (menuWasEnterPressed == false)) {
-
 		menuWasEnterPressed = true;
 
-		if (menuState == 0) {
+		switch (menuState) {
+		case 0:
 			totalGameTime = 0.0f;
 			gameState = 1; // Starts a normal game
 			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
-		}
-		else if (menuState == 1) {
+			break;
+		case 1:
 			m_Graphics->SetMenuState(1);
 			menuState = 4;
-		}
-		else if (menuState == 2) {
+			break;
+		case 2:
 			m_Graphics->m_Camera->SetPosition(0.0f, -4.0f, 0.0f);
 			gameState = 3; // Enters 'scene mode'
 			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
-		}
-		else if (menuState == 3) {
+			break;
+		case 3:
 			return false; // Quits the game
-		}
-		else if (menuState == 4) {
-			//Accept input
+		case 4:
 			menuState = 5;
-		}
-		else if (menuState == 5) {
+			break;
+		case 5:
 			m_Network->EstablishConnection(acceptInputBuffer);
 			menuState = 7;
-		}
-		else if (menuState == 6) {
+			break;
+		case 6:
 			// Go back to main menu
 			m_Graphics->SetMenuState(0);
 			menuState = 1;
-		}
-		else if (menuState == 7) {
+			break;
+		case 7:
 			m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->networkStatus, "Connection attempt cancelled", 10, 10, 1.0f, 1.0f, 1.0f);
-			m_Network->attemptingToEstablish = false;
+			m_Network->establishingConnection = false;
 			menuState = 5;
+			break;
 		}
 	}
 
@@ -355,7 +367,7 @@ bool Game::MenuFrame()
 		menuWasEnterPressed = false;
 	}
 
-	if ((menuState == 7) && (m_Network->twoWayConnection == true)) {
+	if ((menuState == 7) && (m_Network->connectionEstablished == true)) {
 		opponent->Initialize(m_Graphics, m_hwnd, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
 		gameState = 2;
 	}
