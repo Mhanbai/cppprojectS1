@@ -48,14 +48,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 
 	// Create the Direct3D object.
 	m_D3D = new D3DClass;
-	if(!m_D3D)
+	if (!m_D3D)
 	{
 		return false;
 	}
 
 	// Initialize the Direct3D object.
 	result = m_D3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
-	if(!result)
+	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Direct3D.", L"Error", MB_OK);
 		return false;
@@ -101,7 +101,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	}
 
 	// Initialize the terrain object.
-	//result = m_Terrain->Initialize(m_D3D->GetDevice(), "../Engine/data/heightmap01.bmp", L"../Engine/data/dirt01.dds");
+	result = m_Terrain->Initialize(m_D3D->GetDevice(), "../Engine/data/heightmap01.bmp", L"../Engine/data/dirt01.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the terrain object.", L"Error", MB_OK);
@@ -110,7 +110,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;
-	if(!m_LightShader)
+	if (!m_LightShader)
 	{
 		return false;
 	}
@@ -132,7 +132,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 
 	// Initialize the light shader object.
 	result = m_LightShader->Initialize(m_D3D->GetDevice(), hwnd);
-	if(!result)
+	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the light shader object.", L"Error", MB_OK);
 		return false;
@@ -140,7 +140,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 
 	// Create the light object.
 	m_Light = new LightClass;
-	if(!m_Light)
+	if (!m_Light)
 	{
 		return false;
 	}
@@ -163,9 +163,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	// Initialize the light object.
 	m_Light->SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(-0.5f, -0.5f, 0.0f);
+	m_Light->SetDirection(-0.1f, -0.9f, 0.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	//m_Light->SetSpecularPower(10.0f);
+	m_Light->SetSpecularPower(10.0f);
 
 	// Create the sky dome object.
 	m_SkyDome = new SkyDomeClass;
@@ -205,7 +205,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	}
 
 	// Initialize the foliage object.
-	result = m_Foliage->Initialize(m_D3D->GetDevice(), L"../Engine/data/grass.dds", 500);
+	result = m_Foliage->Initialize(m_D3D->GetDevice(), L"../Engine/data/grass.dds", 40000);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the foliage object.", L"Error", MB_OK);
@@ -298,14 +298,14 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release the light object.
-	if(m_Light)
+	if (m_Light)
 	{
 		delete m_Light;
 		m_Light = 0;
 	}
 
 	// Release the light shader object.
-	if(m_LightShader)
+	if (m_LightShader)
 	{
 		m_LightShader->Shutdown();
 		delete m_LightShader;
@@ -343,14 +343,14 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release the camera object.
-	if(m_Camera)
+	if (m_Camera)
 	{
 		delete m_Camera;
 		m_Camera = 0;
 	}
 
 	// Release the D3D object.
-	if(m_D3D)
+	if (m_D3D)
 	{
 		m_D3D->Shutdown();
 		delete m_D3D;
@@ -364,10 +364,10 @@ void GraphicsClass::Shutdown()
 bool GraphicsClass::Frame()
 {
 	bool result;
-	
+
 	// Render the graphics scene.
 	result = Render();
-	if(!result)
+	if (!result)
 	{
 		return false;
 	}
@@ -484,7 +484,7 @@ bool GraphicsClass::Render()
 
 
 		// Render the terrain buffers.
-		/*m_Terrain->Render(m_D3D->GetDeviceContext());
+		m_Terrain->Render(m_D3D->GetDeviceContext());
 
 		// Render the terrain using the terrain shader.
 		result = m_TerrainShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
@@ -492,7 +492,7 @@ bool GraphicsClass::Render()
 		if (!result)
 		{
 			return false;
-		}*/
+		}
 
 		for (int i = 0; i < mainGameAssetCount; i++) {
 			// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
@@ -618,7 +618,8 @@ void GraphicsClass::RenderText(int mode, D3DXMATRIX &worldMatrix)
 	if (mode == 0) {
 		m_Text->RenderMenuText(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
 		m_Text->RenderNetworkText(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
-	} else if (mode == 1) {
+	}
+	else if (mode == 1) {
 		m_Text->RenderDebugText(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
 		m_Text->RenderNetworkText(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
 	}

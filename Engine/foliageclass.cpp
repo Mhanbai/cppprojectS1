@@ -123,7 +123,7 @@ bool FoliageClass::Frame(D3DXVECTOR3 cameraPosition, ID3D11DeviceContext* device
 	{
 		// Get the position of this piece of foliage.
 		modelPosition.x = m_foliageArray[i].x;
-		modelPosition.y = -0.1f;
+		modelPosition.y = m_foliageArray[i].y;
 		modelPosition.z = m_foliageArray[i].z;
 
 		// Calculate the rotation that needs to be applied to the billboard model to face the current camera position using the arc tangent function.
@@ -404,8 +404,9 @@ bool FoliageClass::GeneratePositions()
 	// Set random positions and random colors for each piece of foliage.
 	for (i = 0; i<m_foliageCount; i++)
 	{
-		m_foliageArray[i].x = ((float)rand() / (float)(RAND_MAX)) * 9.0f - 4.5f;
-		m_foliageArray[i].z = ((float)rand() / (float)(RAND_MAX)) * 9.0f - 4.5f;
+		m_foliageArray[i].x = -700 + ((float)rand() / (float)(RAND_MAX)) * 1200.0f;
+		m_foliageArray[i].y = -5.2f;
+		m_foliageArray[i].z = -700 + ((float)rand() / (float)(RAND_MAX)) * 1350.0f;
 
 		red = ((float)rand() / (float)(RAND_MAX)) * 1.0f;
 		green = ((float)rand() / (float)(RAND_MAX)) * 1.0f;

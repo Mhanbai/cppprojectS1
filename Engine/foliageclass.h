@@ -34,7 +34,7 @@ private:
 
 	struct FoliageType
 	{
-		float x, z;
+		float x, y, z;
 		float r, g, b;
 	};
 
