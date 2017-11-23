@@ -82,6 +82,7 @@ bool Game::Frame(int fpsOutput, int cpuOutput, float timerOutput)
 	framesPerSec = fpsOutput;
 	cpuUsage = cpuOutput;
 	totalGameTime += (timerOutput / 1000);
+	deltaTime = timerOutput;
 
 	switch (gameState) {
 	case 0: //Call menu logic if gamestate is set to menu
@@ -337,7 +338,6 @@ bool Game::MenuFrame()
 			menuState = 4;
 			break;
 		case 2:
-			m_Graphics->m_Camera->SetPosition(0.0f, -4.0f, 0.0f);
 			gameState = 3; // Enters 'scene mode'
 			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
 			break;
@@ -377,8 +377,8 @@ bool Game::MenuFrame()
 
 bool Game::GameFrame()
 {
-	mainPlayer->Frame();
-	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector());
+	mainPlayer->Frame(deltaTime / 1000);
+	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
 	//m_Graphics->m_Camera->SetPosition(mainPlayer->GetPosition().x, -750.0f, mainPlayer->GetPosition().z);
 
 	if (m_Input->IsUpPressed() == true) {
@@ -422,17 +422,15 @@ bool Game::GameFrame()
 
 
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, m_Network->myLocalIP, 60, 110, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, m_Network->myPublicIP, 60, 130, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence6, fpsBuffer, 60, 150, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence7, cpuBuffer, 60, 170, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, fpsBuffer, 60, 70, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, cpuBuffer, 60, 90, 1.0f, 1.0f, 1.0f);
 	return true;
 }
 
 bool Game::MultiplayerGameFrame()
 {
-	mainPlayer->Frame();
-	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector());
+	mainPlayer->Frame(deltaTime / 1000);
+	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
 
 	if (m_Input->IsUpPressed() == true) {
 		mainPlayer->Accelerate(true);
@@ -464,21 +462,6 @@ bool Game::MultiplayerGameFrame()
 		mainPlayer->TurnRight(false);
 	}
 
-	char timeBuffer[32];
-	sprintf_s(timeBuffer, "%f", totalGameTime);
-
-	char fpsBuffer[32];
-	sprintf_s(fpsBuffer, "FPS: %i", framesPerSec);
-
-	char cpuBuffer[32];
-	sprintf_s(cpuBuffer, "CPU: %i%%", cpuUsage);
-
-
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, m_Network->myLocalIP, 60, 110, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, m_Network->myPublicIP, 60, 130, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence6, fpsBuffer, 60, 150, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence7, cpuBuffer, 60, 170, 1.0f, 1.0f, 1.0f);
 	return true;
 }
 

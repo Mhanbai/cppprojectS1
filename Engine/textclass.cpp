@@ -17,10 +17,10 @@ TextClass::TextClass()
 	m_sentence1 = 0;
 	m_sentence2 = 0;
 	m_sentence3 = 0;
-	m_sentence4 = 0;
+	/*m_sentence4 = 0;
 	m_sentence5 = 0;
 	m_sentence6 = 0;
-	m_sentence7 = 0;
+	m_sentence7 = 0;*/
 }
 
 
@@ -104,43 +104,31 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	// Initialize sentences used for debug
-	result = InitializeSentence(&m_sentence1, 32, device);
+	result = InitializeSentence(&m_sentence1, 64, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	result = InitializeSentence(&m_sentence2, 32, device);
+	result = InitializeSentence(&m_sentence2, 64, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	result = InitializeSentence(&m_sentence3, 32, device);
+	result = InitializeSentence(&m_sentence3, 64, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	result = InitializeSentence(&m_sentence4, 32, device);
+	result = InitializeSentence(&m_sentence4, 64, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	result = InitializeSentence(&m_sentence5, 32, device);
-	if (!result)
-	{
-		return false;
-	}
-
-	result = InitializeSentence(&m_sentence6, 32, device);
-	if (!result)
-	{
-		return false;
-	}
-
-	result = InitializeSentence(&m_sentence7, 32, device);
+	result = InitializeSentence(&m_sentence5, 64, device);
 	if (!result)
 	{
 		return false;
@@ -178,10 +166,10 @@ void TextClass::Shutdown()
 	ReleaseSentence(&m_sentence5);
 
 	// Release the sentence.
-	ReleaseSentence(&m_sentence6);
+	/*ReleaseSentence(&m_sentence6);
 
 	// Release the sentence.
-	ReleaseSentence(&m_sentence7);
+	ReleaseSentence(&m_sentence7);*/
 
 	// Release the font shader object.
 	if (m_FontShader)
@@ -243,7 +231,7 @@ bool TextClass::RenderDebugText(ID3D11DeviceContext* deviceContext, D3DXMATRIX w
 	}
 
 	// Draw the second sentence.
-	result = RenderSentence(deviceContext, m_sentence6, worldMatrix, orthoMatrix);
+	/*result = RenderSentence(deviceContext, m_sentence6, worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;
@@ -254,7 +242,7 @@ bool TextClass::RenderDebugText(ID3D11DeviceContext* deviceContext, D3DXMATRIX w
 	if (!result)
 	{
 		return false;
-	}
+	}*/
 
 	return true;
 }

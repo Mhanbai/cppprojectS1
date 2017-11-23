@@ -31,9 +31,9 @@ CameraClass::~CameraClass()
 
 void CameraClass::SetPosition(float x, float y, float z)
 {
-	m_positionX = -x;
-	m_positionY = -y;
-	m_positionZ = -z;
+	m_positionX = x;
+	m_positionY = y;
+	m_positionZ = z;
 	return;
 }
 
@@ -61,10 +61,7 @@ D3DXVECTOR3 CameraClass::GetRotation()
 
 void CameraClass::Render()
 {
-	D3DXVECTOR3 up, position, lookAt;
-	float yaw, pitch, roll;
-	D3DXMATRIX rotationMatrix;
-
+	D3DXVECTOR3 position;
 
 	// Setup the vector that points upwards.
 	up.x = 0.0f;
@@ -76,28 +73,8 @@ void CameraClass::Render()
 	position.y = m_positionY;
 	position.z = m_positionZ;
 
-	// Setup where the camera is looking by default.
-	lookAt.x = 0.0f;
-	lookAt.y = 0.0f;
-	lookAt.z = -1.0f;
-
-	// Set the yaw (Y axis), pitch (X axis), and roll (Z axis) rotations in radians.
-	pitch = m_rotationX * 0.0174532925f;
-	yaw = m_rotationY * 0.0174532925f;
-	roll = m_rotationZ * 0.0174532925f;
-
-	// Create the rotation matrix from the yaw, pitch, and roll values.
-	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, yaw, pitch, roll);
-
-	// Transform the lookAt and up vector by the rotation matrix so the view is correctly rotated at the origin.
-	D3DXVec3TransformCoord(&lookAt, &lookAt, &rotationMatrix);
-	D3DXVec3TransformCoord(&up, &up, &rotationMatrix);
-
-	// Translate the rotated camera position to the location of the viewer.
-	lookAt = position + lookAt;
-
 	// Finally create the view matrix from the three updated vectors.
-	D3DXMatrixLookAtLH(&m_viewMatrix, &position, &lookAt, &up);
+	D3DXMatrixLookAtLH(&m_viewMatrix, &position, &-carPos, &up);
 
 	return;
 }
@@ -108,8 +85,21 @@ void CameraClass::GetViewMatrix(D3DXMATRIX& viewMatrix)
 	return;
 }
 
-void CameraClass::Follow(D3DXVECTOR3 followTarget, D3DXVECTOR3 targetForwardVector)
+void CameraClass::Follow(D3DXVECTOR3 followTarget, D3DXVECTOR3 targetForwardVector, float deltaTime)
 {
-	SetPosition(followTarget.x, -3.0f, followTarget.z); //Set position
-	SetRotation(0.0f, atan2(targetForwardVector.x, targetForwardVector.z) * 57.2958f, 0.0f);
+	carPos = followTarget;
+
+	if (firstFrame == true) {
+		D3DXVECTOR3 startPos = followTarget - targetForwardVector * distance + up * height;
+		SetPosition(startPos.x, startPos.y, startPos.z);
+		firstFrame = false;
+	}
+
+	D3DXVECTOR3 myPosition = GetPosition();
+	D3DXVECTOR3 idealPosition = followTarget - targetForwardVector * distance + up * height;
+	D3DXVECTOR3 displacement = myPosition + idealPosition;
+	D3DXVECTOR3 springAcceleration = (-springConstant * displacement) - (dampConstant * velocity);
+	velocity += springAcceleration * deltaTime;
+
+	SetPosition(myPosition.x + (velocity.x * deltaTime), myPosition.y + (velocity.y * deltaTime), myPosition.z + (velocity.z * deltaTime));
 }

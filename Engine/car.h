@@ -25,7 +25,7 @@ public:
 	~Car();
 	bool Initialize(GraphicsClass* &graphics, HWND &hwnd, char* modelFilename, WCHAR* textureFilename);
 	void Shutdown();
-	void Frame();
+	void Frame(float deltaTime);
 
 	void Accelerate(bool);
 	void BreakReverse(bool);

@@ -90,8 +90,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	//m_Camera->SetPosition(0.0f, 170.0f, -30.0f);
 	//m_Camera->SetRotation(-90.0f, 0.0f, 0.0f);
 
-	m_Camera->SetPosition(0.0f, -850.0f, 0.0f);
-	m_Camera->SetRotation(-90.0f, 0.0f, 0.0f);
+	//m_Camera->SetPosition(0.0f, -850.0f, 0.0f);
+	//m_Camera->SetRotation(-90.0f, 0.0f, 0.0f);
 
 	// Create the terrain object.
 	m_Terrain = new TerrainClass;

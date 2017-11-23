@@ -48,6 +48,7 @@ private:
 	int framesPerSec;
 	int cpuUsage;
 	float totalGameTime;
+	float deltaTime;
 
 	bool onlineMode;
 

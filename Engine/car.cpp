@@ -6,24 +6,26 @@ Car::Car()
 	m_Model = 0;
 
 	// Set up gameplay variables
+	accelerationInput = 0.0f;
 	steerInput = 0.0f;
 	graphicsAngle = 0.0f;
 	startingForwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 	forwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 	upVector = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	acceleration = D3DXVECTOR3 (0.0f, 0.0f, 0.0f);
-	accelerationInput = 0.0f;
-	accelerationFactor = 0.75f;
-	frictionFactor = 0.00005f;
-	lateralFrictionFactor = 0.05f;
-	steerFactor = 0.03f;
-	maxSpeed = D3DXVECTOR3(10.0f, 0.0f, 10.0f);
 	velocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	isAccelerating = false;
 	isTurningLeft = false;
 	isTurningRight = false;
 	isBreakReversing = false;
+
+	//Car handling
+	accelerationFactor = 100.0f;
+	frictionFactor = 0.5f;
+	lateralFrictionFactor = 2.0f;
+	steerFactor = 1.0f;
+	maxSpeed = D3DXVECTOR3(40.0f, 0.0f, 40.0f);
 }
 
 Car::Car(const Car &)
@@ -53,7 +55,7 @@ void Car::Shutdown()
 	m_Model = 0;
 }
 
-void Car::Frame()
+void Car::Frame(float deltaTime)
 {
 	// Change input values based on user input
 	if (isAccelerating) {
@@ -86,11 +88,9 @@ void Car::Frame()
 		steerInput = 0.0f;
 	}
 
-	//Normalize the velocity to find the current speed
-	D3DXVec3Normalize(&currentSpeed, &velocity);
-
 	//Angle of steering equals user input multiplied by how well car handles
-	steerAngle = steerInput * steerFactor;
+	steerAngle = steerInput * steerFactor * deltaTime;
+	steerAngle = steerAngle * (D3DXVec3Length(&velocity) / 100.0f);
 
 	//Calculate new forward vector
 	D3DXMatrixRotationY(&rotation, steerAngle); //Create a matrix for rotation around Y from angle of steering
@@ -102,23 +102,20 @@ void Car::Frame()
 	D3DXVec3Cross(&rightVector, &forwardVectorNormalized, &upVector);
 
 	lateralVelocity = rightVector * D3DXVec3Dot(&velocity, &rightVector);
-	lateralFriction = -velocity * lateralFrictionFactor;
+	lateralFriction = -lateralVelocity * lateralFrictionFactor;
 
 	//Acceleration is equal to direction car is facing multiplied by the rate of acceleration multiplied by input
 	acceleration = forwardVector * accelerationInput * accelerationFactor;
 
 	//Friction is equal to the reverse of velocity multiplied by how frictiony the surface is
 	friction = -velocity * frictionFactor;
-	velocity += friction + lateralFriction;
+	velocity += (friction + lateralFriction) * deltaTime;
 
-	//Check that current speed is not higher than max speed
-	if (currentSpeed < maxSpeed) {
-		//Add acceleration to velocity
-		velocity += acceleration;
-	}
+	//Increase velocity by acceleration
+	velocity += acceleration * deltaTime;
 
 	//Add velocity to position
-	position = position + velocity;
+	position = position + velocity * deltaTime;
 
 	//Calculate angle car is facing for graphics
 	graphicsAngle = atan2(forwardVector.z, forwardVector.x) - atan2(startingForwardVector.z, startingForwardVector.x);
@@ -127,16 +124,15 @@ void Car::Frame()
 	m_Model->SetPosition(position.x, position.y, position.z);
 	m_Model->SetRotation(graphicsAngle * 57.2958f);
 
-	//Debug Info
-	char posX[20];
-	sprintf_s(posX, "X: %f", position.x);
-	char posZ[20];
-	sprintf_s(posZ, "Z: %f", position.z);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, posX, 60, 70, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, posZ, 60, 90, 1.0f, 1.0f, 1.0f);
-	/*m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, "4: Test", 60, 110, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, "5: Test", 60, 130, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence6, "6: Test", 60, 150, 1.0f, 1.0f, 1.0f, m_Graphics->m_D3D->GetDeviceContext());*/
+	char spdBuffer[64];
+	sprintf_s(spdBuffer, "SPEED: X: %f Y: %f", velocity.x, velocity.z);
+
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, spdBuffer, 60, 150, 1.0f, 1.0f, 1.0f);
+
+	char lenBuffer[64];
+	sprintf_s(lenBuffer, "MAGNITUDE: %f", D3DXVec3Length(&velocity));
+
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, lenBuffer, 60, 150, 1.0f, 1.0f, 1.0f);
 }
 
 void Car::Accelerate(bool set)
