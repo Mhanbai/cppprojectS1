@@ -33,13 +33,14 @@ Game::~Game()
 {
 }
 
-bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, bool connected, TextClass* &text, HWND &hwnd)
+bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, SoundClass* &sound, bool connected, TextClass* &text, HWND &hwnd)
 {
 	bool result;
 	m_Input = input;
 	m_Graphics = graphics;
 	m_hwnd = hwnd;
 	m_Network = network;
+	m_Sound = sound;
 	sprintf_s(acceptInputBuffer, "");
 	bufferSize = sizeof(acceptInputBuffer);
 	onlineMode = connected;
@@ -92,10 +93,7 @@ bool Game::Frame(int fpsOutput, int cpuOutput, float timerOutput)
 		result = GameFrame();
 		return result;
 	case 2: //Call multiplayer logic if gamestate is set to multiplayer mode
-		result = MultiplayerGameFrame();
-		return result;
-	case 3: //Call camera logic if gamestate is set to camera mode
-		result = CameraFrame();
+		//result = MultiplayerGameFrame();
 		return result;
 	default:
 		return false;
@@ -106,6 +104,8 @@ bool Game::InitializeMenuScreen()
 {
 	bool result;
 
+	m_Sound->LoopSound("../Engine/data/menumusic.wav");
+
 	// Set up Menu Screen 1 assets
 
 	result = m_Graphics->AddBitmapToPipeline(0, menuBackground, m_hwnd, L"../Engine/data/mainmenubackground.dds", m_Graphics->GetScreenWidth(), m_Graphics->GetScreenHeight());
@@ -114,7 +114,7 @@ bool Game::InitializeMenuScreen()
 		return false;
 	}
 
-	result = m_Graphics->AddBitmapToPipeline(0, menuScreen, m_hwnd, L"../Engine/data/mainmenu.dds", 256, 256);
+	result = m_Graphics->AddBitmapToPipeline(0, menuScreen, m_hwnd, L"../Engine/data/mainmenu.dds", 256, 192);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -229,9 +229,10 @@ bool Game::MenuFrame()
 	////////////////////////////////////////////////////////////////////////////////////
 	// ARROW KEY CONTROL //////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////
-	if (menuState < 4) {
+	if (menuState < 3) {
 		if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
-			if (menuState < 3) {
+			m_Sound->PlaySound("../Engine/data/cursor.wav");
+			if (menuState != 2) {
 				menuState++;
 			}
 			else {
@@ -240,11 +241,12 @@ bool Game::MenuFrame()
 			menuWasDownPressed = true;
 		}
 		else if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
-			if (menuState > 0) {
+			m_Sound->PlaySound("../Engine/data/cursor.wav");
+			if (menuState != 0) {
 				menuState--;
 			}
 			else {
-				menuState = 3;
+				menuState = 2;
 			}
 			menuWasUpPressed = true;
 		}
@@ -257,18 +259,20 @@ bool Game::MenuFrame()
 		}
 	}
 
-	if ((menuState >= 4) && (menuState < 7)) {
+	if ((menuState >= 3) && (menuState < 6)) {
 		if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
-			if (menuState < 6) {
+			m_Sound->PlaySound("../Engine/data/cursor.wav");
+			if (menuState != 5) {
 				menuState++;
 			}
 			else {
-				menuState = 4;
+				menuState = 3;
 			}
 			menuWasDownPressed = true;
 		}
 		else if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
-			if (menuState > 4) {
+			m_Sound->PlaySound("../Engine/data/cursor.wav");
+			if (menuState != 3) {
 				menuState--;
 			}
 			else {
@@ -300,18 +304,15 @@ bool Game::MenuFrame()
 		pointer->height_in = menuScreen->height_in + 153;
 		break;
 	case 3:
-		pointer->height_in = menuScreen->height_in + 217;
-		break;
-	case 4:
 		pointer2->height_in = enterIP2->height_in + 68;
 		pointer2->width_in = enterIP2->width_in - 19;
 		MultiplayerSetUpFrame();
 		break;
-	case 5:
+	case 4:
 		pointer2->height_in = acceptButton2->height_in + 25;
 		pointer2->width_in = acceptButton2->width_in - 19;
 		break;
-	case 6:
+	case 5:
 		pointer2->height_in = backButton2->height_in + 25;
 		pointer2->width_in = backButton2->width_in - 19;
 		break;
@@ -329,36 +330,41 @@ bool Game::MenuFrame()
 
 		switch (menuState) {
 		case 0:
+			m_Sound->PlaySound("../Engine/data/select.wav");
+			m_Sound->StopLooping();
+			m_Sound->LoopSound("../Engine/data/wind.wav");
 			totalGameTime = 0.0f;
 			gameState = 1; // Starts a normal game
 			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
 			break;
 		case 1:
+			m_Sound->PlaySound("../Engine/data/select.wav");
 			m_Graphics->SetMenuState(1);
-			menuState = 4;
+			menuState = 3;
 			break;
 		case 2:
-			gameState = 3; // Enters 'scene mode'
-			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
-			break;
-		case 3:
+			m_Sound->PlaySound("../Engine/data/menuback.wav");
 			return false; // Quits the game
+		case 3:
+			m_Sound->PlaySound("../Engine/data/select.wav");
+			menuState = 4;
+			break;
 		case 4:
-			menuState = 5;
+			m_Sound->PlaySound("../Engine/data/select.wav");
+			m_Network->EstablishConnection(acceptInputBuffer);
+			menuState = 6;
 			break;
 		case 5:
-			m_Network->EstablishConnection(acceptInputBuffer);
-			menuState = 7;
-			break;
-		case 6:
 			// Go back to main menu
+			m_Sound->PlaySound("../Engine/data/menuback.wav");
 			m_Graphics->SetMenuState(0);
 			menuState = 1;
 			break;
-		case 7:
+		case 6:
+			m_Sound->PlaySound("../Engine/data/menuback.wav");
 			m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->networkStatus, "Connection attempt cancelled", 10, 10, 1.0f, 1.0f, 1.0f);
 			m_Network->establishingConnection = false;
-			menuState = 5;
+			menuState = 4;
 			break;
 		}
 	}
@@ -367,7 +373,7 @@ bool Game::MenuFrame()
 		menuWasEnterPressed = false;
 	}
 
-	if ((menuState == 7) && (m_Network->connectionEstablished == true)) {
+	if ((menuState == 6) && (m_Network->connectionEstablished == true)) {
 		opponent->Initialize(m_Graphics, m_hwnd, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
 		gameState = 2;
 	}
@@ -379,7 +385,6 @@ bool Game::GameFrame()
 {
 	mainPlayer->Frame(deltaTime / 1000);
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
-	//m_Graphics->m_Camera->SetPosition(mainPlayer->GetPosition().x, -750.0f, mainPlayer->GetPosition().z);
 
 	if (m_Input->IsUpPressed() == true) {
 		mainPlayer->Accelerate(true);
@@ -410,6 +415,8 @@ bool Game::GameFrame()
 	else {
 		mainPlayer->TurnRight(false);
 	}
+
+	m_Sound->SetWindFrequency(mainPlayer->speed);
 
 	char timeBuffer[32];
 	sprintf_s(timeBuffer, "%f", totalGameTime);
@@ -424,44 +431,6 @@ bool Game::GameFrame()
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f);
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, fpsBuffer, 60, 70, 1.0f, 1.0f, 1.0f);
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, cpuBuffer, 60, 90, 1.0f, 1.0f, 1.0f);
-	return true;
-}
-
-bool Game::MultiplayerGameFrame()
-{
-	mainPlayer->Frame(deltaTime / 1000);
-	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
-
-	if (m_Input->IsUpPressed() == true) {
-		mainPlayer->Accelerate(true);
-	}
-	else {
-		mainPlayer->Accelerate(false);
-	}
-
-	if (m_Input->IsDownPressed() == true) {
-		mainPlayer->BreakReverse(true);
-	}
-	else {
-		mainPlayer->BreakReverse(false);
-	}
-
-	if (m_Input->IsLeftPressed() == true)
-	{
-		mainPlayer->TurnLeft(true);
-	}
-	else {
-		mainPlayer->TurnLeft(false);
-	}
-
-	if (m_Input->IsRightPressed() == true)
-	{
-		mainPlayer->TurnRight(true);
-	}
-	else {
-		mainPlayer->TurnRight(false);
-	}
-
 	return true;
 }
 
@@ -488,23 +457,4 @@ bool Game::MultiplayerSetUpFrame()
 
 
 	return false;
-}
-
-bool Game::CameraFrame()
-{
-	if (m_Input->IsUpPressed() == true) {
-
-	}
-	if (m_Input->IsDownPressed() == true) {
-
-	}
-	if (m_Input->IsLeftPressed() == true)
-	{
-
-	}
-	if (m_Input->IsRightPressed() == true)
-	{
-
-	}
-	return true;
 }

@@ -23,7 +23,7 @@ Car::Car()
 	//Car handling
 	accelerationFactor = 100.0f;
 	frictionFactor = 0.5f;
-	lateralFrictionFactor = 2.0f;
+	lateralFrictionFactor = 3.0f;
 	steerFactor = 1.0f;
 	maxSpeed = D3DXVECTOR3(40.0f, 0.0f, 40.0f);
 }
@@ -121,8 +121,10 @@ void Car::Frame(float deltaTime)
 	graphicsAngle = atan2(forwardVector.z, forwardVector.x) - atan2(startingForwardVector.z, startingForwardVector.x);
 
 	//Set the position of the cars model
-	m_Model->SetPosition(position.x, position.y, position.z);
+	m_Model->SetPosition(position.x, position.y + 2.0f, position.z);
 	m_Model->SetRotation(graphicsAngle * 57.2958f);
+
+	speed = (int)D3DXVec3Length(&velocity);
 
 	char spdBuffer[64];
 	sprintf_s(spdBuffer, "SPEED: X: %f Y: %f", velocity.x, velocity.z);

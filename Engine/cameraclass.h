@@ -47,7 +47,7 @@ private:
 	D3DXVECTOR3 up = D3DXVECTOR3 (0.0f, 1.0f, 0.0f);
 	bool firstFrame = true;
 	float distance = 23.0f; //Distance to keep from car
-	float height = -5.0f; //Height from ground
+	float height = -4.0f; //Height from ground
 	float springConstant = 400.0f;
 	float dampConstant = 2.0f * sqrt(springConstant);
 };

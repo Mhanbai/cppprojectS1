@@ -89,12 +89,6 @@ void CameraClass::Follow(D3DXVECTOR3 followTarget, D3DXVECTOR3 targetForwardVect
 {
 	carPos = followTarget;
 
-	if (firstFrame == true) {
-		D3DXVECTOR3 startPos = followTarget - targetForwardVector * distance + up * height;
-		SetPosition(startPos.x, startPos.y, startPos.z);
-		firstFrame = false;
-	}
-
 	D3DXVECTOR3 myPosition = GetPosition();
 	D3DXVECTOR3 idealPosition = followTarget - targetForwardVector * distance + up * height;
 	D3DXVECTOR3 displacement = myPosition + idealPosition;

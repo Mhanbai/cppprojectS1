@@ -13,6 +13,7 @@ SystemClass::SystemClass()
 	m_Cpu = 0;
 	m_Timer = 0;
 	m_Network = 0;
+	m_Sound = 0;
 }
 
 
@@ -78,6 +79,21 @@ bool SystemClass::Initialize()
 	// Initialize the network object.
 	connected = m_Network->Initialize(m_Graphics);
 
+	// Create the sound object.
+	m_Sound = new SoundClass;
+	if (!m_Sound)
+	{
+		return false;
+	}
+
+	// Initialize the sound object.
+	result = m_Sound->Initialize(m_hwnd);
+	if (!result)
+	{
+		MessageBox(m_hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Create the game object
 	m_Game = new Game;
 	if (!m_Game)
@@ -86,7 +102,7 @@ bool SystemClass::Initialize()
 	}
 
 	// Initialize the game object.
-	result = m_Game->Initialize(m_Input, m_Graphics, m_Network, connected, m_Text, m_hwnd);
+	result = m_Game->Initialize(m_Input, m_Graphics, m_Network, m_Sound, connected, m_Text, m_hwnd);
 	if (!result)
 	{
 		return false;
@@ -133,6 +149,14 @@ bool SystemClass::Initialize()
 
 void SystemClass::Shutdown()
 {
+	// Release the sound object.
+	if (m_Sound)
+	{
+		m_Sound->Shutdown();
+		delete m_Sound;
+		m_Sound = 0;
+	}
+
 	// Release the timer object.
 	if (m_Timer)
 	{

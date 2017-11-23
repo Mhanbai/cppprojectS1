@@ -39,12 +39,12 @@ bool SkyDomeClass::Initialize(ID3D11Device* device)
 		return false;
 	}
 
-	float apex_r = (100.0f / (255.0f / 49.0f)) / 100.0f;
-	float apex_b = (100.0f / (255.0f / 128.0f)) / 100.0f;
-	float apex_g = (100.0f / (255.0f / 196.0f)) / 100.0f;
-	float hori_r = (100.0f / (255.0f / 224.0f)) / 100.0f;
-	float hori_b = (100.0f / (255.0f / 202.0f)) / 100.0f;
-	float hori_g = (100.0f / (255.0f / 119.0f)) / 100.0f;
+	float apex_r = (100.0f / (255.0f / 84.0f)) / 100.0f;
+	float apex_b = (100.0f / (255.0f / 146.0f)) / 100.0f;
+	float apex_g = (100.0f / (255.0f / 219.0f)) / 100.0f;
+	float hori_r = (100.0f / (255.0f / 180.0f)) / 100.0f;
+	float hori_b = (100.0f / (255.0f / 243.0f)) / 100.0f;
+	float hori_g = (100.0f / (255.0f / 253.0f)) / 100.0f;
 
 	// Set the color at the top of the sky dome.
 	m_apexColor = D3DXVECTOR4(apex_r, apex_b, apex_g, 1.0f);

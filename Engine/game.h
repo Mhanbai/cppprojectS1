@@ -15,6 +15,7 @@
 #include "car.h"
 #include "racetrack.h"
 #include "networkclass.h"
+#include "soundclass.h"
 #include <time.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +27,7 @@ public:
 	Game();
 	Game(const Game&);
 	~Game();
-	bool Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, bool connected, TextClass* &text, HWND &hwnd);
+	bool Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, SoundClass* &sound, bool connected, TextClass* &text, HWND &hwnd);
 	void Shutdown();
 	void SetOnlineMode(bool mode);
 	bool Frame(int fpsOutput, int cpuOutput, float timerOutput);
@@ -38,9 +39,7 @@ private:
 	bool InitializeMainGame();
 	bool MenuFrame();
 	bool GameFrame();
-	bool MultiplayerGameFrame();
 	bool MultiplayerSetUpFrame();
-	bool CameraFrame();
 	bool menuWasUpPressed;
 	bool menuWasDownPressed;
 	bool menuWasEnterPressed;
@@ -56,6 +55,7 @@ private:
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
 	NetworkClass* m_Network;
+	SoundClass* m_Sound;
 	HWND m_hwnd;
 
 	// References to Main Game Assets

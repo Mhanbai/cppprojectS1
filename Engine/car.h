@@ -35,6 +35,8 @@ public:
 	D3DXVECTOR3 GetForwardVector();
 	D3DXVECTOR3 GetPosition();
 
+	int speed;
+
 private:
 	GraphicsClass* m_Graphics;
 	ModelClass* m_Model;

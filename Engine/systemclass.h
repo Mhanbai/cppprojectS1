@@ -27,6 +27,7 @@
 #include "fpsclass.h"
 #include "cpuclass.h"
 #include "timerclass.h"
+#include "soundclass.h"
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -63,6 +64,7 @@ private:
 	FpsClass* m_Fps;
 	CpuClass* m_Cpu;
 	TimerClass* m_Timer;
+	SoundClass* m_Sound;
 
 	bool connected;
 };

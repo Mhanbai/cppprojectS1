@@ -85,14 +85,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 		return false;
 	}
 
-	// Set the initial position of the camera.
-
-	//m_Camera->SetPosition(0.0f, 170.0f, -30.0f);
-	//m_Camera->SetRotation(-90.0f, 0.0f, 0.0f);
-
-	//m_Camera->SetPosition(0.0f, -850.0f, 0.0f);
-	//m_Camera->SetRotation(-90.0f, 0.0f, 0.0f);
-
 	// Create the terrain object.
 	m_Terrain = new TerrainClass;
 	if (!m_Terrain)
@@ -161,11 +153,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	}
 
 	// Initialize the light object.
-	m_Light->SetAmbientColor(0.1f, 0.1f, 0.1f, 1.0f);
+	m_Light->SetAmbientColor(0.3f, 0.3f, 0.3f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(-0.1f, -0.9f, 0.0f);
+	m_Light->SetDirection(-0.2f, -0.8f, 0.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetSpecularPower(10.0f);
+	m_Light->SetSpecularPower(100.0f);
 
 	// Create the sky dome object.
 	m_SkyDome = new SkyDomeClass;
