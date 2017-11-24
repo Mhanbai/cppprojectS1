@@ -88,9 +88,10 @@ void NetworkClass::Frame(float time)
 	//If the game is trying to establish a connection...
 	if (establishingConnection == true) {
 		//And a message has been recieved...
-		if (messageReceived) {
+		if (messageReceived == true) {
 			//Set connectionEstablished variable to true so game.cpp knows to start a game
 			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Successfully established a connection!", 10, 10, 1.0f, 1.0f, 1.0f);
+			establishingConnection = false;
 			connectionEstablished = true;
 			totalGameTime = 0.0f; // Reset timer to 0 for lap timing/timestamps
 		}
@@ -127,9 +128,11 @@ void NetworkClass::Frame(float time)
 
 	count = recvfrom(sock, readBuffer_, sizeof(readBuffer_), 0, &from, &fromlen);
 	if (count == SOCKET_ERROR) {
-		char errorBuffer[32];
-		sprintf_s(errorBuffer, "Recieve Error: %i", WSAGetLastError());
-		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus3, errorBuffer, 10, 30, 1.0f, 1.0f, 1.0f);
+		if (WSAGetLastError() != WSAEWOULDBLOCK) {
+			char errorBuffer[32];
+			sprintf_s(errorBuffer, "Recieve Error: %i", WSAGetLastError());
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus3, errorBuffer, 10, 30, 1.0f, 1.0f, 1.0f);
+		}
 	}
 	if (count <= 0) {} // If there's nothing to be recieved, skip and keep going
 	else
