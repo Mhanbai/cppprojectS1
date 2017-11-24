@@ -231,7 +231,7 @@ bool Game::MenuFrame()
 	//////////////////////////////////////////////////////////////////////////////////
 	if (menuState < 3) {
 		if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
-			m_Sound->PlaySound("../Engine/data/cursor.wav");
+			m_Sound->PlaySoundOnce("../Engine/data/cursor.wav");
 			if (menuState != 2) {
 				menuState++;
 			}
@@ -241,7 +241,7 @@ bool Game::MenuFrame()
 			menuWasDownPressed = true;
 		}
 		else if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
-			m_Sound->PlaySound("../Engine/data/cursor.wav");
+			m_Sound->PlaySoundOnce("../Engine/data/cursor.wav");
 			if (menuState != 0) {
 				menuState--;
 			}
@@ -261,7 +261,7 @@ bool Game::MenuFrame()
 
 	if ((menuState >= 3) && (menuState < 6)) {
 		if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
-			m_Sound->PlaySound("../Engine/data/cursor.wav");
+			m_Sound->PlaySoundOnce("../Engine/data/cursor.wav");
 			if (menuState != 5) {
 				menuState++;
 			}
@@ -271,7 +271,7 @@ bool Game::MenuFrame()
 			menuWasDownPressed = true;
 		}
 		else if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
-			m_Sound->PlaySound("../Engine/data/cursor.wav");
+			m_Sound->PlaySoundOnce("../Engine/data/cursor.wav");
 			if (menuState != 3) {
 				menuState--;
 			}
@@ -330,7 +330,7 @@ bool Game::MenuFrame()
 
 		switch (menuState) {
 		case 0:
-			m_Sound->PlaySound("../Engine/data/select.wav");
+			m_Sound->PlaySoundOnce("../Engine/data/select.wav");
 			m_Sound->StopLooping();
 			m_Sound->LoopSound("../Engine/data/wind.wav");
 			totalGameTime = 0.0f;
@@ -338,30 +338,30 @@ bool Game::MenuFrame()
 			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
 			break;
 		case 1:
-			m_Sound->PlaySound("../Engine/data/select.wav");
+			m_Sound->PlaySoundOnce("../Engine/data/select.wav");
 			m_Graphics->SetMenuState(1);
 			menuState = 3;
 			break;
 		case 2:
-			m_Sound->PlaySound("../Engine/data/menuback.wav");
+			m_Sound->PlaySoundOnce("../Engine/data/menuback.wav");
 			return false; // Quits the game
 		case 3:
-			m_Sound->PlaySound("../Engine/data/select.wav");
+			m_Sound->PlaySoundOnce("../Engine/data/select.wav");
 			menuState = 4;
 			break;
 		case 4:
-			m_Sound->PlaySound("../Engine/data/select.wav");
+			m_Sound->PlaySoundOnce("../Engine/data/select.wav");
 			m_Network->EstablishConnection(acceptInputBuffer);
 			menuState = 6;
 			break;
 		case 5:
 			// Go back to main menu
-			m_Sound->PlaySound("../Engine/data/menuback.wav");
+			m_Sound->PlaySoundOnce("../Engine/data/menuback.wav");
 			m_Graphics->SetMenuState(0);
 			menuState = 1;
 			break;
 		case 6:
-			m_Sound->PlaySound("../Engine/data/menuback.wav");
+			m_Sound->PlaySoundOnce("../Engine/data/menuback.wav");
 			m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->networkStatus, "Connection attempt cancelled", 10, 10, 1.0f, 1.0f, 1.0f);
 			m_Network->establishingConnection = false;
 			menuState = 4;

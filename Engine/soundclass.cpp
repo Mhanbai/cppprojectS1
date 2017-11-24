@@ -61,43 +61,28 @@ void SoundClass::Shutdown()
 	return;
 }
 
-bool SoundClass::PlaySound(char* file)
+void SoundClass::PlaySoundOnce(char* file)
 {
-	// File format: "../Engine/data/sound02.wav"
 	// Load a wave audio file onto a secondary buffer.
-	bool result = LoadWaveFile(file, &m_secondaryBuffer1, &m_secondary3DBuffer1);
-	if (!result)
-	{
-		return false;
-	}
+	LoadWaveFile(file, &m_secondaryBuffer1, &m_secondary3DBuffer1);
 
-	// Play the wave file now that it has been loaded.
-	result = PlayWaveFile();
-	if (!result)
-	{
-		return false;
+	LPDWORD isPlaying = 0; //Create a var to hold info
+	m_secondaryBuffer1->GetStatus(isPlaying); //Gets whether or not the sound is currently playing/looping
+
+	if (!((int)isPlaying == DSBSTATUS_PLAYING)) {//If it's not, start looping it
+		PlayWaveFile();
 	}
 }
 
-bool SoundClass::LoopSound(char * file)
+void SoundClass::LoopSound(char * file)
 {
-	LPDWORD isPlaying = 0;
+	LoadWaveFile(file, &m_secondaryBuffer2, &m_secondary3DBuffer2); //Load the sound needing looped into the buffer.
+	
+	LPDWORD isPlaying = 0; //Create a var to hold info
+	m_secondaryBuffer2->GetStatus(isPlaying); //Gets whether or not the sound is currently playing/looping
 
-	bool result = LoadWaveFile(file, &m_secondaryBuffer2, &m_secondary3DBuffer2);
-	if (!result)
-	{
-		return false;
-	}
-
-	m_secondaryBuffer2->GetStatus(isPlaying);
-	if (!((int)isPlaying == DSBSTATUS_PLAYING)) {
-
-		// Play the wave file now that it has been loaded.
-		result = LoopWaveFile();
-		if (!result)
-		{
-			return false;
-		}
+	if (!((int)isPlaying == DSBSTATUS_PLAYING)) { //If it's not, start looping it
+		LoopWaveFile();
 	}
 }
 

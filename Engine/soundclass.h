@@ -52,8 +52,8 @@ public:
 
 	bool Initialize(HWND);
 	void Shutdown();
-	bool PlaySound(char* file);
-	bool LoopSound(char* file);
+	void PlaySoundOnce(char* file);
+	void LoopSound(char* file);
 	void StopLooping();
 	void SetWindFrequency(int freq);
 
