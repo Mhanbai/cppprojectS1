@@ -102,9 +102,16 @@ void NetworkClass::Frame(float time)
 	}
 
 	int count;
-	// Send data needed sent
+	// Send data needing sent
 	count = sendto(sock, writeBuffer_, sizeof(NetMessage), 0, (const sockaddr *)&sendAddr, sizeof(sendAddr));
-	if (count <= 0) {} // If there's nothing to be sent, skip and keep going
+	if (count == SOCKET_ERROR) {
+		if (WSAGetLastError() != 10035) {
+			char errorBuffer[32];
+			sprintf_s(errorBuffer, "Error code: %i", WSAGetLastError());
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, errorBuffer, 10, 10, 1.0f, 1.0f, 1.0f);
+		}
+	}
+	else if (count <= 0) {} // If there's nothing to be sent, skip and keep going
 	else
 	{
 		//Deduct the sum of the data thats just been sent from writeCount
@@ -117,7 +124,14 @@ void NetworkClass::Frame(float time)
 	// Receive data needing recieved
 	int spaceLeft = (sizeof readBuffer_) - readCount_;
 
-	count = recvfrom(sock, readBuffer_, sizeof(NetMessage), 0, &from, &fromlen);
+	count = recvfrom(sock, readBuffer_, sizeof(readBuffer_), 0, &from, &fromlen);
+	if (count == SOCKET_ERROR) {
+		if (WSAGetLastError() != 10035) {
+			char errorBuffer[32];
+			sprintf_s(errorBuffer, "Error code: %i", WSAGetLastError());
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, errorBuffer, 10, 10, 1.0f, 1.0f, 1.0f);
+		}
+	}
 	if (count <= 0) {} // If there's nothing to be recieved, skip and keep going
 	else
 	{
@@ -281,7 +295,8 @@ void NetworkClass::EstablishConnection(char * opponentAddress)
 	//Set address data to what is input by the user on the main menu
 	sendAddr.sin_family = AF_INET;
 	sendAddr.sin_port = htons(4444);
-	sendAddr.sin_addr.s_addr = inet_addr(opponentAddress);
+
+	sendAddr.sin_addr.s_addr = inet_addr("10.1.5.68");
 
 	//Create a new message of type 'Welcome'
 	NetMessage welcomeMessage;

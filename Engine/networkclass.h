@@ -71,7 +71,7 @@ private:
 	//Address to send to & address recieved back
 	sockaddr_in sendAddr;
 	sockaddr from;
-	int fromlen;
+	int fromlen = sizeof(from);
 
 	//Variable to store amount of data recieved and sent
 	int count;
