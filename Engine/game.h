@@ -36,7 +36,7 @@ public:
 private:
 	int menuState;
 	bool InitializeMenuScreen();
-	bool InitializeMainGame();
+	bool InitializeMainGame(bool multiplayer);
 	bool MenuFrame();
 	bool GameFrame();
 	bool MultiplayerSetUpFrame();

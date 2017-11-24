@@ -52,11 +52,7 @@ bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass
 		MessageBox(m_hwnd, L"Could not initialize menu screen.", L"Error", MB_OK);
 		return false;
 	}
-	result = InitializeMainGame();
-	if (!result) {
-		MessageBox(m_hwnd, L"Could not initialize gameplay scene.", L"Error", MB_OK);
-		return false;
-	}
+
 	return true;
 }
 
@@ -202,7 +198,7 @@ bool Game::InitializeMenuScreen()
 	return true;
 }
 
-bool Game::InitializeMainGame()
+bool Game::InitializeMainGame(bool multiplayer)
 {
 	bool result;
 	mainPlayer = new Car();
@@ -211,15 +207,34 @@ bool Game::InitializeMainGame()
 		return false;
 	}
 
-	opponent = new Car();
-	if (!opponent)
-	{
-		return false;
-	}
-
 	result = mainPlayer->Initialize(m_Graphics, m_hwnd, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
 	if (!result) {
 		return false;
+	}
+
+	if (multiplayer == false) {
+		mainPlayer->SetPosition(-12.0f, 0.0f, 0.0f, 0.0f);
+	}
+	else {
+		opponent = new Car();
+		if (!opponent)
+		{
+			return false;
+		}
+
+		opponent->Initialize(m_Graphics, m_hwnd, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
+		if (!result) {
+			return false;
+		}
+
+		if (m_Network->trackPosition == 0) {
+			mainPlayer->SetPosition(-12.0f, 2.5f, 0.0f, 0.0f);
+			opponent->SetPosition(24.0f, 2.5f, 0.0f, 0.0f);
+		}
+		else if (m_Network->trackPosition == 1) {
+			mainPlayer->SetPosition(24.0f, 2.5f, 0.0f, 0.0f);
+			opponent->SetPosition(-12.0f, 2.5f, 0.0f, 0.0f);
+		}
 	}
 
 	m_raceTrack = new RaceTrack();
@@ -232,8 +247,6 @@ bool Game::InitializeMainGame()
 	if (!result) {
 		return false;
 	}
-
-	mainPlayer->SetPosition(-12.0f, 0.0f, 0.0f, 0.0f);
 
 	return true;
 }
@@ -341,6 +354,7 @@ bool Game::MenuFrame()
 	// Changes the gamestate based on what the user has selected when enter is pressed
 	if ((m_Input->IsEnterPressed() == true) && (menuWasEnterPressed == false)) {
 		menuWasEnterPressed = true;
+		bool result;
 
 		switch (menuState) {
 		case 0:
@@ -348,6 +362,11 @@ bool Game::MenuFrame()
 			m_Sound->StopLooping();
 			m_Sound->LoopSound("../Engine/data/wind.wav");
 			totalGameTime = 0.0f;
+			result = InitializeMainGame(false);
+			if (!result) {
+				MessageBox(m_hwnd, L"Could not initialize gameplay scene.", L"Error", MB_OK);
+				return false;
+			}
 			gameState = 1; // Starts a normal game
 			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
 			break;
@@ -388,9 +407,13 @@ bool Game::MenuFrame()
 	}
 
 	if ((menuState == 6) && (m_Network->connectionEstablished == true)) {
-		opponent->Initialize(m_Graphics, m_hwnd, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
-		opponent->SetPosition(-12.0f, 0.0f, 0.0f, 0.0f);
+		bool result = InitializeMainGame(true);
+		if (!result) {
+			MessageBox(m_hwnd, L"Could not initialize gameplay scene.", L"Error", MB_OK);
+			return false;
+		}
 		gameState = 2;
+		m_Graphics->SetGameState(gameState);
 	}
 
 	return true;

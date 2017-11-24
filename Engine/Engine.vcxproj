@@ -88,6 +88,7 @@
     <ClCompile Include="foliageshaderclass.cpp" />
     <ClCompile Include="fpsclass.cpp" />
     <ClCompile Include="networkclass.cpp" />
+    <ClCompile Include="opponent.cpp" />
     <ClCompile Include="soundclass.cpp" />
     <ClCompile Include="terrainshaderclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
@@ -120,6 +121,7 @@
     <ClInclude Include="fpsclass.h" />
     <ClInclude Include="netprotocol.h" />
     <ClInclude Include="networkclass.h" />
+    <ClInclude Include="opponent.h" />
     <ClInclude Include="soundclass.h" />
     <ClInclude Include="terrainshaderclass.h" />
     <ClInclude Include="d3dclass.h" />

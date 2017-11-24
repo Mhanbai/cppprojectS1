@@ -102,6 +102,9 @@
     <ClCompile Include="soundclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="opponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraclass.h">
@@ -189,6 +192,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="soundclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="opponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

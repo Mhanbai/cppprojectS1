@@ -121,7 +121,7 @@ void Car::Frame(float deltaTime)
 	graphicsAngle = atan2(forwardVector.z, forwardVector.x) - atan2(startingForwardVector.z, startingForwardVector.x);
 
 	//Set the position of the cars model
-	m_Model->SetPosition(position.x, position.y + 2.0f, position.z);
+	m_Model->SetPosition(position.x, position.y, position.z);
 	m_Model->SetRotation(graphicsAngle * 57.2958f);
 
 	speed = (int)D3DXVec3Length(&velocity);

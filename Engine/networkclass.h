@@ -55,6 +55,7 @@ public:
 	bool establishingConnection = false;
 	bool messageReceived = false;
 	bool connectionEstablished = false;
+	int trackPosition;
 
 	//Variables that store public and local IPs
 	char* myLocalIP;
@@ -93,6 +94,7 @@ private:
 
 	//Address the player types in to connect to
 	char* desiredOpponent;
+	char* opponentConnecting;
 };
 
 #endif

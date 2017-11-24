@@ -2,6 +2,7 @@
 
 NetworkClass::NetworkClass()
 {
+
 }
 
 NetworkClass::NetworkClass(const NetworkClass &)
@@ -306,7 +307,12 @@ void NetworkClass::EstablishConnection(char * opponentAddress)
 	//Create a new message of type 'Welcome'
 	NetMessage welcomeMessage;
 	welcomeMessage.type = MT_WELCOME;
-	welcomeMessage.myAddr = myLocalIP;
+	if (messageReceived == true) {
+		welcomeMessage.trackPos = 1;
+	}
+	else {
+		welcomeMessage.trackPos = 0;
+	}
 
 	//Send that message to the write queue
 	SendMessage(&welcomeMessage);
@@ -323,14 +329,15 @@ void NetworkClass::EstablishConnection()
 {
 	NetMessage welcomeMessage;
 	welcomeMessage.type = MT_WELCOME;
-	welcomeMessage.myAddr = myLocalIP;
-
+	if (messageReceived == true) {
+		welcomeMessage.trackPos = 1;
+	}
+	else {
+		welcomeMessage.trackPos = 0;
+	}
 	SendMessage(&welcomeMessage);
-
 	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Attempting to establish a connection...", 10, 10, 1.0f, 1.0f, 1.0f);
-
 	startTime = totalGameTime;
-	establishingConnection = true;
 }
 
 void NetworkClass::SendMessage(const NetMessage * message)
@@ -348,8 +355,9 @@ void NetworkClass::SendMessage(const NetMessage * message)
 
 void NetworkClass::ProcessMessage(const NetMessage * message)
 {
-	if ((message->type == MT_WELCOME) && (message->myAddr == desiredOpponent)) {
+	if (message->type == MT_WELCOME) {
 		messageReceived = true;
+		trackPosition = message->trackPos;
 	}
 	else if (message->type == MT_POSITIONUPDATE) {
 		//Update something somewhere with new position

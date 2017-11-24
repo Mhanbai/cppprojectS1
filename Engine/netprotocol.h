@@ -18,13 +18,13 @@ enum MessageType
 struct NetMessage
 {
 	MessageType type;
-	char* myAddr;
+	int trackPos;
 	float posX;
 	float posZ;
 	float timeStamp;
 
 	NetMessage()
-		: type(MT_UNKNOWN), myAddr(""), timeStamp(-1.0f), posX(0.0f), posZ(0.0f)
+		: type(MT_UNKNOWN), trackPos(-1), timeStamp(-1.0f), posX(0.0f), posZ(0.0f)
 	{
 	}
 };
