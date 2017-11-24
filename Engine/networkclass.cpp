@@ -102,23 +102,24 @@ void NetworkClass::Frame(float time)
 	}
 
 	int count;
-	// Send data needing sent
-	count = sendto(sock, writeBuffer_, sizeof(NetMessage), 0, (const sockaddr *)&sendAddr, sizeof(sendAddr));
-	if (count == SOCKET_ERROR) {
-		if (WSAGetLastError() != 10035) {
+	if (writeCount_ > 0) {
+		// Send data needing sent
+		count = sendto(sock, writeBuffer_, sizeof(NetMessage), 0, (const sockaddr *)&sendAddr, sizeof(sendAddr));
+		if (count == SOCKET_ERROR) {
 			char errorBuffer[32];
-			sprintf_s(errorBuffer, "Error code: %i", WSAGetLastError());
+			sprintf_s(errorBuffer, "Send Error: %i", WSAGetLastError());
 			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, errorBuffer, 10, 10, 1.0f, 1.0f, 1.0f);
 		}
-	}
-	else if (count <= 0) {} // If there's nothing to be sent, skip and keep going
-	else
-	{
-		//Deduct the sum of the data thats just been sent from writeCount
-		writeCount_ -= count;
+		else if (count <= 0) {} // If there's nothing to be sent, skip and keep going
+		else
+		{
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Sent message!", 10, 10, 1.0f, 1.0f, 1.0f);
+			//Deduct the sum of the data thats just been sent from writeCount
+			writeCount_ -= count;
 
-		// Remove the sent data from the start of the buffer.
-		//memmove(writeBuffer_, writeBuffer_ + count, writeCount_);
+			// Remove the sent data from the start of the buffer.
+			memmove(writeBuffer_, writeBuffer_ + count, writeCount_);
+		}
 	}
 
 	// Receive data needing recieved
@@ -126,15 +127,14 @@ void NetworkClass::Frame(float time)
 
 	count = recvfrom(sock, readBuffer_, sizeof(readBuffer_), 0, &from, &fromlen);
 	if (count == SOCKET_ERROR) {
-		if (WSAGetLastError() != 10035) {
-			char errorBuffer[32];
-			sprintf_s(errorBuffer, "Error code: %i", WSAGetLastError());
-			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, errorBuffer, 10, 10, 1.0f, 1.0f, 1.0f);
-		}
+		char errorBuffer[32];
+		sprintf_s(errorBuffer, "Recieve Error: %i", WSAGetLastError());
+		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus3, errorBuffer, 10, 30, 1.0f, 1.0f, 1.0f);
 	}
 	if (count <= 0) {} // If there's nothing to be recieved, skip and keep going
 	else
 	{
+		//m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus3, "Recieved message!", 10, 30, 1.0f, 1.0f, 1.0f);
 		// We've successfully read some more data into the buffer.
 		readCount_ += count;
 
@@ -296,7 +296,7 @@ void NetworkClass::EstablishConnection(char * opponentAddress)
 	sendAddr.sin_family = AF_INET;
 	sendAddr.sin_port = htons(4444);
 
-	sendAddr.sin_addr.s_addr = inet_addr("10.1.5.68");
+	sendAddr.sin_addr.s_addr = inet_addr(opponentAddress);
 
 	//Create a new message of type 'Welcome'
 	NetMessage welcomeMessage;

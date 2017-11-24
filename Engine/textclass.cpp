@@ -13,6 +13,8 @@ TextClass::TextClass()
 	acceptInput = 0;
 
 	networkStatus = 0;
+	networkStatus2 = 0;
+	networkStatus3 = 0;
 
 	m_sentence1 = 0;
 	m_sentence2 = 0;
@@ -103,6 +105,18 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 		return false;
 	}
 
+	result = InitializeSentence(&networkStatus2, 64, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	result = InitializeSentence(&networkStatus3, 64, device);
+	if (!result)
+	{
+		return false;
+	}
+
 	// Initialize sentences used for debug
 	result = InitializeSentence(&m_sentence1, 64, device);
 	if (!result)
@@ -149,6 +163,10 @@ void TextClass::Shutdown()
 	ReleaseSentence(&acceptInput);
 
 	ReleaseSentence(&networkStatus);
+
+	ReleaseSentence(&networkStatus2);
+
+	ReleaseSentence(&networkStatus3);
 
 	// Release the sentence.
 	ReleaseSentence(&m_sentence1);
@@ -281,6 +299,16 @@ bool TextClass::RenderNetworkText(ID3D11DeviceContext* deviceContext, D3DXMATRIX
 
 	// Draw the first sentence.
 	result = RenderSentence(deviceContext, networkStatus, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+	result = RenderSentence(deviceContext, networkStatus2, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+	result = RenderSentence(deviceContext, networkStatus3, worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;

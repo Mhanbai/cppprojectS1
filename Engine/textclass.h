@@ -49,6 +49,8 @@ public:
 
 	//Sentence for network status
 	SentenceType* networkStatus;
+	SentenceType* networkStatus2;
+	SentenceType* networkStatus3;
 
 	//Sentences for debug text
 	SentenceType* m_sentence1;
