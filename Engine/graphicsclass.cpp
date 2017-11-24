@@ -86,7 +86,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	}
 
 	// Create the terrain object.
-	m_Terrain = new TerrainClass;
+	/*m_Terrain = new TerrainClass;
 	if (!m_Terrain)
 	{
 		return false;
@@ -98,7 +98,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	{
 		MessageBox(hwnd, L"Could not initialize the terrain object.", L"Error", MB_OK);
 		return false;
-	}
+	}*/
 
 	// Create the light shader object.
 	m_LightShader = new LightShaderClass;
@@ -476,7 +476,7 @@ bool GraphicsClass::Render()
 
 
 		// Render the terrain buffers.
-		m_Terrain->Render(m_D3D->GetDeviceContext());
+		/*m_Terrain->Render(m_D3D->GetDeviceContext());
 
 		// Render the terrain using the terrain shader.
 		result = m_TerrainShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
@@ -484,7 +484,7 @@ bool GraphicsClass::Render()
 		if (!result)
 		{
 			return false;
-		}
+		}*/
 
 		for (int i = 0; i < mainGameAssetCount; i++) {
 			// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
