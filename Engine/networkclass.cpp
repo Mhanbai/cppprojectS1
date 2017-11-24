@@ -323,6 +323,7 @@ void NetworkClass::EstablishConnection()
 {
 	NetMessage welcomeMessage;
 	welcomeMessage.type = MT_WELCOME;
+	welcomeMessage.myAddr = myLocalIP;
 
 	SendMessage(&welcomeMessage);
 
