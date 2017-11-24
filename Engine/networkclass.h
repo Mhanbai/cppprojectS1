@@ -90,6 +90,9 @@ private:
 
 	// Reference to Graphics so network status text can be updated
 	GraphicsClass* m_graphics;
+
+	//Address the player types in to connect to
+	char* desiredOpponent;
 };
 
 #endif

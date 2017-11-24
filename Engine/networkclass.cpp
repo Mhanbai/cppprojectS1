@@ -295,6 +295,8 @@ bool NetworkClass::CheckNetwork(char* &localIPHolder, char* &publicIPHolder)
 
 void NetworkClass::EstablishConnection(char * opponentAddress)
 {
+	desiredOpponent = opponentAddress;
+
 	//Set address data to what is input by the user on the main menu
 	sendAddr.sin_family = AF_INET;
 	sendAddr.sin_port = htons(4444);
@@ -304,6 +306,7 @@ void NetworkClass::EstablishConnection(char * opponentAddress)
 	//Create a new message of type 'Welcome'
 	NetMessage welcomeMessage;
 	welcomeMessage.type = MT_WELCOME;
+	welcomeMessage.myAddr = myLocalIP;
 
 	//Send that message to the write queue
 	SendMessage(&welcomeMessage);
@@ -344,8 +347,8 @@ void NetworkClass::SendMessage(const NetMessage * message)
 
 void NetworkClass::ProcessMessage(const NetMessage * message)
 {
-	if (message->type == MT_WELCOME) {
-		bool messageReceived = true;
+	if ((message->type == MT_WELCOME) && (message->myAddr == desiredOpponent)) {
+		messageReceived = true;
 	}
 	else if (message->type == MT_POSITIONUPDATE) {
 		//Update something somewhere with new position

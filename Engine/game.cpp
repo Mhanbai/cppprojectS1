@@ -5,6 +5,7 @@ Game::Game()
 	m_Input = 0;
 	m_Graphics = 0;
 	mainPlayer = 0;
+	opponent = 0;
 	m_raceTrack = 0;
 	gameState = 0;
 	menuState = 0;
@@ -69,6 +70,13 @@ void Game::Shutdown()
 		delete mainPlayer;
 		mainPlayer = 0;
 	}
+
+	if (opponent) {
+		opponent->Shutdown();
+		delete opponent;
+		opponent = 0;
+	}
+
 }
 
 void Game::SetOnlineMode(bool mode)
@@ -199,6 +207,12 @@ bool Game::InitializeMainGame()
 	bool result;
 	mainPlayer = new Car();
 	if (!mainPlayer)
+	{
+		return false;
+	}
+
+	opponent = new Car();
+	if (!opponent)
 	{
 		return false;
 	}
@@ -375,6 +389,7 @@ bool Game::MenuFrame()
 
 	if ((menuState == 6) && (m_Network->connectionEstablished == true)) {
 		opponent->Initialize(m_Graphics, m_hwnd, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
+		opponent->SetPosition(-12.0f, 0.0f, 0.0f, 0.0f);
 		gameState = 2;
 	}
 
