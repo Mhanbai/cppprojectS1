@@ -276,7 +276,7 @@ bool Game::MenuFrame()
 				menuState--;
 			}
 			else {
-				menuState = 6;
+				menuState = 5;
 			}
 			menuWasUpPressed = true;
 		}
