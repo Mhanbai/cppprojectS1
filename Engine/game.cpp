@@ -93,7 +93,7 @@ bool Game::Frame(int fpsOutput, int cpuOutput, float timerOutput)
 		result = GameFrame();
 		return result;
 	case 2: //Call multiplayer logic if gamestate is set to multiplayer mode
-		//result = MultiplayerGameFrame();
+		result = GameFrame();
 		return result;
 	default:
 		return false;
