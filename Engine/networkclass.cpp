@@ -56,7 +56,7 @@ bool NetworkClass::Initialize(GraphicsClass* &graphics)
 
 	// Fill out a sockaddr_in structure to describe the address we'll listen on.
 	listenAddr.sin_family = AF_INET;
-	listenAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	listenAddr.sin_addr.s_addr = inet_addr("0.0.0.0");
 	// htons converts the port number to network byte order (big-endian).
 	listenAddr.sin_port = htons(4444);
 
