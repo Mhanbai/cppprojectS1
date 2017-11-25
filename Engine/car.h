@@ -13,6 +13,7 @@
 #include <windows.h>
 #include <time.h>
 #include "graphicsclass.h"
+#include "networkclass.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: Car
@@ -23,9 +24,9 @@ public:
 	Car();
 	Car(const Car&);
 	~Car();
-	bool Initialize(GraphicsClass* &graphics, HWND &hwnd, char* modelFilename, WCHAR* textureFilename);
+	bool Initialize(GraphicsClass* &graphics, HWND &hwnd, NetworkClass* &network, char* modelFilename, WCHAR* textureFilename);
 	void Shutdown();
-	void Frame(float deltaTime);
+	void Frame(float deltaTime, float gameTime);
 
 	void Accelerate(bool);
 	void BreakReverse(bool);
@@ -40,6 +41,7 @@ public:
 private:
 	GraphicsClass* m_Graphics;
 	ModelClass* m_Model;
+	NetworkClass* m_Network;
 
 	//Forward Vector, Up Vector & Right Vector + useful storage variables
 	D3DXVECTOR3 startingForwardVector;
@@ -82,6 +84,10 @@ private:
 	bool isTurningLeft;
 	bool isTurningRight;
 	bool isBreakReversing;
+
+	//Information for network messages
+	float timeStamp;
+	float lastMessageSent;
 };
 
 #endif

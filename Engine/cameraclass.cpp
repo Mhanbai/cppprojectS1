@@ -17,9 +17,9 @@ CameraClass::CameraClass(TextClass* &text, D3DClass* &d3d)
 	m_rotationY = 0.0f;
 	m_rotationZ = 0.0f;
 
-	distance = 23.0f; //Distance to keep from car
+	distance = 20.0f; //Distance to keep from car
 	height = -4.0f; //Height from ground
-	springConstant = 40.0f;
+	springConstant = 80.0f;
 	dampConstant = 2.0f * sqrt(springConstant);
 }
 

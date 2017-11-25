@@ -70,6 +70,13 @@ bool NetworkClass::Initialize(GraphicsClass* &graphics)
 	{
 		m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connected to Internet!", 10, 10, 1.0f, 1.0f, 1.0f);
 	}
+
+	//Put a blank message at the start of 'positionUpdates' in order to prevent null pointer error in 'Process Message' function
+	Update blank;
+	positionUpdates.push_back(blank);
+	positionUpdates.push_back(blank);
+	positionUpdates.push_back(blank);
+
 	return true;
 }
 
@@ -112,10 +119,8 @@ void NetworkClass::Frame(float time)
 			sprintf_s(errorBuffer, "Send Error: %i", WSAGetLastError());
 			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, errorBuffer, 10, 10, 1.0f, 1.0f, 1.0f);
 		}
-		else if (count <= 0) {} // If there's nothing to be sent, skip and keep going
 		else
 		{
-			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Sent message!", 10, 10, 1.0f, 1.0f, 1.0f);
 			//Deduct the sum of the data thats just been sent from writeCount
 			writeCount_ -= count;
 
@@ -135,7 +140,6 @@ void NetworkClass::Frame(float time)
 			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus3, errorBuffer, 10, 30, 1.0f, 1.0f, 1.0f);
 		}
 	}
-	if (count <= 0) {} // If there's nothing to be recieved, skip and keep going
 	else
 	{
 		//m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus3, "Recieved message!", 10, 30, 1.0f, 1.0f, 1.0f);
@@ -302,7 +306,7 @@ void NetworkClass::EstablishConnection(char * opponentAddress)
 	sendAddr.sin_family = AF_INET;
 	sendAddr.sin_port = htons(4444);
 
-	sendAddr.sin_addr.s_addr = inet_addr(opponentAddress);
+	sendAddr.sin_addr.s_addr = inet_addr("192.168.1.235");
 
 	//Create a new message of type 'Welcome'
 	NetMessage welcomeMessage;
@@ -315,7 +319,7 @@ void NetworkClass::EstablishConnection(char * opponentAddress)
 	}
 
 	//Send that message to the write queue
-	SendMessage(&welcomeMessage);
+	SendNetMessage(&welcomeMessage);
 
 	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Attempting to establish a connection...", 10, 10, 1.0f, 1.0f, 1.0f);
 
@@ -335,12 +339,12 @@ void NetworkClass::EstablishConnection()
 	else {
 		welcomeMessage.trackPos = 0;
 	}
-	SendMessage(&welcomeMessage);
+	SendNetMessage(&welcomeMessage);
 	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Attempting to establish a connection...", 10, 10, 1.0f, 1.0f, 1.0f);
 	startTime = totalGameTime;
 }
 
-void NetworkClass::SendMessage(const NetMessage * message)
+void NetworkClass::SendNetMessage(const NetMessage * message)
 {
 	//If theres more messages on the write buffer than it can handle, complain to the user
 	if (writeCount_ + sizeof(NetMessage) > sizeof(writeBuffer_))
@@ -353,6 +357,17 @@ void NetworkClass::SendMessage(const NetMessage * message)
 	writeCount_ += sizeof(NetMessage);
 }
 
+void NetworkClass::PositionUpdate(float x, float z, float time, float angle)
+{
+	NetMessage positionUpdate;
+	positionUpdate.type = MT_POSITIONUPDATE;
+	positionUpdate.timeStamp = time;
+	positionUpdate.posX = x;
+	positionUpdate.posZ = z;
+	positionUpdate.angle = angle;
+	SendNetMessage(&positionUpdate);
+}
+
 void NetworkClass::ProcessMessage(const NetMessage * message)
 {
 	if (message->type == MT_WELCOME) {
@@ -360,7 +375,14 @@ void NetworkClass::ProcessMessage(const NetMessage * message)
 		trackPosition = message->trackPos;
 	}
 	else if (message->type == MT_POSITIONUPDATE) {
-		//Update something somewhere with new position
+		if (message->timeStamp > positionUpdates[positionUpdates.size() - 1].timeStamp) {
+			Update update;
+			update.timeStamp = message->timeStamp;
+			update.posX = message->posX;
+			update.posZ = message->posZ;
+			update.angle = message->angle;
+			positionUpdates.push_back(update);
+		}
 	}
 	else if (message->type == MT_RACEFINISHED) {
 		//Update something somewhere with fact race is finished

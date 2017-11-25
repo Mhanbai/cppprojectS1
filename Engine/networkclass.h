@@ -19,8 +19,21 @@
 #include <string.h>
 #include <locale>
 #include <sstream>
+#include <vector>
 #include "netprotocol.h"
 #include "graphicsclass.h"
+
+struct Update
+{
+	float timeStamp;
+	float posX;
+	float posZ;
+	float angle;
+	Update()
+		: timeStamp(0.0f), posX(0.0f), posZ(0.0f), angle (0.0f)
+	{
+	}
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: Network Class
@@ -45,7 +58,8 @@ public:
 	void EstablishConnection();
 
 	//Send messages
-	void SendMessage(const NetMessage *message);
+	void SendNetMessage(const NetMessage *message);
+	void PositionUpdate(float x, float z, float time, float angle);
 
 	//Process recieved messages
 	void ProcessMessage(const NetMessage *message);
@@ -60,6 +74,9 @@ public:
 	//Variables that store public and local IPs
 	char* myLocalIP;
 	char* myPublicIP;
+
+	//Contain position update messages from opponent
+	std::vector<Update> positionUpdates;
 
 private:
 	//Network variables

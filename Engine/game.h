@@ -13,6 +13,7 @@
 #include "inputclass.h"
 #include "graphicsclass.h"
 #include "car.h"
+#include "opponent.h"
 #include "racetrack.h"
 #include "networkclass.h"
 #include "soundclass.h"
@@ -56,11 +57,12 @@ private:
 	GraphicsClass* m_Graphics;
 	NetworkClass* m_Network;
 	SoundClass* m_Sound;
+	TextClass* m_Text;
 	HWND m_hwnd;
 
 	// References to Main Game Assets
 	Car* mainPlayer;
-	Car* opponent;
+	Opponent* opponent;
 	RaceTrack* m_raceTrack;
 
 	// References to Menu Screen One Assets

@@ -341,7 +341,7 @@ void InputClass::CheckNumKeyPress(char &toUpdate, unsigned long size)
 		if (inputCount > 0) {
 			inputCount--;
 			char filler[32] = "";
-			strncpy(filler, &toUpdate, inputCount);
+			strncpy_s(filler, &toUpdate, inputCount);
 			sprintf(&toUpdate, "%s", filler);
 		}
 	}

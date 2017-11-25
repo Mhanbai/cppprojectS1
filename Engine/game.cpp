@@ -42,6 +42,7 @@ bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass
 	m_hwnd = hwnd;
 	m_Network = network;
 	m_Sound = sound;
+	m_Text = text;
 	sprintf_s(acceptInputBuffer, "");
 	bufferSize = sizeof(acceptInputBuffer);
 	onlineMode = connected;
@@ -98,6 +99,7 @@ bool Game::Frame(int fpsOutput, int cpuOutput, float timerOutput)
 		return result;
 	case 2: //Call multiplayer logic if gamestate is set to multiplayer mode
 		result = GameFrame();
+		opponent->Frame(deltaTime / 1000, totalGameTime);
 		return result;
 	default:
 		return false;
@@ -207,33 +209,33 @@ bool Game::InitializeMainGame(bool multiplayer)
 		return false;
 	}
 
-	result = mainPlayer->Initialize(m_Graphics, m_hwnd, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
+	result = mainPlayer->Initialize(m_Graphics, m_hwnd, m_Network, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
 	if (!result) {
 		return false;
 	}
 
 	if (multiplayer == false) {
-		mainPlayer->SetPosition(-12.0f, 0.0f, 0.0f, 0.0f);
+		mainPlayer->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
 	}
 	else {
-		opponent = new Car();
+		opponent = new Opponent();
 		if (!opponent)
 		{
 			return false;
 		}
 
-		opponent->Initialize(m_Graphics, m_hwnd, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
+		opponent->Initialize(m_Graphics, m_hwnd, m_Network, m_Text, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
 		if (!result) {
 			return false;
 		}
 
 		if (m_Network->trackPosition == 0) {
-			mainPlayer->SetPosition(-12.0f, 2.5f, 0.0f, 0.0f);
-			opponent->SetPosition(24.0f, 2.5f, 0.0f, 0.0f);
+			mainPlayer->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
+			opponent->SetPosition(12.0f, 2.0f, 0.0f, 0.0f);
 		}
 		else if (m_Network->trackPosition == 1) {
-			mainPlayer->SetPosition(24.0f, 2.5f, 0.0f, 0.0f);
-			opponent->SetPosition(-12.0f, 2.5f, 0.0f, 0.0f);
+			mainPlayer->SetPosition(12.0f, 2.0f, 0.0f, 0.0f);
+			opponent->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
 		}
 	}
 
@@ -412,7 +414,9 @@ bool Game::MenuFrame()
 			MessageBox(m_hwnd, L"Could not initialize gameplay scene.", L"Error", MB_OK);
 			return false;
 		}
+		m_Sound->StopLooping();
 		gameState = 2;
+		totalGameTime = 0.0f;
 		m_Graphics->SetGameState(gameState);
 	}
 
@@ -421,7 +425,7 @@ bool Game::MenuFrame()
 
 bool Game::GameFrame()
 {
-	mainPlayer->Frame(deltaTime / 1000);
+	mainPlayer->Frame(deltaTime / 1000, totalGameTime);
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
 
 	if (m_Input->IsUpPressed() == true) {

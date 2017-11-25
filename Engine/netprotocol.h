@@ -21,10 +21,11 @@ struct NetMessage
 	int trackPos;
 	float posX;
 	float posZ;
+	float angle;
 	float timeStamp;
 
 	NetMessage()
-		: type(MT_UNKNOWN), trackPos(-1), timeStamp(-1.0f), posX(0.0f), posZ(0.0f)
+		: type(MT_UNKNOWN), trackPos(-1), timeStamp(-1.0f), posX(0.0f), posZ(0.0f), angle(0.0f)
 	{
 	}
 };

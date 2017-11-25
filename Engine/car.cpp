@@ -36,10 +36,13 @@ Car::~Car()
 {
 }
 
-bool Car::Initialize(GraphicsClass *& graphics, HWND &hwnd, char* modelFilename, WCHAR* textureFilename)
+bool Car::Initialize(GraphicsClass *& graphics, HWND &hwnd, NetworkClass* &network, char* modelFilename, WCHAR* textureFilename)
 {
 	bool result;
 	m_Graphics = graphics;
+	m_Network = network;
+
+	lastMessageSent = 0.0f;
 
 	result = m_Graphics->AddToPipeline(m_Model, hwnd, modelFilename, textureFilename);
 	if (!result) {
@@ -55,7 +58,7 @@ void Car::Shutdown()
 	m_Model = 0;
 }
 
-void Car::Frame(float deltaTime)
+void Car::Frame(float deltaTime, float gameTime)
 {
 	// Change input values based on user input
 	if (isAccelerating) {
@@ -124,17 +127,27 @@ void Car::Frame(float deltaTime)
 	m_Model->SetPosition(position.x, position.y, position.z);
 	m_Model->SetRotation(graphicsAngle * 57.2958f);
 
+	//If we are in a multiplayer game, send a position update message every half second
+	if (m_Network->connectionEstablished == true) {
+		if ((gameTime - lastMessageSent) > 0.1f) {
+			m_Network->PositionUpdate(position.x, position.z, gameTime, graphicsAngle);
+			lastMessageSent = gameTime;
+		}
+	}
+
+	/////////////////////////
+
 	speed = (int)D3DXVec3Length(&velocity);
 
-	char spdBuffer[64];
+	/*char spdBuffer[64];
 	sprintf_s(spdBuffer, "SPEED: X: %f Y: %f", velocity.x, velocity.z);
 
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, spdBuffer, 60, 150, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, spdBuffer, 60, 150, 1.0f, 1.0f, 1.0f);*/
 
-	char lenBuffer[64];
+	/*char lenBuffer[64];
 	sprintf_s(lenBuffer, "MAGNITUDE: %f", D3DXVec3Length(&velocity));
 
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, lenBuffer, 60, 150, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, lenBuffer, 60, 150, 1.0f, 1.0f, 1.0f);*/
 }
 
 void Car::Accelerate(bool set)
