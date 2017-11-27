@@ -209,7 +209,7 @@ bool Game::InitializeMainGame(bool multiplayer)
 		return false;
 	}
 
-	result = mainPlayer->Initialize(m_Graphics, m_hwnd, m_Network, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
+	result = mainPlayer->Initialize(m_Graphics, m_Sound, m_hwnd, m_Network, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
 	if (!result) {
 		return false;
 	}
@@ -417,6 +417,7 @@ bool Game::MenuFrame()
 		m_Sound->StopLooping();
 		gameState = 2;
 		totalGameTime = 0.0f;
+		m_Sound->LoopSound("../Engine/data/wind.wav");
 		m_Graphics->SetGameState(gameState);
 	}
 
@@ -458,8 +459,6 @@ bool Game::GameFrame()
 		mainPlayer->TurnRight(false);
 	}
 
-	m_Sound->SetWindFrequency(mainPlayer->speed);
-
 	char timeBuffer[32];
 	sprintf_s(timeBuffer, "%f", totalGameTime);
 
@@ -470,9 +469,9 @@ bool Game::GameFrame()
 	sprintf_s(cpuBuffer, "CPU: %i%%", cpuUsage);
 
 
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 50, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, fpsBuffer, 60, 70, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, cpuBuffer, 60, 90, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 70, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, fpsBuffer, 60, 90, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, cpuBuffer, 60, 110, 1.0f, 1.0f, 1.0f);
 	return true;
 }
 

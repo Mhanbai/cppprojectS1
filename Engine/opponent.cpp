@@ -19,6 +19,8 @@ bool Opponent::Initialize(GraphicsClass *& graphics, HWND & hwnd, NetworkClass* 
 	m_Network = network;
 	m_Text = text;
 
+	graphicsAngle = 0.0f;
+
 	position = D3DXVECTOR3(-12.0f, 2.0f, 0.0f);
 
 	result = m_Graphics->AddToPipeline(m_Model, hwnd, modelFilename, textureFilename);
@@ -39,8 +41,6 @@ void Opponent::Shutdown()
 
 void Opponent::Frame(float deltaTime, float totalTime)
 {
-	graphicsAngle = 0.0f;
-
 	//Make life easier by assigning the last two relevant messages to variables
 	Update pos0 = m_Network->positionUpdates[m_Network->positionUpdates.size() - 1];
 	Update pos1 = m_Network->positionUpdates[m_Network->positionUpdates.size() - 2];

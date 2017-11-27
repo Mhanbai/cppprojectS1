@@ -78,6 +78,10 @@ public:
 	//Contain position update messages from opponent
 	std::vector<Update> positionUpdates;
 
+	//Stores and displays the length of time it takes to send messages to the client
+	float ping = 0.0f;
+	char pingBuffer[32];
+
 private:
 	//Network variables
 	WSADATA w;

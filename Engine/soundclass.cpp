@@ -78,10 +78,8 @@ void SoundClass::LoopSound(char * file)
 {
 	LoadWaveFile(file, &m_secondaryBuffer2, &m_secondary3DBuffer2); //Load the sound needing looped into the buffer.
 	
-	LPDWORD isPlaying = 0; //Create a var to hold info
-	m_secondaryBuffer2->GetStatus(isPlaying); //Gets whether or not the sound is currently playing/looping
-
-	if (!((int)isPlaying == DSBSTATUS_PLAYING)) { //If it's not, start looping it
+	LPDWORD isPlaying = 0; 
+	if (!(m_secondaryBuffer2->GetStatus(isPlaying) == DSBSTATUS_PLAYING)) { //If it's not, start looping it
 		LoopWaveFile();
 	}
 }

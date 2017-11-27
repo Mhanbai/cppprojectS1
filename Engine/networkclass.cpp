@@ -162,6 +162,9 @@ void NetworkClass::Frame(float time)
 		}
 	}
 
+	sprintf_s(pingBuffer, "Ping: %f", ping);
+	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus3, pingBuffer, 10, 50, 1.0f, 1.0f, 0.0f);
+
 	return;
 }
 
@@ -370,6 +373,8 @@ void NetworkClass::PositionUpdate(float x, float z, float time, float angle)
 
 void NetworkClass::ProcessMessage(const NetMessage * message)
 {
+	ping = totalGameTime - message->timeStamp;
+
 	if (message->type == MT_WELCOME) {
 		messageReceived = true;
 		trackPosition = message->trackPos;

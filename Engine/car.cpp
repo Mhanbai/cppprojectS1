@@ -9,6 +9,8 @@ Car::Car()
 	accelerationInput = 0.0f;
 	steerInput = 0.0f;
 	graphicsAngle = 0.0f;
+	startAccelerationFactor = 10.0f;
+	gear = 0.5f;
 	startingForwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 	forwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 	upVector = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
@@ -21,11 +23,9 @@ Car::Car()
 	isBreakReversing = false;
 
 	//Car handling
-	accelerationFactor = 100.0f;
 	frictionFactor = 0.5f;
 	lateralFrictionFactor = 3.0f;
 	steerFactor = 1.0f;
-	maxSpeed = D3DXVECTOR3(40.0f, 0.0f, 40.0f);
 }
 
 Car::Car(const Car &)
@@ -36,11 +36,12 @@ Car::~Car()
 {
 }
 
-bool Car::Initialize(GraphicsClass *& graphics, HWND &hwnd, NetworkClass* &network, char* modelFilename, WCHAR* textureFilename)
+bool Car::Initialize(GraphicsClass *& graphics, SoundClass* sound, HWND &hwnd, NetworkClass* &network, char* modelFilename, WCHAR* textureFilename)
 {
 	bool result;
 	m_Graphics = graphics;
 	m_Network = network;
+	m_Sound = sound;
 
 	lastMessageSent = 0.0f;
 
@@ -60,6 +61,22 @@ void Car::Shutdown()
 
 void Car::Frame(float deltaTime, float gameTime)
 {
+	speed = (D3DXVec3Length(&velocity));
+
+	if (speed < 30.0f) {
+		//m_Sound->LoopSound("../Engine/data/carslow.wav");
+		gear = 0.5f;
+	}
+	else if ((speed >= 30.0f) && (speed < 70.0f)) {
+		gear = 0.75f;
+	}
+	else {
+		gear = 1.0f;
+	}
+
+	accelerationFactor = startAccelerationFactor + (speed * gear);
+
+
 	// Change input values based on user input
 	if (isAccelerating) {
 		accelerationInput = 1.0f;
@@ -93,7 +110,7 @@ void Car::Frame(float deltaTime, float gameTime)
 
 	//Angle of steering equals user input multiplied by how well car handles
 	steerAngle = steerInput * steerFactor * deltaTime;
-	steerAngle = steerAngle * (D3DXVec3Length(&velocity) / 100.0f);
+	steerAngle = steerAngle * (speed / 100.0f);
 
 	//Calculate new forward vector
 	D3DXMatrixRotationY(&rotation, steerAngle); //Create a matrix for rotation around Y from angle of steering
@@ -115,7 +132,9 @@ void Car::Frame(float deltaTime, float gameTime)
 	velocity += (friction + lateralFriction) * deltaTime;
 
 	//Increase velocity by acceleration
-	velocity += acceleration * deltaTime;
+	if (speed < 150.0f) {
+		velocity += acceleration * deltaTime;
+	}
 
 	//Add velocity to position
 	position = position + velocity * deltaTime;
@@ -136,8 +155,6 @@ void Car::Frame(float deltaTime, float gameTime)
 	}
 
 	/////////////////////////
-
-	speed = (int)D3DXVec3Length(&velocity);
 
 	/*char spdBuffer[64];
 	sprintf_s(spdBuffer, "SPEED: X: %f Y: %f", velocity.x, velocity.z);

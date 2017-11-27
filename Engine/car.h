@@ -14,6 +14,7 @@
 #include <time.h>
 #include "graphicsclass.h"
 #include "networkclass.h"
+#include "soundclass.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: Car
@@ -24,7 +25,7 @@ public:
 	Car();
 	Car(const Car&);
 	~Car();
-	bool Initialize(GraphicsClass* &graphics, HWND &hwnd, NetworkClass* &network, char* modelFilename, WCHAR* textureFilename);
+	bool Initialize(GraphicsClass* &graphics, SoundClass* sound, HWND &hwnd, NetworkClass* &network, char* modelFilename, WCHAR* textureFilename);
 	void Shutdown();
 	void Frame(float deltaTime, float gameTime);
 
@@ -36,12 +37,11 @@ public:
 	D3DXVECTOR3 GetForwardVector();
 	D3DXVECTOR3 GetPosition();
 
-	int speed;
-
 private:
 	GraphicsClass* m_Graphics;
 	ModelClass* m_Model;
 	NetworkClass* m_Network;
+	SoundClass* m_Sound;
 
 	//Forward Vector, Up Vector & Right Vector + useful storage variables
 	D3DXVECTOR3 startingForwardVector;
@@ -54,10 +54,6 @@ private:
 	//Rotation matrix
 	D3DXMATRIX rotation;
 
-	//Current Speed & Max Speed
-	D3DXVECTOR3 currentSpeed;
-	D3DXVECTOR3 maxSpeed;
-
 	//Position of model for graphics & game
 	D3DXVECTOR3 position;
 	float graphicsAngle;
@@ -66,7 +62,10 @@ private:
 	D3DXVECTOR3 velocity;
 	D3DXVECTOR3 friction;
 	D3DXVECTOR3 acceleration;
+	float speed;
 	float accelerationFactor;
+	float startAccelerationFactor;
+	float gear;
 	float frictionFactor;
 	float accelerationInput;
 	float steerInput;
