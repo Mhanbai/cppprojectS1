@@ -41,26 +41,46 @@ void Opponent::Shutdown()
 
 void Opponent::Frame(float deltaTime, float totalTime)
 {
-	//Make life easier by assigning the last two relevant messages to variables
-	Update pos0 = m_Network->positionUpdates[m_Network->positionUpdates.size() - 1];
-	Update pos1 = m_Network->positionUpdates[m_Network->positionUpdates.size() - 2];
+	if (m_Network->updateAvailable == true) {
+		//Make life easier by assigning the last two relevant messages to variables
+		Update pos0 = m_Network->positionUpdates[m_Network->positionUpdates.size() - 1];
+		Update pos1 = m_Network->positionUpdates[m_Network->positionUpdates.size() - 2];
 
-	//Calculate velocities for X and Z from last two messages
-	velX = (pos0.posX - pos1.posX) / (pos0.timeStamp - pos1.timeStamp);
-	velZ = (pos0.posZ - pos1.posZ) / (pos0.timeStamp - pos1.timeStamp);
-	velA = (pos0.angle - pos1.angle) / (pos0.timeStamp - pos1.timeStamp);
+		//Calculate velocities for X and Z from last two messages
+		velX = (pos0.posX - pos1.posX) / (pos0.timeStamp - pos1.timeStamp);
+		velZ = (pos0.posZ - pos1.posZ) / (pos0.timeStamp - pos1.timeStamp);
 
-	//Calculate the time for when we are trying to predict
-	predictionTime = totalTime - pos0.timeStamp;
+		//Calculate the time for when we are trying to predict
+		predictionTime = totalTime - pos0.timeStamp;
 
-	//Linear prediction model to calculate where we want the car to be
-	D3DXVECTOR3 newPos = D3DXVECTOR3((pos0.posX + velX * predictionTime), 2.0f, (pos0.posZ + velZ * predictionTime));
-	float graphicsAngle = pos0.angle + (velA * predictionTime);
+		//Linear prediction model to calculate where we want the car to be
+		if (!(isnan(velX)) && (!isnan(velZ))) {
+			lastPosition = position;
+			nextPosition = D3DXVECTOR3((pos0.posX + velX * predictionTime), 2.0f, (pos0.posZ + velZ * predictionTime));
+			currentForwardVector = forwardVector;
+			D3DXVec3Subtract(&nextForwardVector, &nextPosition, &lastPosition);
+		}
+		frame = 1;
 
-	//Interpolate to the new position
-	if ((isnan(newPos.x) == false) && (isnan(newPos.z) == false)) {
-		D3DXVec3Lerp(&position, &position, &newPos, 0.5f);
+		if (startUpdatingAngle == false) {
+			for (int i = 0; i < m_Network->positionUpdates.size(); i++) {
+				if ((m_Network->positionUpdates[i].posX > 0.0f) || (m_Network->positionUpdates[i].posZ > 0.0f)) {
+					startUpdatingAngle = true;
+				}
+			}
+		}
+
+		m_Network->updateAvailable = false;
 	}
+
+	D3DXVec3Lerp(&position, &lastPosition, &nextPosition, 0.16666666666666f * frame);
+	D3DXVec3Lerp(&forwardVector, &currentForwardVector, &nextForwardVector, 0.16666666666666f * frame);
+
+	if (startUpdatingAngle == true) {
+		graphicsAngle = atan2(forwardVector.z, forwardVector.x) - atan2(startingForwardVector.z, startingForwardVector.x);
+	}
+
+	frame++;
 
 	//Set the model to where the car is
 	m_Model->SetPosition(position.x, position.y, position.z);

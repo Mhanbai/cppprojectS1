@@ -232,10 +232,10 @@ bool Game::InitializeMainGame(bool multiplayer)
 
 		if (m_Network->trackPosition == 0) {
 			mainPlayer->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
-			opponent->SetPosition(12.0f, 2.0f, 0.0f, 0.0f);
+			opponent->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
 		}
 		else if (m_Network->trackPosition == 1) {
-			mainPlayer->SetPosition(12.0f, 2.0f, 0.0f, 0.0f);
+			mainPlayer->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
 			opponent->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
 		}
 	}

@@ -92,7 +92,7 @@ void Car::Frame(float deltaTime, float gameTime)
 		}
 		gear = 0.5f;
 	}
-	else if ((speed >= 30.0f) && (speed < 70.0f)) {
+	else if ((speed >= 30.0f) && (speed < 60.0f)) {
 		gear = 0.75f;
 	}
 	else {
@@ -163,7 +163,7 @@ void Car::Frame(float deltaTime, float gameTime)
 	velocity += (friction + lateralFriction) * deltaTime;
 
 	//Increase velocity by acceleration
-	if (speed < 150.0f) {
+	if (speed < 100.0f) {
 		velocity += acceleration * deltaTime;
 	}
 

@@ -69,6 +69,7 @@ public:
 	bool establishingConnection = false;
 	bool messageReceived = false;
 	bool connectionEstablished = false;
+	bool updateAvailable = false;
 	int trackPosition;
 
 	//Variables that store public and local IPs

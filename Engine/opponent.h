@@ -12,6 +12,7 @@
 ///////////////////////
 #include <windows.h>
 #include <time.h>
+#include <vector>
 #include "graphicsclass.h"
 #include "networkclass.h"
 
@@ -37,15 +38,24 @@ private:
 	TextClass* m_Text;
 
 	//Variables for interpolation of position
+	D3DXVECTOR3 lastPosition;
+	D3DXVECTOR3 nextPosition;
 	float velX;
 	float velZ;
-	float velA;
 	float predictionTime;
+	float lastPredictionTime = 0.0f;
+	float frame = 1;
 
 	//Position of model for graphics & game
+	D3DXVECTOR3 currentForwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	D3DXVECTOR3 forwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	D3DXVECTOR3 nextForwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 	D3DXVECTOR3 startingForwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 	D3DXVECTOR3 position;
-	float graphicsAngle;
+	float lastGraphicsAngle = 0.0f;
+	float graphicsAngle = 0.0f;
+	float nextGraphicsAngle = 0.0f;
+	bool startUpdatingAngle = false;
 };
 
 #endif

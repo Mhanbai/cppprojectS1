@@ -387,6 +387,7 @@ void NetworkClass::ProcessMessage(const NetMessage * message)
 			update.posZ = message->posZ;
 			update.angle = message->angle;
 			positionUpdates.push_back(update);
+			updateAvailable = true;
 		}
 	}
 	else if (message->type == MT_RACEFINISHED) {
