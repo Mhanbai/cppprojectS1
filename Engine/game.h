@@ -28,7 +28,7 @@ public:
 	Game();
 	Game(const Game&);
 	~Game();
-	bool Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, SoundClass* &sound, bool connected, TextClass* &text, HWND &hwnd);
+	bool Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, SoundClass* &sound, bool connected, TextClass* &text, HWND &hwnd, D3DClass* &d3d);
 	void Shutdown();
 	void SetOnlineMode(bool mode);
 	bool Frame(int fpsOutput, int cpuOutput, float timerOutput);
@@ -53,6 +53,7 @@ private:
 	bool onlineMode;
 
 	// References to System Objects
+	D3DClass* m_D3D;
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
 	NetworkClass* m_Network;

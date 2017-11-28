@@ -95,6 +95,17 @@ D3DXVECTOR3 ModelClass::GetPosition()
 	return D3DXVECTOR3(gameObjectPosition.x, gameObjectPosition.y, gameObjectPosition.z);
 }
 
+D3DXVECTOR3* ModelClass::GetCollisionMesh()
+{
+	D3DXVECTOR3* mesh = new D3DXVECTOR3[m_vertexCount];
+
+	for (int i = 0; i < m_vertexCount; i++) {
+		mesh[i] = D3DXVECTOR3(m_model[i].x, m_model[i].y, m_model[i].z);
+	}
+
+	return mesh;
+}
+
 void ModelClass::SetPosition(float xPos, float yPos, float zPos)
 {
 	gameObjectPosition.x = xPos;
@@ -119,6 +130,11 @@ D3DXMATRIX ModelClass::GetRotationMatrix()
 	D3DXMATRIX toReturn;
 	D3DXMatrixRotationY(&toReturn, -gameObjectPosition.w * 0.0174532925f);
 	return toReturn;
+}
+
+float ModelClass::GetVertexCount()
+{
+	return m_vertexCount;
 }
 
 void ModelClass::SetRotation(float angle)

@@ -50,6 +50,15 @@ bool Car::Initialize(GraphicsClass *& graphics, SoundClass* sound, HWND &hwnd, N
 		return false;
 	}
 
+	mesh = m_Model->GetCollisionMesh();
+
+	m_Graphics->m_D3D->GetWorldMatrix(worldMatrix);
+
+	for (int i = 0; i < m_Model->GetVertexCount(); i++) {
+		D3DXVec3Transform(&product, &mesh[i], &worldMatrix);
+		mesh[i] = D3DXVECTOR3(product.x, product.y, product.z);
+	}
+
 	return true;
 }
 
@@ -63,14 +72,36 @@ void Car::Frame(float deltaTime, float gameTime)
 {
 	speed = (D3DXVec3Length(&velocity));
 
-	if (speed < 30.0f) {
-		//m_Sound->LoopSound("../Engine/data/carslow.wav");
+	if (speed < 5.0f) {
+		if (idlecarsfx == false) {
+			if (slowcarsfx == true) {
+				m_Sound->StopLooping();
+				slowcarsfx = false;
+			}
+			m_Sound->LoopSound("../Engine/data/caridle.wav");
+			idlecarsfx = true;
+		}
+	}
+	else if (speed < 30.0f) {
+		if (slowcarsfx == false) {
+			m_Sound->StopLooping();
+			idlecarsfx = false;
+			fastcarsfx = false;
+			m_Sound->LoopSound("../Engine/data/carslow.wav");
+			slowcarsfx = true;
+		}
 		gear = 0.5f;
 	}
 	else if ((speed >= 30.0f) && (speed < 70.0f)) {
 		gear = 0.75f;
 	}
 	else {
+		if (fastcarsfx == false) {
+			m_Sound->StopLooping();
+			slowcarsfx = false;
+			m_Sound->LoopSound("../Engine/data/carfast.wav");
+			fastcarsfx = true;
+		}
 		gear = 1.0f;
 	}
 
@@ -152,6 +183,11 @@ void Car::Frame(float deltaTime, float gameTime)
 			m_Network->PositionUpdate(position.x, position.z, gameTime, graphicsAngle);
 			lastMessageSent = gameTime;
 		}
+	}
+
+	for (int i = 0; i < m_Model->GetVertexCount(); i++) {
+		D3DXVec3Transform(&product, &mesh[i], &worldMatrix);
+		mesh[i] = D3DXVECTOR3(product.x + position.x, product.y + position.x, product.y + position.z);
 	}
 
 	/////////////////////////

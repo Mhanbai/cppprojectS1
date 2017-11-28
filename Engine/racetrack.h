@@ -21,12 +21,14 @@ public:
 	RaceTrack();
 	RaceTrack(const RaceTrack&);
 	~RaceTrack();
-	bool Initialize(GraphicsClass* &graphics, HWND &hwnd);
+	bool Initialize(GraphicsClass* &graphics, HWND &hwnd, D3DClass* &D3D);
 	void Shutdown();
+	D3DXVECTOR3* mesh;
+	ModelClass* m_Model;
 
 private:
 	GraphicsClass* m_Graphics;
-	ModelClass* raceTrack;
+	D3DClass* m_D3D;
 };
 
 #endif

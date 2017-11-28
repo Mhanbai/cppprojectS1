@@ -77,9 +77,9 @@ void SoundClass::PlaySoundOnce(char* file)
 void SoundClass::LoopSound(char * file)
 {
 	LoadWaveFile(file, &m_secondaryBuffer2, &m_secondary3DBuffer2); //Load the sound needing looped into the buffer.
-	
 	LPDWORD isPlaying = 0; 
-	if (!(m_secondaryBuffer2->GetStatus(isPlaying) == DSBSTATUS_PLAYING)) { //If it's not, start looping it
+
+	if (!(m_secondaryBuffer2->GetStatus(isPlaying) == DSBSTATUS_LOOPING)) { //If it's not, start looping it
 		LoopWaveFile();
 	}
 }

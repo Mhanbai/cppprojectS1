@@ -34,9 +34,10 @@ Game::~Game()
 {
 }
 
-bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, SoundClass* &sound, bool connected, TextClass* &text, HWND &hwnd)
+bool Game::Initialize(InputClass* &input, GraphicsClass* &graphics, NetworkClass* &network, SoundClass* &sound, bool connected, TextClass* &text, HWND &hwnd, D3DClass* &d3d)
 {
 	bool result;
+	m_D3D = d3d;
 	m_Input = input;
 	m_Graphics = graphics;
 	m_hwnd = hwnd;
@@ -245,7 +246,7 @@ bool Game::InitializeMainGame(bool multiplayer)
 		return false;
 	}
 
-	result = m_raceTrack->Initialize(m_Graphics, m_hwnd);
+	result = m_raceTrack->Initialize(m_Graphics, m_hwnd, m_D3D);
 	if (!result) {
 		return false;
 	}
@@ -363,6 +364,7 @@ bool Game::MenuFrame()
 			m_Sound->PlaySoundOnce("../Engine/data/select.wav");
 			m_Sound->StopLooping();
 			m_Sound->LoopSound("../Engine/data/wind.wav");
+			m_Sound->PlaySoundOnce("../Engine/data/carstart.wav");
 			totalGameTime = 0.0f;
 			result = InitializeMainGame(false);
 			if (!result) {
@@ -417,6 +419,7 @@ bool Game::MenuFrame()
 		m_Sound->StopLooping();
 		gameState = 2;
 		totalGameTime = 0.0f;
+		m_Sound->PlaySoundOnce("../Engine/data/carstart.wav");
 		m_Sound->LoopSound("../Engine/data/wind.wav");
 		m_Graphics->SetGameState(gameState);
 	}
@@ -458,6 +461,8 @@ bool Game::GameFrame()
 	else {
 		mainPlayer->TurnRight(false);
 	}
+
+
 
 	char timeBuffer[32];
 	sprintf_s(timeBuffer, "%f", totalGameTime);

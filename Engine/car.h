@@ -37,9 +37,11 @@ public:
 	D3DXVECTOR3 GetForwardVector();
 	D3DXVECTOR3 GetPosition();
 
+	D3DXVECTOR3* mesh;
+	ModelClass* m_Model;
+
 private:
 	GraphicsClass* m_Graphics;
-	ModelClass* m_Model;
 	NetworkClass* m_Network;
 	SoundClass* m_Sound;
 
@@ -87,6 +89,16 @@ private:
 	//Information for network messages
 	float timeStamp;
 	float lastMessageSent;
+
+	//For sound control
+	bool idlecarsfx = false;
+	bool slowcarsfx = false;
+	bool midcarsfx = false;
+	bool fastcarsfx = false;
+
+	//
+	D3DXVECTOR4 product;
+	D3DXMATRIX worldMatrix;
 };
 
 #endif

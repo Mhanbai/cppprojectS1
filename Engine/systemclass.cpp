@@ -102,7 +102,7 @@ bool SystemClass::Initialize()
 	}
 
 	// Initialize the game object.
-	result = m_Game->Initialize(m_Input, m_Graphics, m_Network, m_Sound, connected, m_Text, m_hwnd);
+	result = m_Game->Initialize(m_Input, m_Graphics, m_Network, m_Sound, connected, m_Text, m_hwnd, m_Graphics->m_D3D);
 	if (!result)
 	{
 		return false;
