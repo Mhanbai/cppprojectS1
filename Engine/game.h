@@ -91,6 +91,10 @@ private:
 	char acceptInputBuffer[32];
 	unsigned long bufferSize;
 	bool typing;
+
+	//Debug
+	int x = 0;
+	float lastDisplayTime = 0.0f;
 };
 
 #endif

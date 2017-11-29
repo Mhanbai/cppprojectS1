@@ -63,7 +63,7 @@ void Opponent::Frame(float deltaTime, float totalTime)
 		frame = 1;
 
 		if (startUpdatingAngle == false) {
-			for (int i = 0; i < m_Network->positionUpdates.size(); i++) {
+			for (unsigned int i = 0; i < m_Network->positionUpdates.size(); i++) {
 				if ((m_Network->positionUpdates[i].posX > 0.0f) || (m_Network->positionUpdates[i].posZ > 0.0f)) {
 					startUpdatingAngle = true;
 				}

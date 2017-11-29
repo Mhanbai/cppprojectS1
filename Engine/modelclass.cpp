@@ -10,6 +10,7 @@ ModelClass::ModelClass()
 	m_indexBuffer = 0;
 	m_model = 0;
 	m_texture = 0;
+	mesh = 0;
 	gameObjectPosition = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
@@ -67,6 +68,11 @@ void ModelClass::Shutdown()
 	// Release the model data.
 	ReleaseModel();
 
+	if (mesh) {
+		delete mesh;
+		mesh = 0;
+	}
+
 	return;
 }
 
@@ -95,15 +101,15 @@ D3DXVECTOR3 ModelClass::GetPosition()
 	return D3DXVECTOR3(gameObjectPosition.x, gameObjectPosition.y, gameObjectPosition.z);
 }
 
-D3DXVECTOR3* ModelClass::GetCollisionMesh()
+void ModelClass::GetCollisionMesh(D3DXVECTOR3* &mesh_in)
 {
-	D3DXVECTOR3* mesh = new D3DXVECTOR3[m_vertexCount];
+	mesh = new D3DXVECTOR3[m_vertexCount];
 
 	for (int i = 0; i < m_vertexCount; i++) {
 		mesh[i] = D3DXVECTOR3(m_model[i].x, m_model[i].y, m_model[i].z);
 	}
 
-	return mesh;
+	mesh_in = mesh;
 }
 
 void ModelClass::SetPosition(float xPos, float yPos, float zPos)
@@ -132,7 +138,7 @@ D3DXMATRIX ModelClass::GetRotationMatrix()
 	return toReturn;
 }
 
-float ModelClass::GetVertexCount()
+int ModelClass::GetVertexCount()
 {
 	return m_vertexCount;
 }

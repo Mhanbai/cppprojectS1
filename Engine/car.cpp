@@ -50,14 +50,7 @@ bool Car::Initialize(GraphicsClass *& graphics, SoundClass* sound, HWND &hwnd, N
 		return false;
 	}
 
-	mesh = m_Model->GetCollisionMesh();
-
-	m_Graphics->m_D3D->GetWorldMatrix(worldMatrix);
-
-	for (int i = 0; i < m_Model->GetVertexCount(); i++) {
-		D3DXVec3Transform(&product, &mesh[i], &worldMatrix);
-		mesh[i] = D3DXVECTOR3(product.x, product.y, product.z);
-	}
+	m_Collider = FindCollider();
 
 	return true;
 }
@@ -66,6 +59,7 @@ void Car::Shutdown()
 {
 	m_Graphics = 0;
 	m_Model = 0;
+	mesh = 0;
 }
 
 void Car::Frame(float deltaTime, float gameTime)
@@ -167,6 +161,31 @@ void Car::Frame(float deltaTime, float gameTime)
 		velocity += acceleration * deltaTime;
 	}
 
+	//Update the collider
+	m_Collider.backLeft = m_Collider.backLeft - position;
+	D3DXVec3Transform(&nextForwardVector, &m_Collider.backLeft, &rotation);
+	m_Collider.backLeft = D3DXVECTOR3(nextForwardVector.x, nextForwardVector.y, nextForwardVector.z);
+	m_Collider.backLeft = m_Collider.backLeft + position;
+	m_Collider.backLeft = m_Collider.backLeft + velocity * deltaTime;
+
+	m_Collider.backRight = m_Collider.backRight - position;
+	D3DXVec3Transform(&nextForwardVector, &m_Collider.backRight, &rotation);
+	m_Collider.backRight = D3DXVECTOR3(nextForwardVector.x, nextForwardVector.y, nextForwardVector.z);
+	m_Collider.backRight = m_Collider.backRight + position;
+	m_Collider.backRight = m_Collider.backRight + velocity * deltaTime;
+
+	m_Collider.frontLeft = m_Collider.frontLeft - position;
+	D3DXVec3Transform(&nextForwardVector, &m_Collider.frontLeft, &rotation);
+	m_Collider.frontLeft = D3DXVECTOR3(nextForwardVector.x, nextForwardVector.y, nextForwardVector.z);
+	m_Collider.frontLeft = m_Collider.frontLeft + position;
+	m_Collider.frontLeft = m_Collider.frontLeft + velocity * deltaTime;
+
+	m_Collider.frontRight = m_Collider.frontRight - position;
+	D3DXVec3Transform(&nextForwardVector, &m_Collider.frontRight, &rotation);
+	m_Collider.frontRight = D3DXVECTOR3(nextForwardVector.x, nextForwardVector.y, nextForwardVector.z);
+	m_Collider.frontRight = m_Collider.frontRight + position;
+	m_Collider.frontRight = m_Collider.frontRight + velocity * deltaTime;
+
 	//Add velocity to position
 	position = position + velocity * deltaTime;
 
@@ -185,22 +204,15 @@ void Car::Frame(float deltaTime, float gameTime)
 		}
 	}
 
-	for (int i = 0; i < m_Model->GetVertexCount(); i++) {
-		D3DXVec3Transform(&product, &mesh[i], &worldMatrix);
-		mesh[i] = D3DXVECTOR3(product.x + position.x, product.y + position.x, product.y + position.z);
-	}
+	char spdBuffer[64];
+	sprintf_s(spdBuffer, "POS: X: %f Y: %f Z: %f", m_Collider.frontRight.x, m_Collider.frontRight.y, m_Collider.frontRight.z);
 
-	/////////////////////////
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, spdBuffer, 60, 150, 1.0f, 1.0f, 1.0f);
 
-	/*char spdBuffer[64];
-	sprintf_s(spdBuffer, "SPEED: X: %f Y: %f", velocity.x, velocity.z);
+	char lenBuffer[64];
+	sprintf_s(lenBuffer, "MAINPOS: X: %f Y: %f Z: %f", position.x, position.y, position.z);
 
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, spdBuffer, 60, 150, 1.0f, 1.0f, 1.0f);*/
-
-	/*char lenBuffer[64];
-	sprintf_s(lenBuffer, "MAGNITUDE: %f", D3DXVec3Length(&velocity));
-
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, lenBuffer, 60, 150, 1.0f, 1.0f, 1.0f);*/
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, lenBuffer, 60, 170, 1.0f, 1.0f, 1.0f);
 }
 
 void Car::Accelerate(bool set)
@@ -245,10 +257,24 @@ void Car::TurnRight(bool set)
 
 void Car::SetPosition(float xPos, float yPos, float zPos, float rotation)
 {
+	float xOffset = position.x - xPos;
+	float yOffset = position.y - yPos;
+	float zOffset = position.z - zPos;
+
 	position.x = xPos;
 	position.y = yPos;
 	position.z = zPos;
 	graphicsAngle = rotation;
+
+	//Update position of collider
+	m_Collider.frontRight.x = m_Collider.frontRight.x - xOffset;
+	m_Collider.frontRight.z = m_Collider.frontRight.z - zOffset;
+	m_Collider.frontLeft.x = m_Collider.frontLeft.x - xOffset;
+	m_Collider.frontLeft.z = m_Collider.frontLeft.z - zOffset;
+	m_Collider.backRight.x = m_Collider.backRight.x - xOffset;
+	m_Collider.backRight.z = m_Collider.backRight.z - zOffset;
+	m_Collider.backLeft.x = m_Collider.backLeft.x - xOffset;
+	m_Collider.backLeft.z = m_Collider.backLeft.z - zOffset;
 }
 
 D3DXVECTOR3 Car::GetForwardVector()
@@ -259,4 +285,44 @@ D3DXVECTOR3 Car::GetForwardVector()
 D3DXVECTOR3 Car::GetPosition()
 {
 	return position;
+}
+
+Car::CollisionBox Car::FindCollider()
+{
+	m_Model->GetCollisionMesh(mesh);
+	m_Graphics->m_D3D->GetWorldMatrix(worldMatrix);
+
+	for (int i = 0; i < m_Model->GetVertexCount(); i++) {
+		D3DXVec3Transform(&product, &mesh[i], &worldMatrix);
+		mesh[i] = D3DXVECTOR3(product.x, product.y, product.z);
+	}
+
+	float biggestX = mesh[0].x;
+	float biggestZ = mesh[0].z;
+	float lowestX = mesh[0].x;
+	float lowestZ = mesh[0].z;
+
+	for (int i = 0; i < m_Model->GetVertexCount(); i++) {
+		if (mesh[i].x > biggestX) {
+			biggestX = mesh[i].x;
+		}
+		if (mesh[i].x < lowestX) {
+			lowestX = mesh[i].x;
+		}
+		if (mesh[i].z > biggestZ) {
+			biggestZ = mesh[i].z;
+		}
+		if (mesh[i].z < lowestZ) {
+			lowestZ = mesh[i].z;
+		}
+	}
+
+	CollisionBox returner;
+
+	returner.frontLeft = D3DXVECTOR3(lowestX, 0.0f, biggestZ);
+	returner.backLeft = D3DXVECTOR3(lowestX, 0.0f, lowestZ);
+	returner.frontRight = D3DXVECTOR3(biggestX, 0.0f, biggestZ);
+	returner.backRight = D3DXVECTOR3(biggestX, 0.0f, lowestZ);
+
+	return returner;
 }

@@ -472,6 +472,17 @@ bool Game::GameFrame()
 	mainPlayer->Frame(deltaTime / 1000, totalGameTime);
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
 
+	if ((totalGameTime - lastDisplayTime) > 1.0f) {
+		lastDisplayTime = totalGameTime;
+		if (x < 641) {
+			x++;
+		}
+		else {
+			x = 0;
+		}
+		m_raceTrack->ViewCollider(x);
+	}
+
 	if (gameStarted == false) {
 		if ((totalGameTime >= 1.0f) && (totalGameTime < 2.0f)) {
 			if (three == false) {

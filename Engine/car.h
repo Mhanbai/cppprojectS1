@@ -22,6 +22,19 @@
 class Car
 {
 public:
+	struct CollisionBox {
+		D3DXVECTOR3 frontLeft;
+		D3DXVECTOR3 frontRight;
+		D3DXVECTOR3 backLeft;
+		D3DXVECTOR3 backRight;
+		CollisionBox()
+			: frontLeft(D3DXVECTOR3(0.0f, 0.0f, 0.0f)), 
+			frontRight(D3DXVECTOR3(0.0f, 0.0f, 0.0f)), 
+			backLeft(D3DXVECTOR3(0.0f, 0.0f, 0.0f)), 
+			backRight(D3DXVECTOR3(0.0f, 0.0f, 0.0f))
+		{
+		}
+	};
 	Car();
 	Car(const Car&);
 	~Car();
@@ -37,8 +50,8 @@ public:
 	D3DXVECTOR3 GetForwardVector();
 	D3DXVECTOR3 GetPosition();
 
-	D3DXVECTOR3* mesh;
 	ModelClass* m_Model;
+	CollisionBox m_Collider;
 
 private:
 	GraphicsClass* m_Graphics;
@@ -96,9 +109,11 @@ private:
 	bool midcarsfx = false;
 	bool fastcarsfx = false;
 
-	//
+	//Helper variables used to create the collision mesh
 	D3DXVECTOR4 product;
 	D3DXMATRIX worldMatrix;
+	D3DXVECTOR3* mesh;
+	Car::CollisionBox FindCollider();
 };
 
 #endif

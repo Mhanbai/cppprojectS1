@@ -47,13 +47,13 @@ public:
 	ID3D11ShaderResourceView* GetTexture();
 
 	D3DXVECTOR3 GetPosition();
-	D3DXVECTOR3* GetCollisionMesh();
+	void GetCollisionMesh(D3DXVECTOR3* &mesh_in);
 	void SetPosition(float xPos, float yPos, float zPos);
 	D3DXMATRIX GetPositionMatrix();
 	float GetRotation();
 	void SetRotation(float angle);
 	D3DXMATRIX GetRotationMatrix();
-	float GetVertexCount();
+	int GetVertexCount();
 
 private:
 	bool InitializeBuffers(ID3D11Device*);
@@ -72,6 +72,7 @@ private:
 	int m_vertexCount, m_indexCount;
 	ModelType* m_model;
 	TextureClass* m_texture;
+	D3DXVECTOR3* mesh;
 };
 
 #endif
