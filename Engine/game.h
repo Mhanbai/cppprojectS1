@@ -50,6 +50,12 @@ private:
 	float totalGameTime;
 	float deltaTime;
 
+	//Values for countdown
+	bool gameStarted = false;
+	bool three = false;
+	bool two = false;
+	bool one = false;
+
 	bool onlineMode;
 
 	// References to System Objects
@@ -71,6 +77,10 @@ private:
 	BitmapClass* menuBackground;
 	BitmapClass* menuTitle;
 	BitmapClass* menuScreen;
+	BitmapClass* threeDisplay;
+	BitmapClass* twoDisplay;
+	BitmapClass* oneDisplay;
+	BitmapClass* goDisplay;
 
 	// References to Menu Screen Two Assets
 	BitmapClass* pointer2;

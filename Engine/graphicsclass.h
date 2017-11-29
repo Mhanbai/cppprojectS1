@@ -58,6 +58,8 @@ public:
 	int GetScreenWidth();
 	int GetScreenHeight();
 
+	int countdown = -1;
+
 private:
 	bool Render();
 	void RenderSkyDome(D3DXMATRIX &worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, D3DXVECTOR3 cameraPosition);
@@ -74,6 +76,8 @@ private:
 	ModelClass* mainGameAssets[20];
 	BitmapClass* menuScreenOneAssets[10];
 	BitmapClass* menuScreenTwoAssets[10];
+	BitmapClass* countDownAssets[4];
+	int countDownAssetCount;
 	int mainGameAssetCount;
 	int menuScreenOneAssetCount;
 	int menuScreenTwoAssetCount;

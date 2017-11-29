@@ -18,6 +18,10 @@ Game::Game()
 	acceptButton2 = 0;
 	backButton2 = 0;
 	enterIP2 = 0;
+	threeDisplay = 0;
+	twoDisplay = 0;
+	oneDisplay = 0;
+	goDisplay = 0;
 
 	typing = false;
 	menuWasUpPressed = false;
@@ -197,6 +201,42 @@ bool Game::InitializeMenuScreen()
 
 	//Set Initial position of pointer
 	pointer2->height_in = backButton2->height_in + 25;
+
+	result = m_Graphics->AddBitmapToPipeline(2, threeDisplay, m_hwnd, L"../Engine/data/three.dds", 79, 110);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	threeDisplay->width_in = (m_Graphics->GetScreenWidth() / 2) - 40;
+	threeDisplay->height_in = (m_Graphics->GetScreenHeight() / 2) - 55;
+
+	result = m_Graphics->AddBitmapToPipeline(2, twoDisplay, m_hwnd, L"../Engine/data/two.dds", 77, 110);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	twoDisplay->width_in = (m_Graphics->GetScreenWidth() / 2) - 38;
+	twoDisplay->height_in = (m_Graphics->GetScreenHeight() / 2) - 55;
+
+	result = m_Graphics->AddBitmapToPipeline(2, oneDisplay, m_hwnd, L"../Engine/data/one.dds", 69, 110);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	oneDisplay->width_in = (m_Graphics->GetScreenWidth() / 2) - 35;
+	oneDisplay->height_in = (m_Graphics->GetScreenHeight() / 2) - 55;
+
+	result = m_Graphics->AddBitmapToPipeline(2, goDisplay, m_hwnd, L"../Engine/data/go.dds", 193, 110);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	goDisplay->width_in = (m_Graphics->GetScreenWidth() / 2) - 96;
+	goDisplay->height_in = (m_Graphics->GetScreenHeight() / 2) - 55;
 
 	return true;
 }
@@ -432,51 +472,85 @@ bool Game::GameFrame()
 	mainPlayer->Frame(deltaTime / 1000, totalGameTime);
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
 
-	if (m_Input->IsUpPressed() == true) {
-		mainPlayer->Accelerate(true);
-	}
-	else {
-		mainPlayer->Accelerate(false);
+	if (gameStarted == false) {
+		if ((totalGameTime >= 1.0f) && (totalGameTime < 2.0f)) {
+			if (three == false) {
+				three = true;
+				m_Sound->PlaySoundOnce("../Engine/data/321.wav");
+				m_Graphics->countdown = 0;
+			}
+		}
+		else if ((totalGameTime >= 2.0f) && (totalGameTime < 3.0f)) {
+			if (two == false) {
+				two = true;
+				m_Sound->PlaySoundOnce("../Engine/data/321.wav");
+				m_Graphics->countdown = 1;
+			}
+		}
+		else if ((totalGameTime >= 3.0f) && (totalGameTime < 4.0f)) {
+			if (one == false) {
+				one = true;
+				m_Sound->PlaySoundOnce("../Engine/data/321.wav");
+				m_Graphics->countdown = 2;
+			}
+		}
+		else if (totalGameTime >= 4.0f){
+			m_Graphics->countdown = 3;
+			totalGameTime = 0.0f;
+			m_Sound->PlaySoundOnce("../Engine/data/go.wav");
+			gameStarted = true;
+		}
 	}
 
-	if (m_Input->IsDownPressed() == true) {
-		mainPlayer->BreakReverse(true);
-	}
-	else {
-		mainPlayer->BreakReverse(false);
+	if (totalGameTime > 1.0f) {
+		m_Graphics->countdown = -1;
 	}
 
-	if (m_Input->IsLeftPressed() == true)
-	{
-		mainPlayer->TurnLeft(true);
-	}
-	else {
-		mainPlayer->TurnLeft(false);
-	}
+	if (gameStarted == true) {
+		if (m_Input->IsUpPressed() == true) {
+			mainPlayer->Accelerate(true);
+		}
+		else {
+			mainPlayer->Accelerate(false);
+		}
 
-	if (m_Input->IsRightPressed() == true)
-	{
-		mainPlayer->TurnRight(true);
-	}
-	else {
-		mainPlayer->TurnRight(false);
-	}
+		if (m_Input->IsDownPressed() == true) {
+			mainPlayer->BreakReverse(true);
+		}
+		else {
+			mainPlayer->BreakReverse(false);
+		}
 
+		if (m_Input->IsLeftPressed() == true)
+		{
+			mainPlayer->TurnLeft(true);
+		}
+		else {
+			mainPlayer->TurnLeft(false);
+		}
 
+		if (m_Input->IsRightPressed() == true)
+		{
+			mainPlayer->TurnRight(true);
+		}
+		else {
+			mainPlayer->TurnRight(false);
+		}
+
+		char fpsBuffer[32];
+		sprintf_s(fpsBuffer, "FPS: %i", framesPerSec);
+
+		char cpuBuffer[32];
+		sprintf_s(cpuBuffer, "CPU: %i%%", cpuUsage);
+
+		m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, fpsBuffer, 60, 90, 1.0f, 1.0f, 1.0f);
+		m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, cpuBuffer, 60, 110, 1.0f, 1.0f, 1.0f);
+	}
 
 	char timeBuffer[32];
-	sprintf_s(timeBuffer, "%f", totalGameTime);
-
-	char fpsBuffer[32];
-	sprintf_s(fpsBuffer, "FPS: %i", framesPerSec);
-
-	char cpuBuffer[32];
-	sprintf_s(cpuBuffer, "CPU: %i%%", cpuUsage);
-
-
+	sprintf_s(timeBuffer, "%.0f:%.2f", floor((totalGameTime / 60)), fmod(totalGameTime, 60));
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 70, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, fpsBuffer, 60, 90, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, cpuBuffer, 60, 110, 1.0f, 1.0f, 1.0f);
+
 	return true;
 }
 

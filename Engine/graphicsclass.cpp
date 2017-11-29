@@ -23,6 +23,7 @@ GraphicsClass::GraphicsClass()
 	mainGameAssetCount = 0;
 	menuScreenOneAssetCount = 0;
 	menuScreenTwoAssetCount = 0;
+	countDownAssetCount = 0;
 	gameState = 0;
 	menuState = 0;
 	m_Foliage = 0;
@@ -334,6 +335,16 @@ void GraphicsClass::Shutdown()
 		}
 	}
 
+	// Release bitmaps used for the second menu screen.
+	for (int i = 0; i < countDownAssetCount; i++) {
+		if (countDownAssets[i])
+		{
+			countDownAssets[i]->Shutdown();
+			delete countDownAssets[i];
+			countDownAssets[i] = 0;
+		}
+	}
+
 	// Release the camera object.
 	if (m_Camera)
 	{
@@ -414,6 +425,19 @@ bool GraphicsClass::AddBitmapToPipeline(int screenNo, BitmapClass* &bitmap, HWND
 		bitmap = menuScreenTwoAssets[menuScreenTwoAssetCount];
 		menuScreenTwoAssetCount++;
 		break;
+	case 2:
+		// Initialize the bitmap object.
+		countDownAssets[countDownAssetCount] = new BitmapClass;
+		result = countDownAssets[countDownAssetCount]->Initialize(m_D3D->GetDevice(), m_screenWidth, m_screenHeight, bitmapFilename, width, height);
+		if (!result)
+		{
+			MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+			return false;
+		}
+
+		bitmap = countDownAssets[countDownAssetCount];
+		countDownAssetCount++;
+		break;
 	}
 
 	return true;
@@ -442,7 +466,7 @@ int GraphicsClass::GetScreenHeight()
 
 bool GraphicsClass::Render()
 {
-	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	D3DXVECTOR3 cameraPosition;
 	bool result;
 
@@ -457,6 +481,7 @@ bool GraphicsClass::Render()
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
+	m_D3D->GetOrthoMatrix(orthoMatrix);
 
 	// Get the position of the camera.
 	cameraPosition = m_Camera->GetPosition();
@@ -473,7 +498,6 @@ bool GraphicsClass::Render()
 		// Render the text strings.
 		m_D3D->TurnOnAlphaBlending();
 		RenderText(1, worldMatrix);
-
 
 		// Render the terrain buffers.
 		m_Terrain->Render(m_D3D->GetDeviceContext());
@@ -514,6 +538,63 @@ bool GraphicsClass::Render()
 		m_D3D->TurnOffAlphaBlending();
 		break;
 	}
+
+	m_D3D->TurnOnAlphaBlending();
+	m_D3D->TurnZBufferOff();
+	switch (countdown) {
+	case 0:
+		result = countDownAssets[0]->Render(m_D3D->GetDeviceContext(), countDownAssets[0]->width_in, countDownAssets[0]->height_in);
+		if (!result)
+		{
+			return false;
+		}
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), countDownAssets[0]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, countDownAssets[0]->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
+		break;
+	case 1:
+		result = countDownAssets[1]->Render(m_D3D->GetDeviceContext(), countDownAssets[1]->width_in, countDownAssets[1]->height_in);
+		if (!result)
+		{
+			return false;
+		}
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), countDownAssets[1]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, countDownAssets[1]->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
+		break;
+	case 2:
+		result = countDownAssets[2]->Render(m_D3D->GetDeviceContext(), countDownAssets[2]->width_in, countDownAssets[2]->height_in);
+		if (!result)
+		{
+			return false;
+		}
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), countDownAssets[2]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, countDownAssets[2]->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
+		break;
+	case 3:
+		result = countDownAssets[3]->Render(m_D3D->GetDeviceContext(), countDownAssets[3]->width_in, countDownAssets[3]->height_in);
+		if (!result)
+		{
+			return false;
+		}
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), countDownAssets[3]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, countDownAssets[3]->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
+		break;
+	default:
+		break;
+	}
+	m_D3D->TurnZBufferOn();
+	m_D3D->TurnOffAlphaBlending();
 
 	m_D3D->EndScene();
 
