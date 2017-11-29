@@ -47,6 +47,15 @@ private:
 	ModelClass* point1;
 	ModelClass* point2;
 	ModelClass* point3;
+	ModelClass* point4;
+	ModelClass* point5;
+	ModelClass* point6;
+	ModelClass* point7;
+	ModelClass* point8;
+	ModelClass* point9;
+	ModelClass* point10;
+	ModelClass* point11;
+	ModelClass* point12;
 
 };
 

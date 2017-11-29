@@ -73,7 +73,7 @@ private:
 	int m_screenWidth;
 	int m_screenHeight;
 
-	ModelClass* mainGameAssets[20];
+	ModelClass* mainGameAssets[40];
 	BitmapClass* menuScreenOneAssets[10];
 	BitmapClass* menuScreenTwoAssets[10];
 	BitmapClass* countDownAssets[4];

@@ -471,11 +471,12 @@ bool Game::GameFrame()
 {
 	mainPlayer->Frame(deltaTime / 1000, totalGameTime);
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
+	//m_Graphics->m_Camera->SetPosition(-100.0f, 900.0f, 100.0f);
 
 	if ((totalGameTime - lastDisplayTime) > 1.0f) {
 		lastDisplayTime = totalGameTime;
-		if (x < 641) {
-			x++;
+		if (x < 205) {
+			x = x + 4;
 		}
 		else {
 			x = 0;
