@@ -186,7 +186,6 @@ ID3D11ShaderResourceView* FoliageClass::GetTexture()
 	return m_Texture->GetTexture();
 }
 
-
 bool FoliageClass::InitializeBuffers(ID3D11Device* device)
 {
 	VertexType* vertices;

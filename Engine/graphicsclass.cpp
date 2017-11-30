@@ -466,7 +466,6 @@ int GraphicsClass::GetScreenHeight()
 
 bool GraphicsClass::Render()
 {
-	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	D3DXVECTOR3 cameraPosition;
 	bool result;
 
@@ -500,7 +499,7 @@ bool GraphicsClass::Render()
 		RenderText(1, worldMatrix);
 
 		// Render the terrain buffers.
-		m_Terrain->Render(m_D3D->GetDeviceContext());
+		/*m_Terrain->Render(m_D3D->GetDeviceContext());
 
 		// Render the terrain using the terrain shader.
 		result = m_TerrainShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
@@ -508,7 +507,7 @@ bool GraphicsClass::Render()
 		if (!result)
 		{
 			return false;
-		}
+		}*/
 
 		for (int i = 0; i < mainGameAssetCount; i++) {
 			// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.

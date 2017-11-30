@@ -36,12 +36,13 @@ Car::~Car()
 {
 }
 
-bool Car::Initialize(GraphicsClass *& graphics, SoundClass* sound, HWND &hwnd, NetworkClass* &network, char* modelFilename, WCHAR* textureFilename)
+bool Car::Initialize(RaceTrack* &racetrack, GraphicsClass *& graphics, SoundClass* sound, HWND &hwnd, NetworkClass* &network, char* modelFilename, WCHAR* textureFilename)
 {
 	bool result;
 	m_Graphics = graphics;
 	m_Network = network;
 	m_Sound = sound;
+	m_Racetrack = racetrack;
 
 	lastMessageSent = 0.0f;
 
@@ -192,6 +193,20 @@ void Car::Frame(float deltaTime, float gameTime)
 	//Calculate angle car is facing for graphics
 	graphicsAngle = atan2(forwardVector.z, forwardVector.x) - atan2(startingForwardVector.z, startingForwardVector.x);
 
+	for (unsigned int i = 0; i < m_Racetrack->trackGrid.size(); i++) {
+		isOnTrack = IsInsideTriangle(m_Collider.backLeft, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
+		isOnTrack = IsInsideTriangle(m_Collider.backRight, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
+		isOnTrack = IsInsideTriangle(m_Collider.frontLeft, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
+		isOnTrack = IsInsideTriangle(m_Collider.frontRight, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
+	}
+
+	if (isOnTrack == true) {
+		position.y = 2.0f;
+	}
+	else if (isOnTrack == false) {
+		position.y = 4.0f;
+	}
+
 	//Set the position of the cars model
 	m_Model->SetPosition(position.x, position.y, position.z);
 	m_Model->SetRotation(graphicsAngle * 57.2958f);
@@ -285,6 +300,23 @@ D3DXVECTOR3 Car::GetForwardVector()
 D3DXVECTOR3 Car::GetPosition()
 {
 	return position;
+}
+
+bool Car::IsInsideTriangle(D3DXVECTOR3 s, D3DXVECTOR3 a, D3DXVECTOR3 b, D3DXVECTOR3 c)
+{
+	float as_x = s.x - a.x;
+	float as_z = s.z - a.z;
+	bool s_ab = ((b.x - a.x) * as_z - (b.z - a.z) * as_x) > 0;
+
+	if ((c.x - a.x) * as_z - (c.z - a.z) * as_x > 0 == s_ab) {
+		return false;
+	}
+
+	if ((c.x - b.x) * (s.z - b.z) - (c.z - b.z) * (s.x - b.x) > 0 != s_ab) {
+		return false;
+	}
+
+	return true;
 }
 
 Car::CollisionBox Car::FindCollider()

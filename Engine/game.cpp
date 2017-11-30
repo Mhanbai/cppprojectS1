@@ -250,7 +250,7 @@ bool Game::InitializeMainGame(bool multiplayer)
 		return false;
 	}
 
-	result = mainPlayer->Initialize(m_Graphics, m_Sound, m_hwnd, m_Network, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
+	result = mainPlayer->Initialize(m_raceTrack, m_Graphics, m_Sound, m_hwnd, m_Network, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
 	if (!result) {
 		return false;
 	}
@@ -470,19 +470,9 @@ bool Game::MenuFrame()
 bool Game::GameFrame()
 {
 	mainPlayer->Frame(deltaTime / 1000, totalGameTime);
+	m_raceTrack->Frame();
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
 	//m_Graphics->m_Camera->SetPosition(-100.0f, 900.0f, 100.0f);
-
-	if ((totalGameTime - lastDisplayTime) > 1.0f) {
-		lastDisplayTime = totalGameTime;
-		if (x < 205) {
-			x = x + 4;
-		}
-		else {
-			x = 0;
-		}
-		m_raceTrack->ViewCollider(x);
-	}
 
 	if (gameStarted == false) {
 		if ((totalGameTime >= 1.0f) && (totalGameTime < 2.0f)) {

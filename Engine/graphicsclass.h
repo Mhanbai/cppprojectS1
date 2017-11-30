@@ -60,6 +60,9 @@ public:
 
 	int countdown = -1;
 
+	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
+	FoliageClass* m_Foliage;
+
 private:
 	bool Render();
 	void RenderSkyDome(D3DXMATRIX &worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, D3DXVECTOR3 cameraPosition);
@@ -73,7 +76,7 @@ private:
 	int m_screenWidth;
 	int m_screenHeight;
 
-	ModelClass* mainGameAssets[40];
+	ModelClass* mainGameAssets[300];
 	BitmapClass* menuScreenOneAssets[10];
 	BitmapClass* menuScreenTwoAssets[10];
 	BitmapClass* countDownAssets[4];
@@ -90,7 +93,6 @@ private:
 	TerrainShaderClass* m_TerrainShader;
 	TerrainClass* m_Terrain;
 	D3DXMATRIX screenViewMatrix;
-	FoliageClass* m_Foliage;
 	FoliageShaderClass* m_FoliageShader;
 };
 

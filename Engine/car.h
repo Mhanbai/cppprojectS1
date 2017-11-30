@@ -15,6 +15,7 @@
 #include "graphicsclass.h"
 #include "networkclass.h"
 #include "soundclass.h"
+#include "racetrack.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: Car
@@ -38,7 +39,7 @@ public:
 	Car();
 	Car(const Car&);
 	~Car();
-	bool Initialize(GraphicsClass* &graphics, SoundClass* sound, HWND &hwnd, NetworkClass* &network, char* modelFilename, WCHAR* textureFilename);
+	bool Initialize(RaceTrack* &racetrack, GraphicsClass* &graphics, SoundClass* sound, HWND &hwnd, NetworkClass* &network, char* modelFilename, WCHAR* textureFilename);
 	void Shutdown();
 	void Frame(float deltaTime, float gameTime);
 
@@ -57,6 +58,7 @@ private:
 	GraphicsClass* m_Graphics;
 	NetworkClass* m_Network;
 	SoundClass* m_Sound;
+	RaceTrack* m_Racetrack;
 
 	//Forward Vector, Up Vector & Right Vector + useful storage variables
 	D3DXVECTOR3 startingForwardVector;
@@ -102,6 +104,10 @@ private:
 	//Information for network messages
 	float timeStamp;
 	float lastMessageSent;
+
+	//Check to see if car is on track
+	bool IsInsideTriangle(D3DXVECTOR3 s, D3DXVECTOR3 a, D3DXVECTOR3 b, D3DXVECTOR3 c);
+	bool isOnTrack = true;
 
 	//For sound control
 	bool idlecarsfx = false;
