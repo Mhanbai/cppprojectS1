@@ -193,11 +193,38 @@ void Car::Frame(float deltaTime, float gameTime)
 	//Calculate angle car is facing for graphics
 	graphicsAngle = atan2(forwardVector.z, forwardVector.x) - atan2(startingForwardVector.z, startingForwardVector.x);
 
-	for (unsigned int i = 0; i < m_Racetrack->trackGrid.size(); i++) {
+	for (int i = 0; i < m_Racetrack->trackGrid.size(); i++) {
 		isOnTrack = IsInsideTriangle(m_Collider.backLeft, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
-		isOnTrack = IsInsideTriangle(m_Collider.backRight, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
-		isOnTrack = IsInsideTriangle(m_Collider.frontLeft, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
-		isOnTrack = IsInsideTriangle(m_Collider.frontRight, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
+		if (isOnTrack == true) {
+			break;
+		}
+	}
+
+	if (isOnTrack == false) {
+		for (int i = 0; i < m_Racetrack->trackGrid.size(); i++) {
+			isOnTrack = IsInsideTriangle(m_Collider.backRight, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
+			if (isOnTrack == true) {
+				break;
+			}
+		}
+	}
+
+	if (isOnTrack == false) {
+		for (int i = 0; i < m_Racetrack->trackGrid.size(); i++) {
+			isOnTrack = IsInsideTriangle(m_Collider.frontLeft, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
+			if (isOnTrack == true) {
+				break;
+			}
+		}
+	}
+
+	if (isOnTrack == false) {
+		for (int i = 0; i < m_Racetrack->trackGrid.size(); i++) {
+			isOnTrack = IsInsideTriangle(m_Collider.frontRight, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
+			if (isOnTrack == true) {
+				break;
+			}
+		}
 	}
 
 	if (isOnTrack == true) {

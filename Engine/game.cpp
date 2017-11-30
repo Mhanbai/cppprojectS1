@@ -244,6 +244,18 @@ bool Game::InitializeMenuScreen()
 bool Game::InitializeMainGame(bool multiplayer)
 {
 	bool result;
+
+	m_raceTrack = new RaceTrack();
+	if (!m_raceTrack)
+	{
+		return false;
+	}
+
+	result = m_raceTrack->Initialize(m_Graphics, m_hwnd, m_D3D);
+	if (!result) {
+		return false;
+	}
+
 	mainPlayer = new Car();
 	if (!mainPlayer)
 	{
@@ -278,17 +290,6 @@ bool Game::InitializeMainGame(bool multiplayer)
 			mainPlayer->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
 			opponent->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
 		}
-	}
-
-	m_raceTrack = new RaceTrack();
-	if (!m_raceTrack)
-	{
-		return false;
-	}
-
-	result = m_raceTrack->Initialize(m_Graphics, m_hwnd, m_D3D);
-	if (!result) {
-		return false;
 	}
 
 	return true;
