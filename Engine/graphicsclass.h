@@ -58,10 +58,10 @@ public:
 	int GetScreenWidth();
 	int GetScreenHeight();
 
-	int countdown = -1;
-
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	FoliageClass* m_Foliage;
+
+	int countdown = -1;
 
 private:
 	bool Render();
@@ -70,21 +70,7 @@ private:
 	void RenderText(int mode, D3DXMATRIX &worldMatrix);
 
 private:
-	int gameState;
-	int menuState;
-
-	int m_screenWidth;
-	int m_screenHeight;
-
-	ModelClass* mainGameAssets[300];
-	BitmapClass* menuScreenOneAssets[10];
-	BitmapClass* menuScreenTwoAssets[10];
-	BitmapClass* countDownAssets[4];
-	int countDownAssetCount;
-	int mainGameAssetCount;
-	int menuScreenOneAssetCount;
-	int menuScreenTwoAssetCount;
-
+	//References to system objects
 	LightShaderClass* m_LightShader;
 	TextureShaderClass* m_TextureShader;
 	LightClass* m_Light;
@@ -94,6 +80,24 @@ private:
 	TerrainClass* m_Terrain;
 	D3DXMATRIX screenViewMatrix;
 	FoliageShaderClass* m_FoliageShader;
+
+	//Height and width of screen
+	int m_screenWidth;
+	int m_screenHeight;
+
+	//Variables which store what state the game/menu is in, so the correct assets can be rendered
+	int gameState;
+	int menuState;
+
+	//Arrays which determine what assets will be displayed for each gamestate
+	ModelClass* mainGameAssets[300];
+	BitmapClass* menuScreenOneAssets[10];
+	BitmapClass* menuScreenTwoAssets[10];
+	BitmapClass* countDownAssets[4];
+	int countDownAssetCount;
+	int mainGameAssetCount;
+	int menuScreenOneAssetCount;
+	int menuScreenTwoAssetCount;
 };
 
 #endif

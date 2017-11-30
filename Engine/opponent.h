@@ -32,6 +32,7 @@ public:
 	void SetPosition(float xPos, float yPos, float zPos, float rotation);
 
 private:
+	//References to system objects
 	GraphicsClass* m_Graphics;
 	ModelClass* m_Model;
 	NetworkClass* m_Network;

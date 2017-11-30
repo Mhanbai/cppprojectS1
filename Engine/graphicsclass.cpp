@@ -380,16 +380,16 @@ bool GraphicsClass::Frame()
 
 bool GraphicsClass::AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFilename, WCHAR* textureFilename)
 {
-	mainGameAssets[mainGameAssetCount] = new ModelClass;
-	bool result = mainGameAssets[mainGameAssetCount]->Initialize(m_D3D->GetDevice(), modelFilename, textureFilename);
+	mainGameAssets[mainGameAssetCount] = new ModelClass; //Create a new model class for the new asset
+	bool result = mainGameAssets[mainGameAssetCount]->Initialize(m_D3D->GetDevice(), modelFilename, textureFilename); //Initialize the asset
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize model object.", L"Error", MB_OK);
 		return false;
 	}
 
-	model = mainGameAssets[mainGameAssetCount];
-	mainGameAssetCount++;
+	model = mainGameAssets[mainGameAssetCount]; //Change the address of the model that was passed in so it can be manipulated from the other class
+	mainGameAssetCount++; //Keep track of how many assets we're using
 
 	return true;
 }
@@ -398,6 +398,7 @@ bool GraphicsClass::AddBitmapToPipeline(int screenNo, BitmapClass* &bitmap, HWND
 {
 	bool result;
 
+	//This class does the same as for 3D models, but changes the list added to depending on where the bitmap is to be rendered
 	switch (screenNo) {
 	case 0:
 		// Initialize the bitmap object.
@@ -473,7 +474,6 @@ bool GraphicsClass::Render()
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Generate the view matrix based on the camera's position.
-	//m_Camera->Render(m_Codex->positionList[0], 4.0f, 31.5f, -10.0f);
 	m_Camera->Render();
 
 	// Get the world, view, and projection matrices from the camera and d3d objects.
@@ -499,7 +499,7 @@ bool GraphicsClass::Render()
 		RenderText(1, worldMatrix);
 
 		// Render the terrain buffers.
-		/*m_Terrain->Render(m_D3D->GetDeviceContext());
+		m_Terrain->Render(m_D3D->GetDeviceContext());
 
 		// Render the terrain using the terrain shader.
 		result = m_TerrainShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
@@ -507,7 +507,7 @@ bool GraphicsClass::Render()
 		if (!result)
 		{
 			return false;
-		}*/
+		}
 
 		for (int i = 0; i < mainGameAssetCount; i++) {
 			// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.

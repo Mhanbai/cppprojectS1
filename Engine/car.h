@@ -12,6 +12,7 @@
 ///////////////////////
 #include <windows.h>
 #include <time.h>
+#include <vector>
 #include "graphicsclass.h"
 #include "networkclass.h"
 #include "soundclass.h"
@@ -23,6 +24,7 @@
 class Car
 {
 public:
+	//Contains vectors that represent the cars 4 surrounding positions in terms of X & Z coordinates
 	struct CollisionBox {
 		D3DXVECTOR3 frontLeft;
 		D3DXVECTOR3 frontRight;
@@ -36,6 +38,7 @@ public:
 		{
 		}
 	};
+
 	Car();
 	Car(const Car&);
 	~Car();
@@ -53,27 +56,25 @@ public:
 
 	ModelClass* m_Model;
 	CollisionBox m_Collider;
+	
+private:
+	//Set up the cars collider
+	Car::CollisionBox FindCollider();
 
 private:
+	//References to objects
 	GraphicsClass* m_Graphics;
 	NetworkClass* m_Network;
 	SoundClass* m_Sound;
 	RaceTrack* m_Racetrack;
 
-	//Forward Vector, Up Vector & Right Vector + useful storage variables
+	//Useful vectors for determining positions
 	D3DXVECTOR3 startingForwardVector;
 	D3DXVECTOR3 forwardVector;
 	D3DXVECTOR4 nextForwardVector;
 	D3DXVECTOR3 forwardVectorNormalized;
 	D3DXVECTOR3 rightVector;
 	D3DXVECTOR3 upVector;
-
-	//Rotation matrix
-	D3DXMATRIX rotation;
-
-	//Position of model for graphics & game
-	D3DXVECTOR3 position;
-	float graphicsAngle;
 
 	//Velocity, friction, steering etc...
 	D3DXVECTOR3 velocity;
@@ -95,6 +96,13 @@ private:
 	D3DXVECTOR3 lateralFriction;
 	float lateralFrictionFactor;
 
+	//Rotation matrix
+	D3DXMATRIX rotation;
+
+	//Position of model for graphics & game
+	D3DXVECTOR3 position;
+	float graphicsAngle;
+
 	//Booleans for user input
 	bool isAccelerating;
 	bool isTurningLeft;
@@ -105,8 +113,9 @@ private:
 	float timeStamp;
 	float lastMessageSent;
 
-	//Check to see if car is on track
-	bool IsInsideTriangle(D3DXVECTOR3 s, D3DXVECTOR3 a, D3DXVECTOR3 b, D3DXVECTOR3 c);
+	//Functions, lists and variables used to help with checking the car is on the track
+	bool GetLateralPosition(D3DXVECTOR3 toTest, D3DXVECTOR3 linePoint1, D3DXVECTOR3 linePoint2);
+	std::vector<D3DXVECTOR3> toCompare;
 	bool isOnTrack = true;
 
 	//For sound control
@@ -119,7 +128,6 @@ private:
 	D3DXVECTOR4 product;
 	D3DXMATRIX worldMatrix;
 	D3DXVECTOR3* mesh;
-	Car::CollisionBox FindCollider();
 };
 
 #endif

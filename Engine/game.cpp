@@ -473,7 +473,6 @@ bool Game::GameFrame()
 	mainPlayer->Frame(deltaTime / 1000, totalGameTime);
 	m_raceTrack->Frame();
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
-	//m_Graphics->m_Camera->SetPosition(-100.0f, 900.0f, 100.0f);
 
 	if (gameStarted == false) {
 		if ((totalGameTime >= 1.0f) && (totalGameTime < 2.0f)) {

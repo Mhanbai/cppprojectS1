@@ -309,7 +309,7 @@ void NetworkClass::EstablishConnection(char * opponentAddress)
 	sendAddr.sin_family = AF_INET;
 	sendAddr.sin_port = htons(4444);
 
-	sendAddr.sin_addr.s_addr = inet_addr("192.168.1.235");
+	sendAddr.sin_addr.s_addr = inet_addr(opponentAddress);
 
 	//Create a new message of type 'Welcome'
 	NetMessage welcomeMessage;

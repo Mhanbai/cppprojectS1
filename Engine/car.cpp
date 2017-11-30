@@ -44,13 +44,16 @@ bool Car::Initialize(RaceTrack* &racetrack, GraphicsClass *& graphics, SoundClas
 	m_Sound = sound;
 	m_Racetrack = racetrack;
 
+	//Tracks how often a position update has been sent to the opposing player
 	lastMessageSent = 0.0f;
 
+	//Add the car to the graphics pipeline
 	result = m_Graphics->AddToPipeline(m_Model, hwnd, modelFilename, textureFilename);
 	if (!result) {
 		return false;
 	}
 
+	//Find the list of positions that determine the boundaries of the car
 	m_Collider = FindCollider();
 
 	return true;
@@ -65,16 +68,18 @@ void Car::Shutdown()
 
 void Car::Frame(float deltaTime, float gameTime)
 {
+	//The speed of the car is equivalent to the magnitude of the velocity vector
 	speed = (D3DXVec3Length(&velocity));
 
-	if (speed < 5.0f) {
-		if (idlecarsfx == false) {
-			if (slowcarsfx == true) {
+	//This handles both gear changing and car noise
+	if (speed < 5.0f) { //If speed is within a certain limit
+		if (idlecarsfx == false) { //And appropriate noise is not already looping
+			if (slowcarsfx == true) { //If the noise for the previous speed is still looping, stop looping it
 				m_Sound->StopLooping();
 				slowcarsfx = false;
 			}
-			m_Sound->LoopSound("../Engine/data/caridle.wav");
-			idlecarsfx = true;
+			m_Sound->LoopSound("../Engine/data/caridle.wav"); //Then start looping the new noise
+			idlecarsfx = true; //Boolean to determine that the noise is playing
 		}
 	}
 	else if (speed < 30.0f) {
@@ -100,10 +105,10 @@ void Car::Frame(float deltaTime, float gameTime)
 		gear = 1.0f;
 	}
 
+	//Controls the 'gear' i.e. the car moves at a speed relevant to how fast its already going
 	accelerationFactor = startAccelerationFactor + (speed * gear);
 
-
-	// Change input values based on user input
+	//User Input
 	if (isAccelerating) {
 		accelerationInput = 1.0f;
 	}
@@ -136,6 +141,8 @@ void Car::Frame(float deltaTime, float gameTime)
 
 	//Angle of steering equals user input multiplied by how well car handles
 	steerAngle = steerInput * steerFactor * deltaTime;
+
+	//Divide the angle by speed divided by 100. This stops the car from being able to turn on the spot
 	steerAngle = steerAngle * (speed / 100.0f);
 
 	//Calculate new forward vector
@@ -147,6 +154,7 @@ void Car::Frame(float deltaTime, float gameTime)
 	D3DXVec3Normalize(&forwardVectorNormalized, &forwardVector);
 	D3DXVec3Cross(&rightVector, &forwardVectorNormalized, &upVector);
 
+	//Lateral friction stops the car from drifting as if it is on ice
 	lateralVelocity = rightVector * D3DXVec3Dot(&velocity, &rightVector);
 	lateralFriction = -lateralVelocity * lateralFrictionFactor;
 
@@ -162,12 +170,18 @@ void Car::Frame(float deltaTime, float gameTime)
 		velocity += acceleration * deltaTime;
 	}
 
+	//Apply velocity to car position
+	position = position + velocity * deltaTime;
+
+	//Calculate angle car is facing for graphics
+	graphicsAngle = atan2(forwardVector.z, forwardVector.x) - atan2(startingForwardVector.z, startingForwardVector.x);
+
 	//Update the collider
-	m_Collider.backLeft = m_Collider.backLeft - position;
-	D3DXVec3Transform(&nextForwardVector, &m_Collider.backLeft, &rotation);
-	m_Collider.backLeft = D3DXVECTOR3(nextForwardVector.x, nextForwardVector.y, nextForwardVector.z);
-	m_Collider.backLeft = m_Collider.backLeft + position;
-	m_Collider.backLeft = m_Collider.backLeft + velocity * deltaTime;
+	m_Collider.backLeft = m_Collider.backLeft - position; //Translate the collider so the Y axis is through the origin
+	D3DXVec3Transform(&nextForwardVector, &m_Collider.backLeft, &rotation); //Rotate the collider by the rotation matrix
+	m_Collider.backLeft = D3DXVECTOR3(nextForwardVector.x, nextForwardVector.y, nextForwardVector.z); //Convert Vec4 from calculation into Vec3
+	m_Collider.backLeft = m_Collider.backLeft + position; //Translate the collider back to its position
+	m_Collider.backLeft = m_Collider.backLeft + velocity * deltaTime; //Apply the same velocity as for the car
 
 	m_Collider.backRight = m_Collider.backRight - position;
 	D3DXVec3Transform(&nextForwardVector, &m_Collider.backRight, &rotation);
@@ -187,52 +201,47 @@ void Car::Frame(float deltaTime, float gameTime)
 	m_Collider.frontRight = m_Collider.frontRight + position;
 	m_Collider.frontRight = m_Collider.frontRight + velocity * deltaTime;
 
-	//Add velocity to position
-	position = position + velocity * deltaTime;
-
-	//Calculate angle car is facing for graphics
-	graphicsAngle = atan2(forwardVector.z, forwardVector.x) - atan2(startingForwardVector.z, startingForwardVector.x);
-
-	for (int i = 0; i < m_Racetrack->trackGrid.size(); i++) {
-		isOnTrack = IsInsideTriangle(m_Collider.backLeft, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
-		if (isOnTrack == true) {
-			break;
+	//Find which track nodes are close to the car
+	for (int i = 0; i < m_Racetrack->relVertex.size(); i++) { //For each vertex in the list of track nodes
+		D3DXVECTOR3 distance;
+		D3DXVec3Subtract(&distance, &position, &m_Racetrack->relVertex[i]); //Find the vector between the car and the node
+		float fltDist = D3DXVec3Length(&distance); //Find magnitude in order to get distance
+		if (fltDist < 80.0f) { //If distance is less than 70, add it to the 'nodes that are close' list 
+			toCompare.push_back(m_Racetrack->relVertex[i]);
 		}
 	}
 
-	if (isOnTrack == false) {
-		for (int i = 0; i < m_Racetrack->trackGrid.size(); i++) {
-			isOnTrack = IsInsideTriangle(m_Collider.backRight, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
-			if (isOnTrack == true) {
-				break;
+	if (toCompare.size() > 0) { //Go through the list of nodes that are close
+		int topRightCount = 0;
+		int topLeftCount = 0;
+		int backRightCount = 0;
+		int backLeftCount = 0;
+		for (int i = 0; i < toCompare.size(); i++) {
+			if (GetLateralPosition(toCompare[i], m_Collider.frontRight, m_Collider.backRight)) { 
+				backRightCount++; //If theres at least one node on the left...
+			}
+			else {
+				topLeftCount++; //...and at least one on the right...
 			}
 		}
-	}
 
-	if (isOnTrack == false) {
-		for (int i = 0; i < m_Racetrack->trackGrid.size(); i++) {
-			isOnTrack = IsInsideTriangle(m_Collider.frontLeft, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
-			if (isOnTrack == true) {
-				break;
-			}
+		if ((backRightCount > 0) && (topLeftCount > 0)) {
+			isOnTrack = true; //...then we're on the track.
 		}
-	}
-
-	if (isOnTrack == false) {
-		for (int i = 0; i < m_Racetrack->trackGrid.size(); i++) {
-			isOnTrack = IsInsideTriangle(m_Collider.frontRight, m_Racetrack->trackGrid[i].point1, m_Racetrack->trackGrid[i].point2, m_Racetrack->trackGrid[i].point3);
-			if (isOnTrack == true) {
-				break;
-			}
+		else {
+			isOnTrack = false;
 		}
+	} else {
+		isOnTrack = false; //If there are no nodes that are close, we're obviously not on the track
 	}
 
-	if (isOnTrack == true) {
+	if (isOnTrack == true) { //if we're not on the track, we should be level with the terrain
 		position.y = 2.0f;
-	}
-	else if (isOnTrack == false) {
+	} else if (isOnTrack == false) {
 		position.y = 4.0f;
 	}
+
+	toCompare.clear(); //Clear the list of nodes that are close for next time
 
 	//Set the position of the cars model
 	m_Model->SetPosition(position.x, position.y, position.z);
@@ -245,16 +254,6 @@ void Car::Frame(float deltaTime, float gameTime)
 			lastMessageSent = gameTime;
 		}
 	}
-
-	char spdBuffer[64];
-	sprintf_s(spdBuffer, "POS: X: %f Y: %f Z: %f", m_Collider.frontRight.x, m_Collider.frontRight.y, m_Collider.frontRight.z);
-
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, spdBuffer, 60, 150, 1.0f, 1.0f, 1.0f);
-
-	char lenBuffer[64];
-	sprintf_s(lenBuffer, "MAINPOS: X: %f Y: %f Z: %f", position.x, position.y, position.z);
-
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, lenBuffer, 60, 170, 1.0f, 1.0f, 1.0f);
 }
 
 void Car::Accelerate(bool set)
@@ -329,21 +328,16 @@ D3DXVECTOR3 Car::GetPosition()
 	return position;
 }
 
-bool Car::IsInsideTriangle(D3DXVECTOR3 s, D3DXVECTOR3 a, D3DXVECTOR3 b, D3DXVECTOR3 c)
+bool Car::GetLateralPosition(D3DXVECTOR3 toTest, D3DXVECTOR3 linePoint1, D3DXVECTOR3 linePoint2)
 {
-	float as_x = s.x - a.x;
-	float as_z = s.z - a.z;
-	bool s_ab = ((b.x - a.x) * as_z - (b.z - a.z) * as_x) > 0;
-
-	if ((c.x - a.x) * as_z - (c.z - a.z) * as_x > 0 == s_ab) {
-		return false;
+	//This calculation returns a negative number if 'toTest' is to the left of the two line points, and a positive number or zero if it is to the right
+	float orientation = ((linePoint2.x - linePoint1.x) * (toTest.z - linePoint1.z)) - ((linePoint2.z - linePoint1.z) * (toTest.x - linePoint1.x));
+	if (orientation >= 0.0f) {
+		return true; //Point is to the right
 	}
-
-	if ((c.x - b.x) * (s.z - b.z) - (c.z - b.z) * (s.x - b.x) > 0 != s_ab) {
-		return false;
+	else {
+		return false; //Point is to the left
 	}
-
-	return true;
 }
 
 Car::CollisionBox Car::FindCollider()

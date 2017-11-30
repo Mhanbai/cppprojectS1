@@ -26,6 +26,14 @@ bool RaceTrack::Initialize(GraphicsClass *& graphics, HWND & hwnd, D3DClass* &D3
 		return false;
 	}
 
+	/*for (int i = 0; i < 20; i++) {
+		result = m_Graphics->AddToPipeline(points[i], hwnd, "../Engine/data/skysphere.txt", L"../Engine/data/cars.dds");
+		if (!result) {
+			return false;
+		}
+	}*/
+									 
+
 	m_Model->SetPosition(0.0f, 4.0f, 0.0f);
 
 	m_Model->GetCollisionMesh(mesh);
@@ -39,11 +47,6 @@ bool RaceTrack::Initialize(GraphicsClass *& graphics, HWND & hwnd, D3DClass* &D3
 				relVertex.push_back(D3DXVECTOR3(-mesh[i].x, 0.0f, -mesh[i].z));
 			}
 		}
-	}
-
-	for (int i = 0; i < relVertex.size() - 2; i++) {
-		CollisionTriangle triangle = CollisionTriangle(relVertex[i], relVertex[i+1], relVertex[i+2]);
-		trackGrid.push_back(triangle);
 	}
 
 	return true;

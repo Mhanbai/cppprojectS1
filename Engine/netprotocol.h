@@ -13,8 +13,6 @@ enum MessageType
 };
 
 // The message structure.
-// This is a "plain old data" type, so we can send it over the network.
-// (In a real program, we would want this structure to be packed.)
 struct NetMessage
 {
 	MessageType type;
