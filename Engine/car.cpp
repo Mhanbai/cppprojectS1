@@ -53,13 +53,13 @@ bool Car::Initialize(RaceTrack* &racetrack, GraphicsClass *& graphics, SoundClas
 		return false;
 	}
 
-	for (int i = 0; i < 4; i++) {
+	/*for (int i = 0; i < 4; i++) {
 		//Add the car to the graphics pipeline
 		result = m_Graphics->AddToPipeline(nodes[i], hwnd, "../Engine/data/skysphere.txt", L"../Engine/data/cars.dds");
 		if (!result) {
 			return false;
 		}
-	}
+	}*/
 
 	//Find the list of positions that determine the boundaries of the car
 	m_Collider = FindCollider();
@@ -209,10 +209,10 @@ void Car::Frame(float deltaTime, float gameTime)
 	//Calculate angle car is facing for graphics
 	graphicsAngle = atan2(forwardVector.z, forwardVector.x) - atan2(startingForwardVector.z, startingForwardVector.x);
 
-	nodes[0]->SetPosition(m_Collider.frontRight.x, m_Collider.frontRight.y, m_Collider.frontRight.z);
+	/*nodes[0]->SetPosition(m_Collider.frontRight.x, m_Collider.frontRight.y, m_Collider.frontRight.z);
 	nodes[1]->SetPosition(m_Collider.frontLeft.x, m_Collider.frontLeft.y, m_Collider.frontLeft.z);
 	nodes[2]->SetPosition(m_Collider.backRight.x, m_Collider.backRight.y, m_Collider.backRight.z);
-	nodes[3]->SetPosition(m_Collider.backLeft.x, m_Collider.backLeft.y, m_Collider.backLeft.z);
+	nodes[3]->SetPosition(m_Collider.backLeft.x, m_Collider.backLeft.y, m_Collider.backLeft.z);*/
 
 	//Find which track nodes are close to the car
 	for (int i = 0; i < m_Racetrack->relVertex.size(); i++) { //For each vertex in the list of track nodes
