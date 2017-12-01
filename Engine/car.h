@@ -45,6 +45,7 @@ public:
 	bool Initialize(RaceTrack* &racetrack, GraphicsClass* &graphics, SoundClass* sound, HWND &hwnd, NetworkClass* &network, char* modelFilename, WCHAR* textureFilename);
 	void Shutdown();
 	void Frame(float deltaTime, float gameTime);
+	void Reset();
 
 	void Accelerate(bool);
 	void BreakReverse(bool);
@@ -53,6 +54,7 @@ public:
 	void SetPosition(float xPos, float yPos, float zPos, float rotation);
 	D3DXVECTOR3 GetForwardVector();
 	D3DXVECTOR3 GetPosition();
+	void EndGameState();
 
 	ModelClass* m_Model;
 	CollisionBox m_Collider;

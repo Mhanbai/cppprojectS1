@@ -328,6 +328,12 @@ D3DXVECTOR3 Car::GetPosition()
 	return position;
 }
 
+void Car::EndGameState()
+{
+	friction = -velocity * 2.0f;
+	velocity += (friction + lateralFriction) * 0.016f;
+}
+
 bool Car::GetLateralPosition(D3DXVECTOR3 toTest, D3DXVECTOR3 linePoint1, D3DXVECTOR3 linePoint2)
 {
 	//This calculation returns a negative number if 'toTest' is to the left of the two line points, and a positive number or zero if it is to the right

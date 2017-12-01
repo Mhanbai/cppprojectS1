@@ -48,6 +48,7 @@ public:
 	bool Initialize(GraphicsClass* &graphics);
 	void Shutdown();
 	void Frame(float time);
+	void Reset();
 
 	//Check computer is connected to internet, and recheck if previous check failed
 	bool CheckNetwork(char* &localIPHolder, char* &publicIPHolder);

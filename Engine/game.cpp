@@ -448,6 +448,7 @@ bool Game::MenuFrame()
 				MessageBox(m_hwnd, L"Could not initialize gameplay scene.", L"Error", MB_OK);
 				return false;
 			}
+			mainPlayer->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
 			gameState = 1; // Starts a normal game
 			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
 			break;
@@ -510,41 +511,6 @@ bool Game::GameFrame()
 	m_raceTrack->Frame();
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
 
-	if (checkpoint == 1) {
-		if (mainPlayer->CheckIntersection(mainPlayer->m_Collider, m_raceTrack->CP1) == true) {
-			checkpoint = 2;
-		}
-	}
-	else if (checkpoint == 2) {
-		if (mainPlayer->CheckIntersection(mainPlayer->m_Collider, m_raceTrack->CP2) == true) {
-			checkpoint = 3;
-		}
-	}
-	else if (checkpoint == 3) {
-		if (mainPlayer->CheckIntersection(mainPlayer->m_Collider, m_raceTrack->CP3) == true) {
-			checkpoint = 4;
-		}
-	}
-	else if (checkpoint == 4) {
-		if (mainPlayer->CheckIntersection(mainPlayer->m_Collider, m_raceTrack->FL) == true) {
-			if (lap == 1) {
-				checkpoint = 1;
-				lap = 2;
-				m_Graphics->lap1 = false;
-				m_Graphics->lap2 = true;
-			}
-			else if (lap == 2) {
-				m_Graphics->lap1 = false;
-				m_Graphics->lap2 = false;
-				Victory(true, totalGameTime);
-			}
-		}
-	}
-
-	if (m_Network->opponentHasWon == true) {
-		Victory(false, totalGameTime);
-	}
-
 	char cpBuffer[32];
 	sprintf_s(cpBuffer, "CheckPoint: %i", checkpoint);
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, cpBuffer, 60, 130, 1.0f, 1.0f, 1.0f); 
@@ -553,44 +519,6 @@ bool Game::GameFrame()
 	sprintf_s(lapBuffer, "Lap: %i", lap);
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, lapBuffer, 60, 150, 1.0f, 1.0f, 1.0f); 
 
-	/*m_raceTrack->node->SetPosition(m_raceTrack->relVertex[x].x, m_raceTrack->relVertex[x].y, m_raceTrack->relVertex[x].z);
-
-	if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
-		menuWasUpPressed = true;
-		x++;
-	}
-
-	if (m_Input->IsUpPressed() == false) {
-		menuWasUpPressed = false;
-	}
-
-	if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
-		menuWasDownPressed = true;
-		x--;
-	}
-
-	if (m_Input->IsDownPressed() == false) {
-		menuWasDownPressed = false;
-	}
-
-	if (m_Input->IsLeftPressed() == true) {
-		x--;
-	}
-
-	if (m_Input->IsRightPressed() == true) {
-		x++;
-	}
-
-	if (x > 212) {
-		x = 0;
-	}
-	else if (x < 0) {
-		x = 212;
-	}
-
-	char xBuffer[32];
-	sprintf_s(xBuffer, "Node: %i", x);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, xBuffer, 60, 130, 1.0f, 1.0f, 1.0f);*/
 	if (isCountdownDone == false) {
 		if (gameStarted == false) {
 			if ((totalGameTime >= 1.0f) && (totalGameTime < 2.0f)) {
@@ -624,11 +552,50 @@ bool Game::GameFrame()
 		}
 	}
 
-	if ((gameStarted == true) && (totalGameTime > 1.0f)) {
-		m_Graphics->countdown = -1;
-	}
-
 	if (gameStarted == true) {
+		if (totalGameTime > 1.0f) {
+			m_Graphics->countdown = -1;
+		}
+
+		if (checkpoint == 1) {
+			if (mainPlayer->CheckIntersection(mainPlayer->m_Collider, m_raceTrack->CP1) == true) {
+				checkpoint = 2;
+			}
+		}
+		else if (checkpoint == 2) {
+			if (mainPlayer->CheckIntersection(mainPlayer->m_Collider, m_raceTrack->CP2) == true) {
+				checkpoint = 3;
+			}
+		}
+		else if (checkpoint == 3) {
+			if (mainPlayer->CheckIntersection(mainPlayer->m_Collider, m_raceTrack->CP3) == true) {
+				checkpoint = 4;
+			}
+		}
+		else if (checkpoint == 4) {
+			if (mainPlayer->CheckIntersection(mainPlayer->m_Collider, m_raceTrack->FL) == true) {
+				if (lap == 1) {
+					checkpoint = 1;
+					lap = 2;
+					m_Graphics->lap1 = false;
+					m_Graphics->lap2 = true;
+				}
+				else if (lap == 2) {
+					m_Graphics->lap1 = false;
+					m_Graphics->lap2 = false;
+					gameEndTime = totalGameTime;
+					gameHasEnded = true;
+					Victory(true);
+				}
+			}
+		}
+
+		if (m_Network->opponentHasWon == true) {
+			gameEndTime = totalGameTime;
+			gameHasEnded = true;
+			Victory(false);
+		}
+
 		if (m_Input->IsUpPressed() == true) {
 			mainPlayer->Accelerate(true);
 		}
@@ -669,6 +636,13 @@ bool Game::GameFrame()
 		m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, cpuBuffer, 60, 110, 1.0f, 1.0f, 1.0f);
 	}
 
+	if (gameHasEnded == true) {
+		mainPlayer->EndGameState();
+		if ((totalGameTime - gameEndTime) > 5.0f) {
+			return false; //Shut it all down
+		}
+	}
+
 	char timeBuffer[32];
 	sprintf_s(timeBuffer, "%.0f:%.2f", floor((totalGameTime / 60)), fmod(totalGameTime, 60));
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 70, 1.0f, 1.0f, 1.0f);
@@ -676,7 +650,7 @@ bool Game::GameFrame()
 	return true;
 }
 
-void Game::Victory(bool didWin, float gameEndTime)
+void Game::Victory(bool didWin)
 {
 	gameStarted = false;
 	if (didWin == true) {
@@ -684,9 +658,6 @@ void Game::Victory(bool didWin, float gameEndTime)
 	}
 	if (didWin == false) {
 		m_Graphics->loss = true;
-	}
-	if ((totalGameTime - gameEndTime) > 5.0f) {
-		//Reset all variables and go back to main menu
 	}
 }
 

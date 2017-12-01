@@ -43,7 +43,7 @@ private:
 	bool MultiplayerSetUpFrame();
 	bool MenuFrame();
 	bool GameFrame();
-	void Victory(bool didWin, float gameEndTime);
+	void Victory(bool didWin);
 
 private:
 	// References to System Objects
@@ -86,6 +86,8 @@ private:
 	bool isCountdownDone = false;
 	int checkpoint = 1;
 	int lap = 1;
+	float gameEndTime;
+	bool gameHasEnded = false;
 
 	//Variables used for 'enter IP' screen
 	char acceptInputBuffer[32]; 

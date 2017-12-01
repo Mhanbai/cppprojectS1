@@ -44,6 +44,7 @@ public:
 
 	bool Initialize(int, int, TextClass* &text, HWND);
 	void Shutdown();
+	void Reset();
 	bool Frame();
 
 	bool AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFilename, WCHAR* textureFilename);
@@ -95,7 +96,7 @@ private:
 	int menuState;
 
 	//Arrays which determine what assets will be displayed for each gamestate
-	ModelClass* mainGameAssets[300];
+	ModelClass* mainGameAssets[50];
 	BitmapClass* menuScreenOneAssets[10];
 	BitmapClass* menuScreenTwoAssets[10];
 	BitmapClass* gameUIAssets[8];

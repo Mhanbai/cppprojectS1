@@ -26,6 +26,7 @@ public:
 	Opponent(const Opponent&);
 	~Opponent();
 	bool Initialize(GraphicsClass* &graphics, HWND &hwnd, NetworkClass* &network, TextClass* &text, char* modelFilename, WCHAR* textureFilename);
+	void Reset();
 	void Shutdown();
 
 	void Frame(float deltaTime, float totalTime);

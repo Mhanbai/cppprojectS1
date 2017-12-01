@@ -21,8 +21,6 @@ bool Opponent::Initialize(GraphicsClass *& graphics, HWND & hwnd, NetworkClass* 
 
 	graphicsAngle = 0.0f;
 
-	position = D3DXVECTOR3(-12.0f, 2.0f, 0.0f);
-
 	result = m_Graphics->AddToPipeline(m_Model, hwnd, modelFilename, textureFilename);
 	if (!result) {
 		return false;
@@ -37,6 +35,7 @@ void Opponent::Shutdown()
 	m_Model = 0;
 	m_Network = 0;
 	m_Text = 0;
+	m_Model = 0;
 }
 
 void Opponent::Frame(float deltaTime, float totalTime)
