@@ -23,7 +23,7 @@ GraphicsClass::GraphicsClass()
 	mainGameAssetCount = 0;
 	menuScreenOneAssetCount = 0;
 	menuScreenTwoAssetCount = 0;
-	countDownAssetCount = 0;
+	gameUIAssetCount = 0;
 	gameState = 0;
 	menuState = 0;
 	m_Foliage = 0;
@@ -336,12 +336,12 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release bitmaps used for the second menu screen.
-	for (int i = 0; i < countDownAssetCount; i++) {
-		if (countDownAssets[i])
+	for (int i = 0; i < gameUIAssetCount; i++) {
+		if (gameUIAssets[i])
 		{
-			countDownAssets[i]->Shutdown();
-			delete countDownAssets[i];
-			countDownAssets[i] = 0;
+			gameUIAssets[i]->Shutdown();
+			delete gameUIAssets[i];
+			gameUIAssets[i] = 0;
 		}
 	}
 
@@ -428,16 +428,16 @@ bool GraphicsClass::AddBitmapToPipeline(int screenNo, BitmapClass* &bitmap, HWND
 		break;
 	case 2:
 		// Initialize the bitmap object.
-		countDownAssets[countDownAssetCount] = new BitmapClass;
-		result = countDownAssets[countDownAssetCount]->Initialize(m_D3D->GetDevice(), m_screenWidth, m_screenHeight, bitmapFilename, width, height);
+		gameUIAssets[gameUIAssetCount] = new BitmapClass;
+		result = gameUIAssets[gameUIAssetCount]->Initialize(m_D3D->GetDevice(), m_screenWidth, m_screenHeight, bitmapFilename, width, height);
 		if (!result)
 		{
 			MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 			return false;
 		}
 
-		bitmap = countDownAssets[countDownAssetCount];
-		countDownAssetCount++;
+		bitmap = gameUIAssets[gameUIAssetCount];
+		gameUIAssetCount++;
 		break;
 	}
 
@@ -534,66 +534,116 @@ bool GraphicsClass::Render()
 		m_Foliage->Render(m_D3D->GetDeviceContext());
 		result = m_FoliageShader->Render(m_D3D->GetDeviceContext(), m_Foliage->GetVertexCount(), m_Foliage->GetInstanceCount(), viewMatrix, projectionMatrix, m_Foliage->GetTexture());
 
+		m_D3D->TurnZBufferOff();
+		//Render Game UI Assets
+		switch (countdown) {
+		case 0:
+			result = gameUIAssets[0]->Render(m_D3D->GetDeviceContext(), gameUIAssets[0]->width_in, gameUIAssets[0]->height_in);
+			if (!result)
+			{
+				return false;
+			}
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), gameUIAssets[0]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, gameUIAssets[0]->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+			break;
+		case 1:
+			result = gameUIAssets[1]->Render(m_D3D->GetDeviceContext(), gameUIAssets[1]->width_in, gameUIAssets[1]->height_in);
+			if (!result)
+			{
+				return false;
+			}
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), gameUIAssets[1]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, gameUIAssets[1]->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+			break;
+		case 2:
+			result = gameUIAssets[2]->Render(m_D3D->GetDeviceContext(), gameUIAssets[2]->width_in, gameUIAssets[2]->height_in);
+			if (!result)
+			{
+				return false;
+			}
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), gameUIAssets[2]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, gameUIAssets[2]->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+			break;
+		case 3:
+			result = gameUIAssets[3]->Render(m_D3D->GetDeviceContext(), gameUIAssets[3]->width_in, gameUIAssets[3]->height_in);
+			if (!result)
+			{
+				return false;
+			}
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), gameUIAssets[3]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, gameUIAssets[3]->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+			break;
+		default:
+			break;
+		}
+
+		if (lap1) {
+			result = gameUIAssets[4]->Render(m_D3D->GetDeviceContext(), gameUIAssets[4]->width_in, gameUIAssets[4]->height_in);
+			if (!result)
+			{
+				return false;
+			}
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), gameUIAssets[4]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, gameUIAssets[4]->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+		}
+		else if (lap2) {
+			result = gameUIAssets[5]->Render(m_D3D->GetDeviceContext(), gameUIAssets[5]->width_in, gameUIAssets[5]->height_in);
+			if (!result)
+			{
+				return false;
+			}
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), gameUIAssets[5]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, gameUIAssets[5]->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+		}
+
+		if (victory) {
+			result = gameUIAssets[6]->Render(m_D3D->GetDeviceContext(), gameUIAssets[6]->width_in, gameUIAssets[6]->height_in);
+			if (!result)
+			{
+				return false;
+			}
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), gameUIAssets[6]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, gameUIAssets[6]->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+		}
+
+		if (loss) {
+			result = gameUIAssets[7]->Render(m_D3D->GetDeviceContext(), gameUIAssets[7]->width_in, gameUIAssets[7]->height_in);
+			if (!result)
+			{
+				return false;
+			}
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), gameUIAssets[7]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, gameUIAssets[7]->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+		}
+
+		m_D3D->TurnZBufferOn();
 		m_D3D->TurnOffAlphaBlending();
 		break;
 	}
-
-	m_D3D->TurnOnAlphaBlending();
-	m_D3D->TurnZBufferOff();
-	switch (countdown) {
-	case 0:
-		result = countDownAssets[0]->Render(m_D3D->GetDeviceContext(), countDownAssets[0]->width_in, countDownAssets[0]->height_in);
-		if (!result)
-		{
-			return false;
-		}
-		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), countDownAssets[0]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, countDownAssets[0]->GetTexture());
-		if (!result)
-		{
-			return false;
-		}
-		break;
-	case 1:
-		result = countDownAssets[1]->Render(m_D3D->GetDeviceContext(), countDownAssets[1]->width_in, countDownAssets[1]->height_in);
-		if (!result)
-		{
-			return false;
-		}
-		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), countDownAssets[1]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, countDownAssets[1]->GetTexture());
-		if (!result)
-		{
-			return false;
-		}
-		break;
-	case 2:
-		result = countDownAssets[2]->Render(m_D3D->GetDeviceContext(), countDownAssets[2]->width_in, countDownAssets[2]->height_in);
-		if (!result)
-		{
-			return false;
-		}
-		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), countDownAssets[2]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, countDownAssets[2]->GetTexture());
-		if (!result)
-		{
-			return false;
-		}
-		break;
-	case 3:
-		result = countDownAssets[3]->Render(m_D3D->GetDeviceContext(), countDownAssets[3]->width_in, countDownAssets[3]->height_in);
-		if (!result)
-		{
-			return false;
-		}
-		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), countDownAssets[3]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, countDownAssets[3]->GetTexture());
-		if (!result)
-		{
-			return false;
-		}
-		break;
-	default:
-		break;
-	}
-	m_D3D->TurnZBufferOn();
-	m_D3D->TurnOffAlphaBlending();
 
 	m_D3D->EndScene();
 

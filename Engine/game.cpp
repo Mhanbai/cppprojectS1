@@ -238,6 +238,42 @@ bool Game::InitializeMenuScreen()
 	goDisplay->width_in = (m_Graphics->GetScreenWidth() / 2) - 96;
 	goDisplay->height_in = (m_Graphics->GetScreenHeight() / 2) - 55;
 
+	result = m_Graphics->AddBitmapToPipeline(2, lap1, m_hwnd, L"../Engine/data/lap1.dds", 358, 114);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	lap1->width_in = (m_Graphics->GetScreenWidth()) - 487;
+	lap1->height_in = 100 - 57;
+
+	result = m_Graphics->AddBitmapToPipeline(2, lap2, m_hwnd, L"../Engine/data/lap2.dds", 365, 114);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	lap2->width_in = (m_Graphics->GetScreenWidth()) - 498;
+	lap2->height_in = 100 - 57;
+
+	result = m_Graphics->AddBitmapToPipeline(2, winner, m_hwnd, L"../Engine/data/winner.dds", 409, 110);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	winner->width_in = (m_Graphics->GetScreenWidth() / 2) - 205;
+	winner->height_in = (m_Graphics->GetScreenWidth() / 2) - 55;
+
+	result = m_Graphics->AddBitmapToPipeline(2, loser, m_hwnd, L"../Engine/data/loser.dds", 499, 110);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	loser->width_in = (m_Graphics->GetScreenWidth() / 2) - 250;
+	loser->height_in = (m_Graphics->GetScreenWidth() / 2) - 55;
+
 	return true;
 }
 
@@ -474,37 +510,121 @@ bool Game::GameFrame()
 	m_raceTrack->Frame();
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
 
-	if (gameStarted == false) {
-		if ((totalGameTime >= 1.0f) && (totalGameTime < 2.0f)) {
-			if (three == false) {
-				three = true;
-				m_Sound->PlaySoundOnce("../Engine/data/321.wav");
-				m_Graphics->countdown = 0;
-			}
+	if (checkpoint == 1) {
+		if (mainPlayer->CheckIntersection(mainPlayer->m_Collider, m_raceTrack->CP1) == true) {
+			checkpoint = 2;
 		}
-		else if ((totalGameTime >= 2.0f) && (totalGameTime < 3.0f)) {
-			if (two == false) {
-				two = true;
-				m_Sound->PlaySoundOnce("../Engine/data/321.wav");
-				m_Graphics->countdown = 1;
-			}
+	}
+	else if (checkpoint == 2) {
+		if (mainPlayer->CheckIntersection(mainPlayer->m_Collider, m_raceTrack->CP2) == true) {
+			checkpoint = 3;
 		}
-		else if ((totalGameTime >= 3.0f) && (totalGameTime < 4.0f)) {
-			if (one == false) {
-				one = true;
-				m_Sound->PlaySoundOnce("../Engine/data/321.wav");
-				m_Graphics->countdown = 2;
-			}
+	}
+	else if (checkpoint == 3) {
+		if (mainPlayer->CheckIntersection(mainPlayer->m_Collider, m_raceTrack->CP3) == true) {
+			checkpoint = 4;
 		}
-		else if (totalGameTime >= 4.0f){
-			m_Graphics->countdown = 3;
-			totalGameTime = 0.0f;
-			m_Sound->PlaySoundOnce("../Engine/data/go.wav");
-			gameStarted = true;
+	}
+	else if (checkpoint == 4) {
+		if (mainPlayer->CheckIntersection(mainPlayer->m_Collider, m_raceTrack->FL) == true) {
+			if (lap == 1) {
+				checkpoint = 1;
+				lap = 2;
+				m_Graphics->lap1 = false;
+				m_Graphics->lap2 = true;
+			}
+			else if (lap == 2) {
+				m_Graphics->lap1 = false;
+				m_Graphics->lap2 = false;
+				Victory(true, totalGameTime);
+			}
 		}
 	}
 
-	if (totalGameTime > 1.0f) {
+	if (m_Network->opponentHasWon == true) {
+		Victory(false, totalGameTime);
+	}
+
+	char cpBuffer[32];
+	sprintf_s(cpBuffer, "CheckPoint: %i", checkpoint);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, cpBuffer, 60, 130, 1.0f, 1.0f, 1.0f); 
+
+	char lapBuffer[32];
+	sprintf_s(lapBuffer, "Lap: %i", lap);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, lapBuffer, 60, 150, 1.0f, 1.0f, 1.0f); 
+
+	/*m_raceTrack->node->SetPosition(m_raceTrack->relVertex[x].x, m_raceTrack->relVertex[x].y, m_raceTrack->relVertex[x].z);
+
+	if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
+		menuWasUpPressed = true;
+		x++;
+	}
+
+	if (m_Input->IsUpPressed() == false) {
+		menuWasUpPressed = false;
+	}
+
+	if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
+		menuWasDownPressed = true;
+		x--;
+	}
+
+	if (m_Input->IsDownPressed() == false) {
+		menuWasDownPressed = false;
+	}
+
+	if (m_Input->IsLeftPressed() == true) {
+		x--;
+	}
+
+	if (m_Input->IsRightPressed() == true) {
+		x++;
+	}
+
+	if (x > 212) {
+		x = 0;
+	}
+	else if (x < 0) {
+		x = 212;
+	}
+
+	char xBuffer[32];
+	sprintf_s(xBuffer, "Node: %i", x);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, xBuffer, 60, 130, 1.0f, 1.0f, 1.0f);*/
+	if (isCountdownDone == false) {
+		if (gameStarted == false) {
+			if ((totalGameTime >= 1.0f) && (totalGameTime < 2.0f)) {
+				if (three == false) {
+					m_Graphics->countdown = 0;
+					three = true;
+					m_Sound->PlaySoundOnce("../Engine/data/321.wav");
+				}
+			}
+			else if ((totalGameTime >= 2.0f) && (totalGameTime < 3.0f)) {
+				if (two == false) {
+					m_Graphics->countdown = 1;
+					two = true;
+					m_Sound->PlaySoundOnce("../Engine/data/321.wav");
+				}
+			}
+			else if ((totalGameTime >= 3.0f) && (totalGameTime < 4.0f)) {
+				if (one == false) {
+					m_Graphics->countdown = 2;
+					one = true;
+					m_Sound->PlaySoundOnce("../Engine/data/321.wav");
+				}
+			}
+			else if (totalGameTime >= 4.0f) {
+				m_Graphics->countdown = 3;
+				totalGameTime = 0.0f;
+				isCountdownDone = true;
+				m_Sound->PlaySoundOnce("../Engine/data/go.wav");
+				gameStarted = true;
+			}
+		}
+	}
+
+	if ((gameStarted == true) && (totalGameTime > 1.0f)) {
 		m_Graphics->countdown = -1;
 	}
 
@@ -554,6 +674,20 @@ bool Game::GameFrame()
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 70, 1.0f, 1.0f, 1.0f);
 
 	return true;
+}
+
+void Game::Victory(bool didWin, float gameEndTime)
+{
+	gameStarted = false;
+	if (didWin == true) {
+		m_Graphics->victory = true;
+	}
+	if (didWin == false) {
+		m_Graphics->loss = true;
+	}
+	if ((totalGameTime - gameEndTime) > 5.0f) {
+		//Reset all variables and go back to main menu
+	}
 }
 
 bool Game::MultiplayerSetUpFrame()

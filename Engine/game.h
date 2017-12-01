@@ -43,6 +43,7 @@ private:
 	bool MultiplayerSetUpFrame();
 	bool MenuFrame();
 	bool GameFrame();
+	void Victory(bool didWin, float gameEndTime);
 
 private:
 	// References to System Objects
@@ -64,15 +65,27 @@ private:
 	BitmapClass* menuBackground;
 	BitmapClass* menuTitle;
 	BitmapClass* menuScreen;
-	BitmapClass* threeDisplay;
-	BitmapClass* twoDisplay;
-	BitmapClass* oneDisplay;
-	BitmapClass* goDisplay;
+
 	BitmapClass* pointer2;
 	BitmapClass* menuBackground2;
 	BitmapClass* acceptButton2;
 	BitmapClass* backButton2;
 	BitmapClass* enterIP2;
+
+	//References to UI assets
+	BitmapClass* threeDisplay;
+	BitmapClass* twoDisplay;
+	BitmapClass* oneDisplay;
+	BitmapClass* goDisplay;
+	BitmapClass* lap1;
+	BitmapClass* lap2;
+	BitmapClass* winner;
+	BitmapClass* loser;
+
+	//Track checkpoint & lap
+	bool isCountdownDone = false;
+	int checkpoint = 1;
+	int lap = 1;
 
 	//Variables used for 'enter IP' screen
 	char acceptInputBuffer[32]; 
@@ -98,6 +111,9 @@ private:
 
 	//Is the game online?
 	bool onlineMode;
+
+	//Debug
+	int x = 0;
 };
 
 #endif

@@ -371,6 +371,14 @@ void NetworkClass::PositionUpdate(float x, float z, float time, float angle)
 	SendNetMessage(&positionUpdate);
 }
 
+void NetworkClass::SendVictory(float timestamp)
+{
+	NetMessage victoryUpdate;
+	victoryUpdate.type = MT_RACEFINISHED;
+	victoryUpdate.timeStamp = timestamp;
+	SendNetMessage(&victoryUpdate);
+}
+
 void NetworkClass::ProcessMessage(const NetMessage * message)
 {
 	ping = totalGameTime - message->timeStamp;
@@ -391,6 +399,6 @@ void NetworkClass::ProcessMessage(const NetMessage * message)
 		}
 	}
 	else if (message->type == MT_RACEFINISHED) {
-		//Update something somewhere with fact race is finished
+		opponentHasWon = true;
 	}
 }

@@ -26,13 +26,12 @@ bool RaceTrack::Initialize(GraphicsClass *& graphics, HWND & hwnd, D3DClass* &D3
 		return false;
 	}
 
-	/*for (int i = 0; i < 20; i++) {
-		result = m_Graphics->AddToPipeline(points[i], hwnd, "../Engine/data/skysphere.txt", L"../Engine/data/cars.dds");
+	for (int i = 0; i < 8; i++) {
+		result = m_Graphics->AddToPipeline(node[i], hwnd, "../Engine/data/skysphere.txt", L"../Engine/data/cars.dds");
 		if (!result) {
 			return false;
 		}
-	}*/
-									 
+	}
 
 	m_Model->SetPosition(0.0f, 4.0f, 0.0f);
 
@@ -48,6 +47,20 @@ bool RaceTrack::Initialize(GraphicsClass *& graphics, HWND & hwnd, D3DClass* &D3
 			}
 		}
 	}
+
+	CP1 = CheckPoint(relVertex[18], relVertex[16]);
+	CP2 = CheckPoint(relVertex[198], relVertex[197]);
+	CP3 = CheckPoint(relVertex[73], relVertex[72]);
+	FL = CheckPoint(relVertex[140], relVertex[138]);
+
+	node[0]->SetPosition(FL.point1.x, FL.point1.y, FL.point1.z);
+	node[1]->SetPosition(FL.point2.x, FL.point2.y, FL.point2.z);
+	node[2]->SetPosition(CP1.point1.x, CP1.point1.y, CP1.point1.z);
+	node[3]->SetPosition(CP1.point2.x, CP1.point2.y, CP1.point2.z);
+	node[4]->SetPosition(CP2.point1.x, CP2.point1.y, CP2.point1.z);
+	node[5]->SetPosition(CP2.point2.x, CP2.point2.y, CP2.point2.z);
+	node[6]->SetPosition(CP3.point1.x, CP3.point1.y, CP3.point1.z);
+	node[7]->SetPosition(CP3.point2.x, CP3.point2.y, CP3.point2.z);
 
 	return true;
 }

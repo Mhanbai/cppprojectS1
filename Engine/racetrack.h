@@ -20,6 +20,17 @@
 class RaceTrack
 {
 public:
+	struct CheckPoint {
+		D3DXVECTOR3 point1;
+		D3DXVECTOR3 point2;
+		CheckPoint() {
+		}
+		CheckPoint(D3DXVECTOR3 v1, D3DXVECTOR3 v2) {
+			point1 = v1;
+			point2 = v2;
+		}
+	};
+
 	RaceTrack();
 	RaceTrack(const RaceTrack&);
 	~RaceTrack();
@@ -32,8 +43,16 @@ public:
 	std::vector<D3DXVECTOR3> relVertex;
 	std::vector<float> noList;
 
+	//Checkpoints
+	CheckPoint CP1;
+	CheckPoint CP2;
+	CheckPoint CP3;
+	CheckPoint FL;
+
 	//Model for graphics
 	ModelClass* m_Model;
+	ModelClass* node[8];
+
 
 private:
 	//References to system objects

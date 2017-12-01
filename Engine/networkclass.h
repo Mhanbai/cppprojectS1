@@ -60,6 +60,8 @@ public:
 	//Send messages
 	void SendNetMessage(const NetMessage *message);
 	void PositionUpdate(float x, float z, float time, float angle);
+	void SendVictory(float timestamp);
+	bool opponentHasWon = false;
 
 	//Process recieved messages
 	void ProcessMessage(const NetMessage *message);

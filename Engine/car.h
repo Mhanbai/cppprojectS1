@@ -56,6 +56,9 @@ public:
 
 	ModelClass* m_Model;
 	CollisionBox m_Collider;
+
+	//Check if car is past a line on the track
+	bool CheckIntersection(Car::CollisionBox carRect, RaceTrack::CheckPoint line);
 	
 private:
 	//Set up the cars collider

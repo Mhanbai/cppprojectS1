@@ -340,6 +340,34 @@ bool Car::GetLateralPosition(D3DXVECTOR3 toTest, D3DXVECTOR3 linePoint1, D3DXVEC
 	}
 }
 
+bool Car::CheckIntersection(Car::CollisionBox carRect, RaceTrack::CheckPoint line)
+{
+	if ((GetLateralPosition(carRect.backLeft, line.point1, line.point2) && 
+		GetLateralPosition(carRect.backRight, line.point1, line.point2) && 
+		GetLateralPosition(carRect.frontLeft, line.point1, line.point2) && 
+		GetLateralPosition(carRect.frontRight, line.point1, line.point2)) ||
+		(!GetLateralPosition(carRect.backLeft, line.point1, line.point2) &&
+		!GetLateralPosition(carRect.backRight, line.point1, line.point2) &&
+		!GetLateralPosition(carRect.frontLeft, line.point1, line.point2) &&
+		!GetLateralPosition(carRect.frontRight, line.point1, line.point2))) 
+	{
+		return false;
+	}
+
+	if ((line.point1.x > carRect.frontRight.x) && (line.point2.x > carRect.frontRight.x)) {
+		return false;
+	} else if ((line.point1.x < carRect.backLeft.x) && (line.point2.x < carRect.backLeft.x)) {
+		return false;
+	} else if ((line.point1.y > carRect.frontRight.y) && (line.point2.y > carRect.frontRight.y)) {
+		return false;
+	} else if ((line.point1.y < carRect.backLeft.y) && (line.point2.y < carRect.backLeft.y)) {
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+
 Car::CollisionBox Car::FindCollider()
 {
 	m_Model->GetCollisionMesh(mesh);

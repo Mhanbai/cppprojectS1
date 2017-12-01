@@ -61,7 +61,12 @@ public:
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	FoliageClass* m_Foliage;
 
+	//In-Game UI Controls
 	int countdown = -1;
+	bool lap1 = true;
+	bool lap2 = false;
+	bool victory = false;
+	bool loss = false;
 
 private:
 	bool Render();
@@ -93,8 +98,8 @@ private:
 	ModelClass* mainGameAssets[300];
 	BitmapClass* menuScreenOneAssets[10];
 	BitmapClass* menuScreenTwoAssets[10];
-	BitmapClass* countDownAssets[4];
-	int countDownAssetCount;
+	BitmapClass* gameUIAssets[8];
+	int gameUIAssetCount;
 	int mainGameAssetCount;
 	int menuScreenOneAssetCount;
 	int menuScreenTwoAssetCount;
