@@ -44,7 +44,6 @@ public:
 
 	bool Initialize(int, int, TextClass* &text, HWND);
 	void Shutdown();
-	void Reset();
 	bool Frame();
 
 	bool AddToPipeline(ModelClass* &model, HWND hwnd, char* modelFilename, WCHAR* textureFilename);
