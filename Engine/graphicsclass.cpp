@@ -496,6 +496,16 @@ bool GraphicsClass::Render()
 		RenderSkyDome(worldMatrix, viewMatrix, projectionMatrix, cameraPosition);
 		// Render the text strings.
 		m_D3D->TurnOnAlphaBlending();
+		result = gameUIAssets[8]->Render(m_D3D->GetDeviceContext(), gameUIAssets[8]->width_in, gameUIAssets[8]->height_in);
+		if (!result)
+		{
+			return false;
+		}
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), gameUIAssets[8]->GetIndexCount(), worldMatrix, screenViewMatrix, orthoMatrix, gameUIAssets[8]->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
 		RenderText(1, worldMatrix);
 
 		// Render the terrain buffers.

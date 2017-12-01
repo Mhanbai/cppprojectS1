@@ -96,10 +96,10 @@ private:
 	int menuState;
 
 	//Arrays which determine what assets will be displayed for each gamestate
-	ModelClass* mainGameAssets[50];
+	ModelClass* mainGameAssets[30];
 	BitmapClass* menuScreenOneAssets[10];
 	BitmapClass* menuScreenTwoAssets[10];
-	BitmapClass* gameUIAssets[8];
+	BitmapClass* gameUIAssets[10];
 	int gameUIAssetCount;
 	int mainGameAssetCount;
 	int menuScreenOneAssetCount;

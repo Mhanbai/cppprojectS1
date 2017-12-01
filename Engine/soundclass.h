@@ -52,10 +52,10 @@ public:
 
 	bool Initialize(HWND);
 	void Shutdown();
-	void PlaySoundOnce(char* file);
-	void LoopSound(char* file);
-	void StopLooping();
-	void SetWindFrequency(int freq);
+
+	bool PlayWaveFile(char* file, int buffer);
+	bool LoopWaveFile(char* file, int buffer);
+	void StopWaveFile(int buffer);
 
 private:
 	bool InitializeDirectSound(HWND);
@@ -64,17 +64,18 @@ private:
 	bool LoadWaveFile(char*, IDirectSoundBuffer8**, IDirectSound3DBuffer8**);
 	void ShutdownWaveFile(IDirectSoundBuffer8**, IDirectSound3DBuffer8**);
 
-	bool PlayWaveFile();
-	bool LoopWaveFile();
-
 private:
 	IDirectSound8* m_DirectSound;
 	IDirectSoundBuffer* m_primaryBuffer;
 	IDirectSound3DListener8* m_listener;
 	IDirectSoundBuffer8* m_secondaryBuffer1;
 	IDirectSoundBuffer8* m_secondaryBuffer2;
+	IDirectSoundBuffer8* m_secondaryBuffer3;
+	IDirectSoundBuffer8* m_secondaryBuffer4;
 	IDirectSound3DBuffer8* m_secondary3DBuffer1;
 	IDirectSound3DBuffer8* m_secondary3DBuffer2;
+	IDirectSound3DBuffer8* m_secondary3DBuffer3;
+	IDirectSound3DBuffer8* m_secondary3DBuffer4;
 };
 
 #endif

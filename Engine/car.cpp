@@ -53,6 +53,14 @@ bool Car::Initialize(RaceTrack* &racetrack, GraphicsClass *& graphics, SoundClas
 		return false;
 	}
 
+	for (int i = 0; i < 4; i++) {
+		//Add the car to the graphics pipeline
+		result = m_Graphics->AddToPipeline(nodes[i], hwnd, "../Engine/data/skysphere.txt", L"../Engine/data/cars.dds");
+		if (!result) {
+			return false;
+		}
+	}
+
 	//Find the list of positions that determine the boundaries of the car
 	m_Collider = FindCollider();
 
@@ -75,19 +83,19 @@ void Car::Frame(float deltaTime, float gameTime)
 	if (speed < 5.0f) { //If speed is within a certain limit
 		if (idlecarsfx == false) { //And appropriate noise is not already looping
 			if (slowcarsfx == true) { //If the noise for the previous speed is still looping, stop looping it
-				m_Sound->StopLooping();
+				m_Sound->StopWaveFile(2);
 				slowcarsfx = false;
 			}
-			m_Sound->LoopSound("../Engine/data/caridle.wav"); //Then start looping the new noise
+			m_Sound->LoopWaveFile("../Engine/data/caridle.wav", 2); //Then start looping the new noise
 			idlecarsfx = true; //Boolean to determine that the noise is playing
 		}
 	}
 	else if (speed < 30.0f) {
 		if (slowcarsfx == false) {
-			m_Sound->StopLooping();
+			m_Sound->StopWaveFile(2);
 			idlecarsfx = false;
 			fastcarsfx = false;
-			m_Sound->LoopSound("../Engine/data/carslow.wav");
+			m_Sound->LoopWaveFile("../Engine/data/carslow.wav", 2);
 			slowcarsfx = true;
 		}
 		gear = 0.5f;
@@ -97,9 +105,9 @@ void Car::Frame(float deltaTime, float gameTime)
 	}
 	else {
 		if (fastcarsfx == false) {
-			m_Sound->StopLooping();
+			m_Sound->StopWaveFile(2);
 			slowcarsfx = false;
-			m_Sound->LoopSound("../Engine/data/carfast.wav");
+			m_Sound->LoopWaveFile("../Engine/data/carfast.wav", 2);
 			fastcarsfx = true;
 		}
 		gear = 1.0f;
@@ -170,12 +178,6 @@ void Car::Frame(float deltaTime, float gameTime)
 		velocity += acceleration * deltaTime;
 	}
 
-	//Apply velocity to car position
-	position = position + velocity * deltaTime;
-
-	//Calculate angle car is facing for graphics
-	graphicsAngle = atan2(forwardVector.z, forwardVector.x) - atan2(startingForwardVector.z, startingForwardVector.x);
-
 	//Update the collider
 	m_Collider.backLeft = m_Collider.backLeft - position; //Translate the collider so the Y axis is through the origin
 	D3DXVec3Transform(&nextForwardVector, &m_Collider.backLeft, &rotation); //Rotate the collider by the rotation matrix
@@ -200,6 +202,17 @@ void Car::Frame(float deltaTime, float gameTime)
 	m_Collider.frontRight = D3DXVECTOR3(nextForwardVector.x, nextForwardVector.y, nextForwardVector.z);
 	m_Collider.frontRight = m_Collider.frontRight + position;
 	m_Collider.frontRight = m_Collider.frontRight + velocity * deltaTime;
+
+	//Apply velocity to car position
+	position = position + velocity * deltaTime;
+
+	//Calculate angle car is facing for graphics
+	graphicsAngle = atan2(forwardVector.z, forwardVector.x) - atan2(startingForwardVector.z, startingForwardVector.x);
+
+	nodes[0]->SetPosition(m_Collider.frontRight.x, m_Collider.frontRight.y, m_Collider.frontRight.z);
+	nodes[1]->SetPosition(m_Collider.frontLeft.x, m_Collider.frontLeft.y, m_Collider.frontLeft.z);
+	nodes[2]->SetPosition(m_Collider.backRight.x, m_Collider.backRight.y, m_Collider.backRight.z);
+	nodes[3]->SetPosition(m_Collider.backLeft.x, m_Collider.backLeft.y, m_Collider.backLeft.z);
 
 	//Find which track nodes are close to the car
 	for (int i = 0; i < m_Racetrack->relVertex.size(); i++) { //For each vertex in the list of track nodes

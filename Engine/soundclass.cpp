@@ -13,6 +13,10 @@ SoundClass::SoundClass()
 	m_secondary3DBuffer1 = 0;
 	m_secondaryBuffer2 = 0;
 	m_secondary3DBuffer2 = 0;
+	m_secondaryBuffer3 = 0;
+	m_secondary3DBuffer3 = 0;
+	m_secondaryBuffer4 = 0;
+	m_secondary3DBuffer4 = 0;
 }
 
 
@@ -37,13 +41,6 @@ bool SoundClass::Initialize(HWND hwnd)
 		return false;
 	}
 
-	//New sound test
-	/*result = PlaySound("../Engine/data/menuback.wav");
-	if (!result)
-	{
-		return false;
-	}*/
-
 	return true;
 }
 
@@ -55,49 +52,15 @@ void SoundClass::Shutdown()
 
 	ShutdownWaveFile(&m_secondaryBuffer2, &m_secondary3DBuffer2);
 
+	ShutdownWaveFile(&m_secondaryBuffer3, &m_secondary3DBuffer3);
+
+	ShutdownWaveFile(&m_secondaryBuffer4, &m_secondary3DBuffer4);
+
 	// Shutdown the Direct Sound API.
 	ShutdownDirectSound();
 
 	return;
 }
-
-void SoundClass::PlaySoundOnce(char* file)
-{
-	// Load a wave audio file onto a secondary buffer.
-	LoadWaveFile(file, &m_secondaryBuffer1, &m_secondary3DBuffer1);
-
-	LPDWORD isPlaying = 0; //Create a var to hold info
-	m_secondaryBuffer1->GetStatus(isPlaying); //Gets whether or not the sound is currently playing/looping
-
-	if (!((int)isPlaying == DSBSTATUS_PLAYING)) {//If it's not, start looping it
-		PlayWaveFile();
-	}
-}
-
-void SoundClass::LoopSound(char * file)
-{
-	LoadWaveFile(file, &m_secondaryBuffer2, &m_secondary3DBuffer2); //Load the sound needing looped into the buffer.
-	LPDWORD isPlaying = 0; 
-
-	if (!(m_secondaryBuffer2->GetStatus(isPlaying) == DSBSTATUS_LOOPING)) { //If it's not, start looping it
-		LoopWaveFile();
-	}
-}
-
-void SoundClass::StopLooping()
-{
-	m_secondaryBuffer2->Stop();
-}
-
-void SoundClass::SetWindFrequency(int freq)
-{
-	LPDWORD frequency = 0;
-	m_secondaryBuffer2->GetFrequency(frequency);
-	unsigned int frequency2 = 44100;
-	frequency2 = frequency2 + (unsigned int)frequency + (freq * 1000);
-	m_secondaryBuffer2->SetFrequency((DWORD)frequency2);
-}
-
 
 bool SoundClass::InitializeDirectSound(HWND hwnd)
 {
@@ -385,78 +348,297 @@ void SoundClass::ShutdownWaveFile(IDirectSoundBuffer8** secondaryBuffer, IDirect
 }
 
 
-bool SoundClass::PlayWaveFile()
+bool SoundClass::PlayWaveFile(char* file, int buffer)
 {
 	HRESULT result;
 	float positionX, positionY, positionZ;
+	switch (buffer) {
+	case 0:
+		LoadWaveFile(file, &m_secondaryBuffer1, &m_secondary3DBuffer1);
 
+		// Set the 3D position of where the sound should be located.
+		positionX = -2.0f;
+		positionY = 0.0f;
+		positionZ = 0.0f;
 
-	// Set the 3D position of where the sound should be located.
-	positionX = -2.0f;
-	positionY = 0.0f;
-	positionZ = 0.0f;
+		// Set position at the beginning of the sound buffer.
+		result = m_secondaryBuffer1->SetCurrentPosition(0);
+		if (FAILED(result))
+		{
+			return false;
+		}
 
-	// Set position at the beginning of the sound buffer.
-	result = m_secondaryBuffer1->SetCurrentPosition(0);
-	if (FAILED(result))
-	{
-		return false;
-	}
+		// Set volume of the buffer to 100%.
+		result = m_secondaryBuffer1->SetVolume(DSBVOLUME_MAX);
+		if (FAILED(result))
+		{
+			return false;
+		}
 
-	// Set volume of the buffer to 100%.
-	result = m_secondaryBuffer1->SetVolume(DSBVOLUME_MAX);
-	if (FAILED(result))
-	{
-		return false;
-	}
+		// Set the 3D position of the sound.
+		m_secondary3DBuffer1->SetPosition(positionX, positionY, positionZ, DS3D_IMMEDIATE);
 
-	// Set the 3D position of the sound.
-	m_secondary3DBuffer1->SetPosition(positionX, positionY, positionZ, DS3D_IMMEDIATE);
+		// Play the contents of the secondary sound buffer.
+		result = m_secondaryBuffer1->Play(0, 0, 0);
+		if (FAILED(result))
+		{
+			return false;
+		}
+		break;
+	case 1:
+		LoadWaveFile(file, &m_secondaryBuffer2, &m_secondary3DBuffer2);
 
-	// Play the contents of the secondary sound buffer.
-	result = m_secondaryBuffer1->Play(0, 0, 0);
-	if (FAILED(result))
-	{
-		return false;
+		// Set the 3D position of where the sound should be located.
+		positionX = -2.0f;
+		positionY = 0.0f;
+		positionZ = 0.0f;
+
+		// Set position at the beginning of the sound buffer.
+		result = m_secondaryBuffer2->SetCurrentPosition(0);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		// Set volume of the buffer to 100%.
+		result = m_secondaryBuffer2->SetVolume(DSBVOLUME_MAX);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		// Set the 3D position of the sound.
+		m_secondary3DBuffer2->SetPosition(positionX, positionY, positionZ, DS3D_IMMEDIATE);
+
+		// Play the contents of the secondary sound buffer.
+		result = m_secondaryBuffer2->Play(0, 0, 0);
+		if (FAILED(result))
+		{
+			return false;
+		}
+		break;
+	case 2:
+		LoadWaveFile(file, &m_secondaryBuffer3, &m_secondary3DBuffer3);
+
+		// Set the 3D position of where the sound should be located.
+		positionX = -2.0f;
+		positionY = 0.0f;
+		positionZ = 0.0f;
+
+		// Set position at the beginning of the sound buffer.
+		result = m_secondaryBuffer3->SetCurrentPosition(0);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		// Set volume of the buffer to 100%.
+		result = m_secondaryBuffer3->SetVolume(DSBVOLUME_MAX);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		// Set the 3D position of the sound.
+		m_secondary3DBuffer3->SetPosition(positionX, positionY, positionZ, DS3D_IMMEDIATE);
+
+		// Play the contents of the secondary sound buffer.
+		result = m_secondaryBuffer3->Play(0, 0, 0);
+		if (FAILED(result))
+		{
+			return false;
+		}
+		break;
+	case 3:
+		LoadWaveFile(file, &m_secondaryBuffer4, &m_secondary3DBuffer4);
+
+		// Set the 3D position of where the sound should be located.
+		positionX = -2.0f;
+		positionY = 0.0f;
+		positionZ = 0.0f;
+
+		// Set position at the beginning of the sound buffer.
+		result = m_secondaryBuffer4->SetCurrentPosition(0);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		// Set volume of the buffer to 100%.
+		result = m_secondaryBuffer4->SetVolume(DSBVOLUME_MAX);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		// Set the 3D position of the sound.
+		m_secondary3DBuffer4->SetPosition(positionX, positionY, positionZ, DS3D_IMMEDIATE);
+
+		// Play the contents of the secondary sound buffer.
+		result = m_secondaryBuffer4->Play(0, 0, 0);
+		if (FAILED(result))
+		{
+			return false;
+		}
+		break;
 	}
 
 	return true;
 }
 
-bool SoundClass::LoopWaveFile()
+bool SoundClass::LoopWaveFile(char* file, int buffer)
 {
 	HRESULT result;
 	float positionX, positionY, positionZ;
 
+	switch (buffer) {
+	case 0:
+		LoadWaveFile(file, &m_secondaryBuffer1, &m_secondary3DBuffer1);
 
-	// Set the 3D position of where the sound should be located.
-	positionX = -2.0f;
-	positionY = 0.0f;
-	positionZ = 0.0f;
+		// Set the 3D position of where the sound should be located.
+		positionX = -2.0f;
+		positionY = 0.0f;
+		positionZ = 0.0f;
 
-	// Set position at the beginning of the sound buffer.
-	result = m_secondaryBuffer2->SetCurrentPosition(0);
-	if (FAILED(result))
-	{
-		return false;
-	}
+		// Set position at the beginning of the sound buffer.
+		result = m_secondaryBuffer1->SetCurrentPosition(0);
+		if (FAILED(result))
+		{
+			return false;
+		}
 
-	// Set volume of the buffer to 100%.
-	result = m_secondaryBuffer2->SetVolume(DSBVOLUME_MAX);
-	if (FAILED(result))
-	{
-		return false;
-	}
+		// Set volume of the buffer to 100%.
+		result = m_secondaryBuffer1->SetVolume(DSBVOLUME_MAX);
+		if (FAILED(result))
+		{
+			return false;
+		}
 
-	// Set the 3D position of the sound.
-	m_secondary3DBuffer2->SetPosition(positionX, positionY, positionZ, DS3D_IMMEDIATE);
+		// Set the 3D position of the sound.
+		m_secondary3DBuffer1->SetPosition(positionX, positionY, positionZ, DS3D_IMMEDIATE);
 
-	// Play the contents of the secondary sound buffer.
-	result = m_secondaryBuffer2->Play(0, 0, DSBPLAY_LOOPING);
-	if (FAILED(result))
-	{
-		return false;
+		// Play the contents of the secondary sound buffer.
+		result = m_secondaryBuffer1->Play(0, 0, DSBPLAY_LOOPING);
+		if (FAILED(result))
+		{
+			return false;
+		}
+		break;
+	case 1:
+		LoadWaveFile(file, &m_secondaryBuffer2, &m_secondary3DBuffer2);
+
+		// Set the 3D position of where the sound should be located.
+		positionX = -2.0f;
+		positionY = 0.0f;
+		positionZ = 0.0f;
+
+		// Set position at the beginning of the sound buffer.
+		result = m_secondaryBuffer2->SetCurrentPosition(0);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		// Set volume of the buffer to 100%.
+		result = m_secondaryBuffer2->SetVolume(DSBVOLUME_MAX);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		// Set the 3D position of the sound.
+		m_secondary3DBuffer2->SetPosition(positionX, positionY, positionZ, DS3D_IMMEDIATE);
+
+		// Play the contents of the secondary sound buffer.
+		result = m_secondaryBuffer2->Play(0, 0, DSBPLAY_LOOPING);
+		if (FAILED(result))
+		{
+			return false;
+		}
+		break;
+	case 2:
+		LoadWaveFile(file, &m_secondaryBuffer3, &m_secondary3DBuffer3);
+
+		// Set the 3D position of where the sound should be located.
+		positionX = -2.0f;
+		positionY = 0.0f;
+		positionZ = 0.0f;
+
+		// Set position at the beginning of the sound buffer.
+		result = m_secondaryBuffer3->SetCurrentPosition(0);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		// Set volume of the buffer to 100%.
+		result = m_secondaryBuffer3->SetVolume(DSBVOLUME_MAX);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		// Set the 3D position of the sound.
+		m_secondary3DBuffer3->SetPosition(positionX, positionY, positionZ, DS3D_IMMEDIATE);
+
+		// Play the contents of the secondary sound buffer.
+		result = m_secondaryBuffer3->Play(0, 0, DSBPLAY_LOOPING);
+		if (FAILED(result))
+		{
+			return false;
+		}
+		break;
+	case 3:
+		LoadWaveFile(file, &m_secondaryBuffer4, &m_secondary3DBuffer4);
+
+		// Set the 3D position of where the sound should be located.
+		positionX = -2.0f;
+		positionY = 0.0f;
+		positionZ = 0.0f;
+
+		// Set position at the beginning of the sound buffer.
+		result = m_secondaryBuffer4->SetCurrentPosition(0);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		// Set volume of the buffer to 100%.
+		result = m_secondaryBuffer4->SetVolume(DSBVOLUME_MAX);
+		if (FAILED(result))
+		{
+			return false;
+		}
+
+		// Set the 3D position of the sound.
+		m_secondary3DBuffer4->SetPosition(positionX, positionY, positionZ, DS3D_IMMEDIATE);
+
+		// Play the contents of the secondary sound buffer.
+		result = m_secondaryBuffer4->Play(0, 0, DSBPLAY_LOOPING);
+		if (FAILED(result))
+		{
+			return false;
+		}
+		break;
 	}
 
 	return true;
+}
+
+void SoundClass::StopWaveFile(int buffer)
+{
+	switch (buffer) {
+	case 0:
+		m_secondaryBuffer1->Stop();
+		break;
+	case 1:
+		m_secondaryBuffer2->Stop();
+		break;
+	case 2:
+		m_secondaryBuffer3->Stop();
+		break;
+	case 3:
+		m_secondaryBuffer4->Stop();
+		break;
+	}
 }

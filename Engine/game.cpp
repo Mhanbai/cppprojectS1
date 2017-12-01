@@ -115,7 +115,7 @@ bool Game::InitializeMenuScreen()
 {
 	bool result;
 
-	m_Sound->LoopSound("../Engine/data/menumusic.wav");
+	m_Sound->LoopWaveFile("../Engine/data/menumusic.wav", 0);
 
 	// Set up Menu Screen 1 assets
 
@@ -274,6 +274,15 @@ bool Game::InitializeMenuScreen()
 	loser->width_in = (m_Graphics->GetScreenWidth() / 2) - 250;
 	loser->height_in = (m_Graphics->GetScreenWidth() / 2) - 55;
 
+	result = m_Graphics->AddBitmapToPipeline(2, loser, m_hwnd, L"../Engine/data/black.dds", 150, 200);
+	if (!result) {
+		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
+		return false;
+	}
+
+	loser->width_in = 0;
+	loser->height_in = 0;
+
 	return true;
 }
 
@@ -338,7 +347,7 @@ bool Game::MenuFrame()
 	//////////////////////////////////////////////////////////////////////////////////
 	if (menuState < 3) {
 		if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
-			m_Sound->PlaySoundOnce("../Engine/data/cursor.wav");
+			m_Sound->PlayWaveFile("../Engine/data/cursor.wav", 0);
 			if (menuState != 2) {
 				menuState++;
 			}
@@ -348,7 +357,7 @@ bool Game::MenuFrame()
 			menuWasDownPressed = true;
 		}
 		else if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
-			m_Sound->PlaySoundOnce("../Engine/data/cursor.wav");
+			m_Sound->PlayWaveFile("../Engine/data/cursor.wav", 0);
 			if (menuState != 0) {
 				menuState--;
 			}
@@ -368,7 +377,7 @@ bool Game::MenuFrame()
 
 	if ((menuState >= 3) && (menuState < 6)) {
 		if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
-			m_Sound->PlaySoundOnce("../Engine/data/cursor.wav");
+			m_Sound->PlayWaveFile("../Engine/data/cursor.wav", 0);
 			if (menuState != 5) {
 				menuState++;
 			}
@@ -378,7 +387,7 @@ bool Game::MenuFrame()
 			menuWasDownPressed = true;
 		}
 		else if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
-			m_Sound->PlaySoundOnce("../Engine/data/cursor.wav");
+			m_Sound->PlayWaveFile("../Engine/data/cursor.wav", 0);
 			if (menuState != 3) {
 				menuState--;
 			}
@@ -438,10 +447,10 @@ bool Game::MenuFrame()
 
 		switch (menuState) {
 		case 0:
-			m_Sound->PlaySoundOnce("../Engine/data/select.wav");
-			m_Sound->StopLooping();
-			m_Sound->LoopSound("../Engine/data/wind.wav");
-			m_Sound->PlaySoundOnce("../Engine/data/carstart.wav");
+			m_Sound->StopWaveFile(0);
+			m_Sound->PlayWaveFile("../Engine/data/select.wav", 0);
+			m_Sound->LoopWaveFile("../Engine/data/music.wav", 1);
+			m_Sound->PlayWaveFile("../Engine/data/carstart.wav", 1);
 			totalGameTime = 0.0f;
 			result = InitializeMainGame(false);
 			if (!result) {
@@ -453,30 +462,30 @@ bool Game::MenuFrame()
 			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
 			break;
 		case 1:
-			m_Sound->PlaySoundOnce("../Engine/data/select.wav");
+			m_Sound->PlayWaveFile("../Engine/data/select.wav", 0);
 			m_Graphics->SetMenuState(1);
 			menuState = 3;
 			break;
 		case 2:
-			m_Sound->PlaySoundOnce("../Engine/data/menuback.wav");
+			m_Sound->PlayWaveFile("../Engine/data/menuback.wav", 0);
 			return false; // Quits the game
 		case 3:
-			m_Sound->PlaySoundOnce("../Engine/data/select.wav");
+			m_Sound->PlayWaveFile("../Engine/data/select.wav", 0);
 			menuState = 4;
 			break;
 		case 4:
-			m_Sound->PlaySoundOnce("../Engine/data/select.wav");
+			m_Sound->PlayWaveFile("../Engine/data/select.wav", 0);
 			m_Network->EstablishConnection(acceptInputBuffer);
 			menuState = 6;
 			break;
 		case 5:
 			// Go back to main menu
-			m_Sound->PlaySoundOnce("../Engine/data/menuback.wav");
+			m_Sound->PlayWaveFile("../Engine/data/menuback.wav", 0);
 			m_Graphics->SetMenuState(0);
 			menuState = 1;
 			break;
 		case 6:
-			m_Sound->PlaySoundOnce("../Engine/data/menuback.wav");
+			m_Sound->PlayWaveFile("../Engine/data/menuback.wav", 0);
 			m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->networkStatus, "Connection attempt cancelled", 10, 10, 1.0f, 1.0f, 1.0f);
 			m_Network->establishingConnection = false;
 			menuState = 4;
@@ -494,11 +503,11 @@ bool Game::MenuFrame()
 			MessageBox(m_hwnd, L"Could not initialize gameplay scene.", L"Error", MB_OK);
 			return false;
 		}
-		m_Sound->StopLooping();
+		m_Sound->StopWaveFile(0);
 		gameState = 2;
 		totalGameTime = 0.0f;
-		m_Sound->PlaySoundOnce("../Engine/data/carstart.wav");
-		m_Sound->LoopSound("../Engine/data/wind.wav");
+		m_Sound->PlayWaveFile("../Engine/data/carstart.wav", 1);
+		m_Sound->LoopWaveFile("../Engine/data/music.wav", 1);
 		m_Graphics->SetGameState(gameState);
 	}
 
@@ -511,42 +520,34 @@ bool Game::GameFrame()
 	m_raceTrack->Frame();
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
 
-	char cpBuffer[32];
-	sprintf_s(cpBuffer, "CheckPoint: %i", checkpoint);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, cpBuffer, 60, 130, 1.0f, 1.0f, 1.0f); 
-
-	char lapBuffer[32];
-	sprintf_s(lapBuffer, "Lap: %i", lap);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, lapBuffer, 60, 150, 1.0f, 1.0f, 1.0f); 
-
 	if (isCountdownDone == false) {
 		if (gameStarted == false) {
 			if ((totalGameTime >= 1.0f) && (totalGameTime < 2.0f)) {
 				if (three == false) {
 					m_Graphics->countdown = 0;
 					three = true;
-					m_Sound->PlaySoundOnce("../Engine/data/321.wav");
+					m_Sound->PlayWaveFile("../Engine/data/321.wav", 1);
 				}
 			}
 			else if ((totalGameTime >= 2.0f) && (totalGameTime < 3.0f)) {
 				if (two == false) {
 					m_Graphics->countdown = 1;
 					two = true;
-					m_Sound->PlaySoundOnce("../Engine/data/321.wav");
+					m_Sound->PlayWaveFile("../Engine/data/321.wav", 1);
 				}
 			}
 			else if ((totalGameTime >= 3.0f) && (totalGameTime < 4.0f)) {
 				if (one == false) {
 					m_Graphics->countdown = 2;
 					one = true;
-					m_Sound->PlaySoundOnce("../Engine/data/321.wav");
+					m_Sound->PlayWaveFile("../Engine/data/321.wav", 1);
 				}
 			}
 			else if (totalGameTime >= 4.0f) {
 				m_Graphics->countdown = 3;
 				totalGameTime = 0.0f;
 				isCountdownDone = true;
-				m_Sound->PlaySoundOnce("../Engine/data/go.wav");
+				m_Sound->PlayWaveFile("../Engine/data/go.wav", 1);
 				gameStarted = true;
 			}
 		}
@@ -590,6 +591,12 @@ bool Game::GameFrame()
 			}
 		}
 
+		if (lap == 1) {
+			laptime1 = totalGameTime;
+		} else if (lap == 2) {
+			laptime2 = totalGameTime - laptime1;
+		}
+
 		if (m_Network->opponentHasWon == true) {
 			gameEndTime = totalGameTime;
 			gameHasEnded = true;
@@ -625,15 +632,6 @@ bool Game::GameFrame()
 		else {
 			mainPlayer->TurnRight(false);
 		}
-
-		char fpsBuffer[32];
-		sprintf_s(fpsBuffer, "FPS: %i", framesPerSec);
-
-		char cpuBuffer[32];
-		sprintf_s(cpuBuffer, "CPU: %i%%", cpuUsage);
-
-		m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, fpsBuffer, 60, 90, 1.0f, 1.0f, 1.0f);
-		m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, cpuBuffer, 60, 110, 1.0f, 1.0f, 1.0f);
 	}
 
 	if (gameHasEnded == true) {
@@ -643,9 +641,27 @@ bool Game::GameFrame()
 		}
 	}
 
+	//Update info text strings
+	char fpsBuffer[32];
+	sprintf_s(fpsBuffer, "FPS: %i", framesPerSec);
+
+	char cpuBuffer[32];
+	sprintf_s(cpuBuffer, "CPU: %i%%", cpuUsage);
+
 	char timeBuffer[32];
 	sprintf_s(timeBuffer, "%.0f:%.2f", floor((totalGameTime / 60)), fmod(totalGameTime, 60));
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 60, 70, 1.0f, 1.0f, 1.0f);
+
+	char lap1Buffer[32];
+	sprintf_s(lap1Buffer, "Lap 1: %.0f:%.2f", floor((laptime1 / 60)), fmod(laptime1, 60));
+
+	char lap2Buffer[32];
+	sprintf_s(lap2Buffer, "Lap 2: %.0f:%.2f", floor((laptime2 / 60)), fmod(laptime2, 60));
+
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, fpsBuffer, 10, 70, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, cpuBuffer, 10, 90, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 10, 130, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, lap1Buffer, 10, 150, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, lap2Buffer, 10, 170, 1.0f, 1.0f, 1.0f);
 
 	return true;
 }
@@ -655,9 +671,11 @@ void Game::Victory(bool didWin)
 	gameStarted = false;
 	if (didWin == true) {
 		m_Graphics->victory = true;
+		m_Sound->PlayWaveFile("../Engine/data/victory.wav", 3);
 	}
 	if (didWin == false) {
 		m_Graphics->loss = true;
+		m_Sound->PlayWaveFile("../Engine/data/defeat.wav", 3);
 	}
 }
 

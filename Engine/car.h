@@ -57,6 +57,7 @@ public:
 	void EndGameState();
 
 	ModelClass* m_Model;
+	ModelClass* nodes[4];
 	CollisionBox m_Collider;
 
 	//Check if car is past a line on the track

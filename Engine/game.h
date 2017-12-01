@@ -104,6 +104,8 @@ private:
 	int cpuUsage;
 	float totalGameTime;
 	float deltaTime;
+	float laptime1 = 0.0f;
+	float laptime2 = 0.0f;
 
 	//Values for countdown
 	bool gameStarted = false;
