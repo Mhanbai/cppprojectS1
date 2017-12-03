@@ -66,10 +66,23 @@ void Opponent::Frame(float deltaTime, float totalTime)
 			//Calculate the time for when we are trying to predict
 			predictionTime = totalTime - pos0.timeStamp;
 
+			if (m_Network->ping < 0.1f) {
+				extrapolationFactor = 4.5f;
+			}
+			else if ((m_Network->ping >= 0.1f) && (m_Network->ping < 0.2f)) {
+				extrapolationFactor = 2.0f;
+			}
+			else if ((m_Network->ping >= 0.2f) && (m_Network->ping < 0.4f)) {
+				extrapolationFactor = 1.5f;
+			}
+			else {
+				extrapolationFactor = 1.0f;
+			}
+
 			//Linear prediction model to calculate where we want the car to be
 			if (!(isnan(velX)) && (!isnan(velZ))) {
 				lastPosition = position;
-				nextPosition = D3DXVECTOR3((pos0.posX + velX * predictionTime), 2.0f, (pos0.posZ + velZ * predictionTime));
+				nextPosition = D3DXVECTOR3((pos0.posX + velX * predictionTime * extrapolationFactor), 2.0f, (pos0.posZ + velZ * predictionTime * extrapolationFactor));
 				currentForwardVector = forwardVector;
 				D3DXVec3Subtract(&nextForwardVector, &nextPosition, &lastPosition);
 			}

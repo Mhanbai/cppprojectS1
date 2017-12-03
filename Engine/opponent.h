@@ -47,6 +47,7 @@ private:
 	float predictionTime;
 	float lastPredictionTime = 0.0f;
 	float frame = 1;
+	float extrapolationFactor = 0.0f;
 
 	//Position of model for graphics & game
 	D3DXVECTOR3 currentForwardVector = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
