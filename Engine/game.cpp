@@ -105,6 +105,7 @@ bool Game::Frame(int fpsOutput, int cpuOutput, float timerOutput)
 	case 2: //Call multiplayer logic if gamestate is set to multiplayer mode
 		result = GameFrame();
 		opponent->Frame(deltaTime / 1000, totalGameTime);
+		//totalGameTime = totalGameTime - m_Network->errorTimer;
 		return result;
 	default:
 		return false;
@@ -274,7 +275,7 @@ bool Game::InitializeMenuScreen()
 	loser->width_in = (m_Graphics->GetScreenWidth() / 2) - 250;
 	loser->height_in = (m_Graphics->GetScreenWidth() / 2) - 55;
 
-	result = m_Graphics->AddBitmapToPipeline(2, loser, m_hwnd, L"../Engine/data/black.dds", 150, 200);
+	result = m_Graphics->AddBitmapToPipeline(2, loser, m_hwnd, L"../Engine/data/black.dds", 250, 300);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -547,6 +548,9 @@ bool Game::GameFrame()
 				m_Graphics->countdown = 3;
 				totalGameTime = 0.0f;
 				isCountdownDone = true;
+				mainPlayer->SetGameStarted();
+				m_Network->ResetGameTime();
+				m_Network->raceHasStarted = true;
 				m_Sound->PlayWaveFile("../Engine/data/go.wav", 1);
 				gameStarted = true;
 			}
@@ -657,11 +661,11 @@ bool Game::GameFrame()
 	char lap2Buffer[32];
 	sprintf_s(lap2Buffer, "Lap 2: %.0f:%.2f", floor((laptime2 / 60)), fmod(laptime2, 60));
 
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence2, fpsBuffer, 10, 70, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence3, cpuBuffer, 10, 90, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence1, timeBuffer, 10, 130, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence4, lap1Buffer, 10, 150, 1.0f, 1.0f, 1.0f);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->m_sentence5, lap2Buffer, 10, 170, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->fpstext, fpsBuffer, 10, 90, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->cputext, cpuBuffer, 10, 110, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->timetext, timeBuffer, 10, 130, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->laptime1text, lap1Buffer, 10, 170, 1.0f, 1.0f, 1.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->laptime2text, lap2Buffer, 10, 190, 1.0f, 1.0f, 1.0f);
 
 	return true;
 }
@@ -674,6 +678,8 @@ void Game::Victory(bool didWin)
 		m_Sound->PlayWaveFile("../Engine/data/victory.wav", 3);
 	}
 	if (didWin == false) {
+		gameEndTime = totalGameTime;
+		gameHasEnded = true;
 		m_Graphics->loss = true;
 		m_Sound->PlayWaveFile("../Engine/data/defeat.wav", 3);
 	}
@@ -692,13 +698,13 @@ bool Game::MultiplayerSetUpFrame()
 
 	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->acceptInput, acceptInputBuffer, enterIP2->width_in + 216, pointer2->height_in + 2, 0.0f, 1.0f, 0.0f);
 
-	char displayLocalIPBuffer[32];
+	char displayLocalIPBuffer[64];
 	sprintf_s(displayLocalIPBuffer, "Your Local IP = %s", m_Network->myLocalIP);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->displayLocalIP, displayLocalIPBuffer, enterIP2->width_in + 196, enterIP2->height_in + 156, 1.0f, 1.0f, 0.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->displayLocalIP, displayLocalIPBuffer, enterIP2->width_in + 5, enterIP2->height_in + 118, 1.0f, 1.0f, 0.0f);
 
-	char displayPublicIPBuffer[32];
+	char displayPublicIPBuffer[64];
 	sprintf_s(displayPublicIPBuffer, "Your Public IP = %s", m_Network->myPublicIP);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->displayPublicIP, displayPublicIPBuffer, enterIP2->width_in + 181, enterIP2->height_in + 176, 1.0f, 1.0f, 0.0f);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->displayPublicIP, displayPublicIPBuffer, enterIP2->width_in + 5, enterIP2->height_in + 138, 1.0f, 1.0f, 0.0f);
 
 
 	return false;

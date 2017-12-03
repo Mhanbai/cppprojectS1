@@ -16,11 +16,15 @@ TextClass::TextClass()
 	networkStatus2 = 0;
 	networkStatus3 = 0;
 
-	m_sentence1 = 0;
-	m_sentence2 = 0;
-	m_sentence3 = 0;
-	m_sentence4 = 0;
-	m_sentence5 = 0;
+	cputext = 0;
+	fpstext = 0;
+	timetext = 0;
+	laptime1text = 0;
+	laptime2text = 0;
+
+	debug1 = 0;
+	debug2 = 0;
+	debug3 = 0;
 }
 
 
@@ -79,13 +83,13 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	// Initialize sentences used for menu
-	result = InitializeSentence(&displayLocalIP, 32, device);
+	result = InitializeSentence(&displayLocalIP, 64, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	result = InitializeSentence(&displayPublicIP, 32, device);
+	result = InitializeSentence(&displayPublicIP, 64, device);
 	if (!result)
 	{
 		return false;
@@ -116,31 +120,49 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	// Initialize sentences used for debug
-	result = InitializeSentence(&m_sentence1, 64, device);
+	result = InitializeSentence(&fpstext, 64, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	result = InitializeSentence(&m_sentence2, 64, device);
+	result = InitializeSentence(&cputext, 64, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	result = InitializeSentence(&m_sentence3, 64, device);
+	result = InitializeSentence(&timetext, 64, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	result = InitializeSentence(&m_sentence4, 64, device);
+	result = InitializeSentence(&laptime1text, 64, device);
 	if (!result)
 	{
 		return false;
 	}
 
-	result = InitializeSentence(&m_sentence5, 64, device);
+	result = InitializeSentence(&laptime2text, 64, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	result = InitializeSentence(&debug1, 64, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	result = InitializeSentence(&debug2, 64, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	result = InitializeSentence(&debug3, 64, device);
 	if (!result)
 	{
 		return false;
@@ -167,19 +189,28 @@ void TextClass::Shutdown()
 	ReleaseSentence(&networkStatus3);
 
 	// Release the sentence.
-	ReleaseSentence(&m_sentence1);
+	ReleaseSentence(&fpstext);
 
 	// Release the sentence.
-	ReleaseSentence(&m_sentence2);
+	ReleaseSentence(&cputext);
 
 	// Release the sentence.
-	ReleaseSentence(&m_sentence3);
+	ReleaseSentence(&timetext);
 
 	// Release the sentence.
-	ReleaseSentence(&m_sentence4);
+	ReleaseSentence(&laptime1text);
 
 	// Release the sentence.
-	ReleaseSentence(&m_sentence5);
+	ReleaseSentence(&laptime2text);
+
+	// Release the sentence.
+	ReleaseSentence(&debug1);
+
+	// Release the sentence.
+	ReleaseSentence(&debug2);
+
+	// Release the sentence.
+	ReleaseSentence(&debug3);
 
 	// Release the font shader object.
 	if (m_FontShader)
@@ -206,35 +237,56 @@ bool TextClass::RenderDebugText(ID3D11DeviceContext* deviceContext, D3DXMATRIX w
 
 
 	// Draw the first sentence.
-	result = RenderSentence(deviceContext, m_sentence1, worldMatrix, orthoMatrix);
+	result = RenderSentence(deviceContext, fpstext, worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Draw the second sentence.
-	result = RenderSentence(deviceContext, m_sentence2, worldMatrix, orthoMatrix);
+	result = RenderSentence(deviceContext, cputext, worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Draw the second sentence.
-	result = RenderSentence(deviceContext, m_sentence3, worldMatrix, orthoMatrix);
+	result = RenderSentence(deviceContext, timetext, worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Draw the second sentence.
-	result = RenderSentence(deviceContext, m_sentence4, worldMatrix, orthoMatrix);
+	result = RenderSentence(deviceContext, laptime1text, worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Draw the second sentence.
-	result = RenderSentence(deviceContext, m_sentence5, worldMatrix, orthoMatrix);
+	result = RenderSentence(deviceContext, laptime2text, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Draw the second sentence.
+	result = RenderSentence(deviceContext, debug1, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Draw the second sentence.
+	result = RenderSentence(deviceContext, debug2, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Draw the second sentence.
+	result = RenderSentence(deviceContext, debug3, worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;

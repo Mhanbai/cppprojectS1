@@ -49,15 +49,15 @@ private:
 	float frame = 1;
 
 	//Position of model for graphics & game
-	D3DXVECTOR3 currentForwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-	D3DXVECTOR3 forwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-	D3DXVECTOR3 nextForwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+	D3DXVECTOR3 currentForwardVector = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 forwardVector = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 nextForwardVector = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 startingForwardVector = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-	D3DXVECTOR3 position;
+	D3DXVECTOR3 position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	float lastGraphicsAngle = 0.0f;
 	float graphicsAngle = 0.0f;
 	float nextGraphicsAngle = 0.0f;
-	bool startUpdatingAngle = false;
+	bool startUpdating = false;
 };
 
 #endif

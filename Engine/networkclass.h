@@ -47,12 +47,19 @@ public:
 	~NetworkClass();
 	bool Initialize(GraphicsClass* &graphics);
 	void Shutdown();
-	void Frame(float time);
-	void Reset();
+	bool Frame(float time);
 
 	//Check computer is connected to internet, and recheck if previous check failed
 	bool CheckNetwork(char* &localIPHolder, char* &publicIPHolder);
 	bool RecheckNetwork();
+
+	//Variables and functions for timing
+	void ResetGameTime();
+	float ping = 0.0f;
+	bool errorPause = false;
+	float errorTimer = 0.0f;
+	bool raceHasStarted = false;
+	float lastMessageRecieved = 0.0f;
 
 	//Establish a connection to an opponent, and retry if first attempt failed
 	void EstablishConnection(char* opponentAddress);

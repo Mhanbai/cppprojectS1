@@ -26,6 +26,14 @@ bool RaceTrack::Initialize(GraphicsClass *& graphics, HWND & hwnd, D3DClass* &D3
 		return false;
 	}
 
+	result = m_Graphics->AddToPipeline(finishBanner, hwnd, "../Engine/data/finish.txt", L"../Engine/data/finish.dds");
+	if (!result) {
+		return false;
+	}
+
+	finishBanner->SetPosition(0.0f, 4.0f, 17.479f);
+	finishBanner->SetRotation(90.0f);
+
 	/*for (int i = 0; i < 8; i++) {
 		result = m_Graphics->AddToPipeline(node[i], hwnd, "../Engine/data/skysphere.txt", L"../Engine/data/cars.dds");
 		if (!result) {

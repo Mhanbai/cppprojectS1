@@ -88,7 +88,7 @@ void NetworkClass::Shutdown()
 	return;
 }
 
-void NetworkClass::Frame(float time)
+bool NetworkClass::Frame(float time)
 {
 	//Game time equals the sum of the frame timer output divided by 1000 
 	totalGameTime = totalGameTime + (time / 1000);
@@ -98,12 +98,11 @@ void NetworkClass::Frame(float time)
 		//And a message has been recieved...
 		if (messageReceived == true) {
 			//Set connectionEstablished variable to true so game.cpp knows to start a game
-			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Successfully established a connection!", 10, 10, 1.0f, 1.0f, 1.0f);
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection established!", 10, 10, 1.0f, 1.0f, 1.0f);
 			establishingConnection = false;
 			connectionEstablished = true;
-			totalGameTime = 0.0f; // Reset timer to 0 for lap timing/timestamps
 		}
-		else if ((totalGameTime - startTime) > 3) {
+		else if ((totalGameTime - startTime) > 3.0f) {
 			//If we've been trying to establish a connection for over 3 seconds, send the message again
 			EstablishConnection();
 			startTime = totalGameTime;
@@ -117,9 +116,9 @@ void NetworkClass::Frame(float time)
 		if (count == SOCKET_ERROR) {
 			char errorBuffer[32];
 			sprintf_s(errorBuffer, "Send Error: %i", WSAGetLastError());
-			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, errorBuffer, 10, 10, 1.0f, 1.0f, 1.0f);
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus2, errorBuffer, 10, 30, 1.0f, 1.0f, 1.0f);
 		}
-		else
+		//else
 		{
 			//Deduct the sum of the data thats just been sent from writeCount
 			writeCount_ -= count;
@@ -137,7 +136,7 @@ void NetworkClass::Frame(float time)
 		if (WSAGetLastError() != WSAEWOULDBLOCK) {
 			char errorBuffer[32];
 			sprintf_s(errorBuffer, "Recieve Error: %i", WSAGetLastError());
-			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus3, errorBuffer, 10, 30, 1.0f, 1.0f, 1.0f);
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus3, errorBuffer, 10, 50, 1.0f, 1.0f, 1.0f);
 		}
 	}
 	else
@@ -150,7 +149,7 @@ void NetworkClass::Frame(float time)
 		{
 			// ... but we've not received a complete message yet.
 			// So we can't do anything until we receive some more.
-			return;
+			return true;
 		}
 		else
 		{
@@ -162,7 +161,37 @@ void NetworkClass::Frame(float time)
 		}
 	}
 
-	return;
+	if ((messageReceived == true) && (raceHasStarted == true)){
+		if (ping > 0.5f) {
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Attempting to reconnect...", 10, 10, 1.0f, 1.0f, 1.0f);
+			//Pause game until ping goes down
+			errorPause = true;
+			//Wait and close game if it doesnt
+			errorTimer += (time / 1000);
+			if ((errorTimer > 5.0f) && (errorTimer <= 8.0f)) {
+				char killBuffer[64];
+				sprintf_s(killBuffer, "Connection Lost. Closing game in %.2f", 8.0f - errorTimer);
+				m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, killBuffer, 10, 10, 1.0f, 1.0f, 1.0f);
+			}
+			else if (errorTimer > 8.0f) {
+				return false;
+			}
+		}
+		else if ((ping <= 0.5f) && (ping > 0.4f)) {
+			errorPause = false;
+			errorTimer = 0.0f;
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "WARNING: Network difficulties", 10, 10, 1.0f, 1.0f, 1.0f);
+		}
+		else {
+			errorPause = false;
+			errorTimer = 0.0f;
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection established!", 10, 10, 1.0f, 1.0f, 1.0f);
+		}
+	}
+
+	ping = totalGameTime - lastMessageRecieved;
+
+	return true;
 }
 
 // This class can be used to complete initialization if CheckNetwork returns false
@@ -181,6 +210,11 @@ bool NetworkClass::RecheckNetwork()
 
 	m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connected!", 10, 10, 1.0f, 1.0f, 1.0f);
 	return true;
+}
+
+void NetworkClass::ResetGameTime()
+{
+	totalGameTime = 0.0f;
 }
 
 bool NetworkClass::CheckNetwork(char* &localIPHolder, char* &publicIPHolder)
@@ -306,7 +340,12 @@ void NetworkClass::EstablishConnection(char * opponentAddress)
 	sendAddr.sin_family = AF_INET;
 	sendAddr.sin_port = htons(4444);
 
-	sendAddr.sin_addr.s_addr = inet_addr(opponentAddress);
+	if (opponentAddress[0] != '\0') {
+		sendAddr.sin_addr.s_addr = inet_addr(opponentAddress);
+	}
+	else {
+		sendAddr.sin_addr.s_addr = inet_addr(myLocalIP);
+	}
 
 	//Create a new message of type 'Welcome'
 	NetMessage welcomeMessage;
@@ -364,7 +403,6 @@ void NetworkClass::PositionUpdate(float x, float z, float time, float angle)
 	positionUpdate.timeStamp = time;
 	positionUpdate.posX = x;
 	positionUpdate.posZ = z;
-	positionUpdate.angle = angle;
 	SendNetMessage(&positionUpdate);
 }
 
@@ -378,17 +416,19 @@ void NetworkClass::SendVictory(float timestamp)
 
 void NetworkClass::ProcessMessage(const NetMessage * message)
 {
+	lastMessageRecieved = message->timeStamp;
+
 	if (message->type == MT_WELCOME) {
 		messageReceived = true;
 		trackPosition = message->trackPos;
 	}
 	else if (message->type == MT_POSITIONUPDATE) {
-		if (message->timeStamp > positionUpdates[positionUpdates.size() - 1].timeStamp) {
+		if ((message->timeStamp > positionUpdates[positionUpdates.size() - 1].timeStamp) && (errorPause == false)) {
+			totalGameTime = totalGameTime - errorTimer;
 			Update update;
 			update.timeStamp = message->timeStamp;
 			update.posX = message->posX;
 			update.posZ = message->posZ;
-			update.angle = message->angle;
 			positionUpdates.push_back(update);
 			updateAvailable = true;
 		}

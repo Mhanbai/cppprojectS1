@@ -51,6 +51,7 @@ public:
 
 	//Model for graphics
 	ModelClass* m_Model;
+	ModelClass* finishBanner;
 	ModelClass* node[8];
 
 

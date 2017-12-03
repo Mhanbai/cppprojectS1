@@ -266,6 +266,7 @@ void SystemClass::Run()
 
 bool SystemClass::Frame()
 {
+
 	bool result;
 
 	// Update the system stats.
@@ -278,7 +279,12 @@ bool SystemClass::Frame()
 		connected = m_Network->RecheckNetwork();
 		m_Game->SetOnlineMode(connected);
 	}
-	m_Network->Frame(m_Timer->GetTime());
+
+	result = m_Network->Frame(m_Timer->GetTime());
+	if (!result)
+	{
+		return false;
+	}
 
 	// Do the input frame processing.
 	result = m_Input->Frame();

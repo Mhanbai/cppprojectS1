@@ -52,12 +52,17 @@ public:
 	SentenceType* networkStatus2;
 	SentenceType* networkStatus3;
 
+	//Sentences for in game ui text
+	SentenceType* cputext;
+	SentenceType* fpstext;
+	SentenceType* timetext;
+	SentenceType* laptime1text;
+	SentenceType* laptime2text;
+
 	//Sentences for debug text
-	SentenceType* m_sentence1;
-	SentenceType* m_sentence2;
-	SentenceType* m_sentence3;
-	SentenceType* m_sentence4;
-	SentenceType* m_sentence5;
+	SentenceType* debug1;
+	SentenceType* debug2;
+	SentenceType* debug3;
 
 private:
 	bool InitializeSentence(SentenceType**, int, ID3D11Device*);

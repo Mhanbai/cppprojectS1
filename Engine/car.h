@@ -45,7 +45,6 @@ public:
 	bool Initialize(RaceTrack* &racetrack, GraphicsClass* &graphics, SoundClass* sound, HWND &hwnd, NetworkClass* &network, char* modelFilename, WCHAR* textureFilename);
 	void Shutdown();
 	void Frame(float deltaTime, float gameTime);
-	void Reset();
 
 	void Accelerate(bool);
 	void BreakReverse(bool);
@@ -62,6 +61,9 @@ public:
 
 	//Check if car is past a line on the track
 	bool CheckIntersection(Car::CollisionBox carRect, RaceTrack::CheckPoint line);
+
+	//Inform the car to start sending messages
+	void SetGameStarted();
 	
 private:
 	//Set up the cars collider
@@ -118,6 +120,7 @@ private:
 	//Information for network messages
 	float timeStamp;
 	float lastMessageSent;
+	bool gameStarted = false;
 
 	//Functions, lists and variables used to help with checking the car is on the track
 	bool GetLateralPosition(D3DXVECTOR3 toTest, D3DXVECTOR3 linePoint1, D3DXVECTOR3 linePoint2);
