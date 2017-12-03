@@ -162,28 +162,36 @@ bool NetworkClass::Frame(float time)
 	}
 
 	if ((messageReceived == true) && (raceHasStarted == true)){
-		if (ping > 0.5f) {
-			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Attempting to reconnect...", 10, 10, 1.0f, 1.0f, 1.0f);
-			//Pause game until ping goes down
-			errorPause = true;
-			//Wait and close game if it doesnt
+		if (ping >= 0.5f) {
 			errorTimer += (time / 1000);
-			if ((errorTimer > 5.0f) && (errorTimer <= 8.0f)) {
-				char killBuffer[64];
-				sprintf_s(killBuffer, "Connection Lost. Closing game in %.2f", 8.0f - errorTimer);
-				m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, killBuffer, 10, 10, 1.0f, 1.0f, 1.0f);
-			}
-			else if (errorTimer > 8.0f) {
-				return false;
+			if (errorTimer > 1.0f) {
+				m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Attempting to reconnect...", 10, 10, 1.0f, 1.0f, 1.0f);
+				//Pause game until ping goes down
+				errorPause = true;
+				//Wait and close game if it doesnt
+				errorTimer += (time / 1000);
+				if ((errorTimer > 5.0f) && (errorTimer <= 8.0f)) {
+					char killBuffer[64];
+					sprintf_s(killBuffer, "Connection Lost. Closing game in %.2f", 8.0f - errorTimer);
+					m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, killBuffer, 10, 10, 1.0f, 1.0f, 1.0f);
+				}
+				else if (errorTimer > 8.0f) {
+					return false;
+				}
 			}
 		}
-		else if ((ping <= 0.5f) && (ping > 0.4f)) {
+		else if ((ping < 0.5f) && (ping >= 0.4f)) {
+			errorTimer = 0.0f;
+		}
+		else if ((ping < 0.4f) && (ping >= 0.2f)) {
 			errorPause = false;
+			totalGameTime = totalGameTime - errorTimer;
 			errorTimer = 0.0f;
 			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "WARNING: Network difficulties", 10, 10, 1.0f, 1.0f, 1.0f);
 		}
-		else {
+		else if (ping < 0.2f) {
 			errorPause = false;
+			totalGameTime = totalGameTime - errorTimer;
 			errorTimer = 0.0f;
 			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->networkStatus, "Connection established!", 10, 10, 1.0f, 1.0f, 1.0f);
 		}
@@ -423,14 +431,34 @@ void NetworkClass::ProcessMessage(const NetMessage * message)
 		trackPosition = message->trackPos;
 	}
 	else if (message->type == MT_POSITIONUPDATE) {
-		if ((message->timeStamp > positionUpdates[positionUpdates.size() - 1].timeStamp) && (errorPause == false)) {
-			totalGameTime = totalGameTime - errorTimer;
+		//Find the difference of position between this update and the last accepted update
+		float diff = abs(abs(message->posX) - abs(positionUpdates[positionUpdates.size() - 1].posX));
+		float diff2 = abs(abs(message->posZ) - abs(positionUpdates[positionUpdates.size() - 1].posZ));
+
+		//If the time of this update is greater than the time of the previous update
+		if ((message->timeStamp > positionUpdates[positionUpdates.size() - 1].timeStamp) && 
+			//If the game is not paused due to a poor connection
+			(errorPause == false) &&
+			//If the update is within the bounds of the track
+			((message->posX < 500.0f) && (message->posX > -500.0f)) &&
+			((message->posZ < 500.0f) && (message->posZ > -500.0f)))
+		
+		{
+
 			Update update;
 			update.timeStamp = message->timeStamp;
 			update.posX = message->posX;
 			update.posZ = message->posZ;
 			positionUpdates.push_back(update);
 			updateAvailable = true;
+
+			char posBuffer1[64];
+			sprintf_s(posBuffer1, "DiffZ: %.3f", diff2);
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->debug2, posBuffer1, 10, 260, 1.0f, 1.0f, 0.0f);
+
+			char posBuffer2[64];
+			sprintf_s(posBuffer2, "DiffX: %.3f", diff);
+			m_graphics->m_Text->UpdateSentence(m_graphics->m_Text->debug3, posBuffer2, 10, 280, 1.0f, 1.0f, 0.0f);
 		}
 	}
 	else if (message->type == MT_RACEFINISHED) {

@@ -28,9 +28,8 @@ struct Update
 	float timeStamp;
 	float posX;
 	float posZ;
-	float angle;
 	Update()
-		: timeStamp(0.0f), posX(0.0f), posZ(0.0f), angle (0.0f)
+		: timeStamp(0.0f), posX(0.0f), posZ(0.0f)
 	{
 	}
 };

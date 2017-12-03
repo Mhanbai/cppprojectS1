@@ -66,23 +66,16 @@ void Opponent::Frame(float deltaTime, float totalTime)
 			//Calculate the time for when we are trying to predict
 			predictionTime = totalTime - pos0.timeStamp;
 
-			if (m_Network->ping < 0.1f) {
-				extrapolationFactor = 4.5f;
-			}
-			else if ((m_Network->ping >= 0.1f) && (m_Network->ping < 0.2f)) {
-				extrapolationFactor = 2.0f;
-			}
-			else if ((m_Network->ping >= 0.2f) && (m_Network->ping < 0.4f)) {
-				extrapolationFactor = 1.5f;
-			}
-			else {
-				extrapolationFactor = 1.0f;
+			if (m_Network->ping < 0.2f) {
+				extrapolationFactor = 0.115f;
+			} else {
+				extrapolationFactor = 0.05f;
 			}
 
 			//Linear prediction model to calculate where we want the car to be
 			if (!(isnan(velX)) && (!isnan(velZ))) {
 				lastPosition = position;
-				nextPosition = D3DXVECTOR3((pos0.posX + velX * predictionTime * extrapolationFactor), 2.0f, (pos0.posZ + velZ * predictionTime * extrapolationFactor));
+				nextPosition = D3DXVECTOR3((pos0.posX + velX * (predictionTime + extrapolationFactor)), 2.0f, (pos0.posZ + velZ * (predictionTime + extrapolationFactor)));
 				currentForwardVector = forwardVector;
 				D3DXVec3Subtract(&nextForwardVector, &nextPosition, &lastPosition);
 			}
@@ -101,8 +94,8 @@ void Opponent::Frame(float deltaTime, float totalTime)
 	}
 
 	char pingBuffer[64];
-	sprintf_s(pingBuffer, "Length to send message = %f", m_Network->ping);
-	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->debug1, pingBuffer, 10, 250, 1.0f, 1.0f, 0.0f);
+	sprintf_s(pingBuffer, "Ping = %.3f", m_Network->ping);
+	m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->debug1, pingBuffer, 10, 240, 1.0f, 1.0f, 0.0f);
 
 	//Set the model to where the car is
 	m_Model->SetPosition(position.x, position.y, position.z);
