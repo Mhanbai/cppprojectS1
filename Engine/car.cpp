@@ -25,7 +25,7 @@ Car::Car()
 	//Car handling
 	frictionFactor = 0.5f;
 	lateralFrictionFactor = 3.0f;
-	steerFactor = 1.0f;
+	steerFactor = 1.1f;
 }
 
 Car::Car(const Car &)

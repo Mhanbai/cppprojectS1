@@ -323,7 +323,7 @@ bool Game::InitializeMainGame(bool multiplayer)
 			return false;
 		}
 
-		opponent->Initialize(m_Graphics, m_hwnd, m_Network, m_Text, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
+		opponent->Initialize(m_Graphics, m_hwnd, m_Network, m_Text, "../Engine/data/c_main.txt", L"../Engine/data/opponent.dds");
 		if (!result) {
 			return false;
 		}
