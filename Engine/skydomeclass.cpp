@@ -26,7 +26,7 @@ bool SkyDomeClass::Initialize(ID3D11Device* device)
 
 
 	// Load in the sky dome model.
-	result = LoadSkyDomeModel("../Engine/data/skysphere.txt");
+	result = LoadSkyDomeModel("data/skysphere.txt");
 	if (!result)
 	{
 		return false;

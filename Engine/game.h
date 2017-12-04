@@ -115,9 +115,6 @@ private:
 
 	//Is the game online?
 	bool onlineMode;
-
-	//Debug
-	int x = 0;
 };
 
 #endif

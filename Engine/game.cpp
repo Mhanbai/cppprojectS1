@@ -105,7 +105,6 @@ bool Game::Frame(int fpsOutput, int cpuOutput, float timerOutput)
 	case 2: //Call multiplayer logic if gamestate is set to multiplayer mode
 		result = GameFrame();
 		opponent->Frame(deltaTime / 1000, totalGameTime);
-		//totalGameTime = totalGameTime - m_Network->errorTimer;
 		return result;
 	default:
 		return false;
@@ -116,17 +115,16 @@ bool Game::InitializeMenuScreen()
 {
 	bool result;
 
-	m_Sound->LoopWaveFile("../Engine/data/menumusic.wav", 0);
+	m_Sound->LoopWaveFile("data/menumusic.wav", 0);
 
 	// Set up Menu Screen 1 assets
-
-	result = m_Graphics->AddBitmapToPipeline(0, menuBackground, m_hwnd, L"../Engine/data/mainmenubackground.dds", m_Graphics->GetScreenWidth(), m_Graphics->GetScreenHeight());
+	result = m_Graphics->AddBitmapToPipeline(0, menuBackground, m_hwnd, L"data/mainmenubackground.dds", m_Graphics->GetScreenWidth(), m_Graphics->GetScreenHeight());
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
 	}
 
-	result = m_Graphics->AddBitmapToPipeline(0, menuScreen, m_hwnd, L"../Engine/data/mainmenu.dds", 256, 192);
+	result = m_Graphics->AddBitmapToPipeline(0, menuScreen, m_hwnd, L"data/mainmenu.dds", 256, 192);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -136,7 +134,7 @@ bool Game::InitializeMenuScreen()
 	menuScreen->width_in = (m_Graphics->GetScreenWidth() / 2) - 128;
 	menuScreen->height_in = (m_Graphics->GetScreenHeight() / 2);
 
-	result = m_Graphics->AddBitmapToPipeline(0, menuTitle, m_hwnd, L"../Engine/data/title.dds", 1008, 114);
+	result = m_Graphics->AddBitmapToPipeline(0, menuTitle, m_hwnd, L"data/title.dds", 1008, 114);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -146,7 +144,7 @@ bool Game::InitializeMenuScreen()
 	menuTitle->width_in = (m_Graphics->GetScreenWidth() / 2) - 504;
 	menuTitle->height_in = ((m_Graphics->GetScreenHeight() / 2) / 2);
 
-	result = m_Graphics->AddBitmapToPipeline(0, pointer, m_hwnd, L"../Engine/data/pointer.dds", 19, 14);
+	result = m_Graphics->AddBitmapToPipeline(0, pointer, m_hwnd, L"data/pointer.dds", 19, 14);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -157,14 +155,13 @@ bool Game::InitializeMenuScreen()
 	pointer->height_in = menuScreen->height_in + 25;
 
 	// Set up Menu Screen 2 assets
-
-	result = m_Graphics->AddBitmapToPipeline(1, menuBackground2, m_hwnd, L"../Engine/data/mainmenubackground.dds", m_Graphics->GetScreenWidth(), m_Graphics->GetScreenHeight());
+	result = m_Graphics->AddBitmapToPipeline(1, menuBackground2, m_hwnd, L"data/mainmenubackground.dds", m_Graphics->GetScreenWidth(), m_Graphics->GetScreenHeight());
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
 	}
 
-	result = m_Graphics->AddBitmapToPipeline(1, enterIP2, m_hwnd, L"../Engine/data/enterip.dds", 512, 106);
+	result = m_Graphics->AddBitmapToPipeline(1, enterIP2, m_hwnd, L"data/enterip.dds", 512, 106);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -174,7 +171,7 @@ bool Game::InitializeMenuScreen()
 	enterIP2->width_in = (m_Graphics->GetScreenWidth() / 2) - 256;
 	enterIP2->height_in = (m_Graphics->GetScreenHeight() / 2) - 118;
 
-	result = m_Graphics->AddBitmapToPipeline(1, acceptButton2, m_hwnd, L"../Engine/data/accept.dds", 256, 64);
+	result = m_Graphics->AddBitmapToPipeline(1, acceptButton2, m_hwnd, L"data/accept.dds", 256, 64);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -184,7 +181,7 @@ bool Game::InitializeMenuScreen()
 	acceptButton2->width_in = (m_Graphics->GetScreenWidth() / 2) - 128;
 	acceptButton2->height_in = (m_Graphics->GetScreenHeight() / 2) + 96;
 
-	result = m_Graphics->AddBitmapToPipeline(1, backButton2, m_hwnd, L"../Engine/data/back.dds", 256, 64);
+	result = m_Graphics->AddBitmapToPipeline(1, backButton2, m_hwnd, L"data/back.dds", 256, 64);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -194,7 +191,7 @@ bool Game::InitializeMenuScreen()
 	backButton2->width_in = acceptButton2->width_in;
 	backButton2->height_in = acceptButton2->height_in + 64;
 
-	result = m_Graphics->AddBitmapToPipeline(1, pointer2, m_hwnd, L"../Engine/data/pointer.dds", 19, 14);
+	result = m_Graphics->AddBitmapToPipeline(1, pointer2, m_hwnd, L"data/pointer.dds", 19, 14);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -203,7 +200,8 @@ bool Game::InitializeMenuScreen()
 	//Set Initial position of pointer
 	pointer2->height_in = backButton2->height_in + 25;
 
-	result = m_Graphics->AddBitmapToPipeline(2, threeDisplay, m_hwnd, L"../Engine/data/three.dds", 79, 110);
+	//Setup CountDown assets
+	result = m_Graphics->AddBitmapToPipeline(2, threeDisplay, m_hwnd, L"data/three.dds", 79, 110);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -212,7 +210,7 @@ bool Game::InitializeMenuScreen()
 	threeDisplay->width_in = (m_Graphics->GetScreenWidth() / 2) - 40;
 	threeDisplay->height_in = (m_Graphics->GetScreenHeight() / 2) - 55;
 
-	result = m_Graphics->AddBitmapToPipeline(2, twoDisplay, m_hwnd, L"../Engine/data/two.dds", 77, 110);
+	result = m_Graphics->AddBitmapToPipeline(2, twoDisplay, m_hwnd, L"data/two.dds", 77, 110);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -221,7 +219,7 @@ bool Game::InitializeMenuScreen()
 	twoDisplay->width_in = (m_Graphics->GetScreenWidth() / 2) - 38;
 	twoDisplay->height_in = (m_Graphics->GetScreenHeight() / 2) - 55;
 
-	result = m_Graphics->AddBitmapToPipeline(2, oneDisplay, m_hwnd, L"../Engine/data/one.dds", 69, 110);
+	result = m_Graphics->AddBitmapToPipeline(2, oneDisplay, m_hwnd, L"data/one.dds", 69, 110);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -230,7 +228,7 @@ bool Game::InitializeMenuScreen()
 	oneDisplay->width_in = (m_Graphics->GetScreenWidth() / 2) - 35;
 	oneDisplay->height_in = (m_Graphics->GetScreenHeight() / 2) - 55;
 
-	result = m_Graphics->AddBitmapToPipeline(2, goDisplay, m_hwnd, L"../Engine/data/go.dds", 193, 110);
+	result = m_Graphics->AddBitmapToPipeline(2, goDisplay, m_hwnd, L"data/go.dds", 193, 110);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -239,7 +237,7 @@ bool Game::InitializeMenuScreen()
 	goDisplay->width_in = (m_Graphics->GetScreenWidth() / 2) - 96;
 	goDisplay->height_in = (m_Graphics->GetScreenHeight() / 2) - 55;
 
-	result = m_Graphics->AddBitmapToPipeline(2, lap1, m_hwnd, L"../Engine/data/lap1.dds", 358, 114);
+	result = m_Graphics->AddBitmapToPipeline(2, lap1, m_hwnd, L"data/lap1.dds", 358, 114);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -248,7 +246,7 @@ bool Game::InitializeMenuScreen()
 	lap1->width_in = (m_Graphics->GetScreenWidth()) - 487;
 	lap1->height_in = 100 - 57;
 
-	result = m_Graphics->AddBitmapToPipeline(2, lap2, m_hwnd, L"../Engine/data/lap2.dds", 365, 114);
+	result = m_Graphics->AddBitmapToPipeline(2, lap2, m_hwnd, L"data/lap2.dds", 365, 114);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -257,7 +255,7 @@ bool Game::InitializeMenuScreen()
 	lap2->width_in = (m_Graphics->GetScreenWidth()) - 498;
 	lap2->height_in = 100 - 57;
 
-	result = m_Graphics->AddBitmapToPipeline(2, winner, m_hwnd, L"../Engine/data/winner.dds", 409, 110);
+	result = m_Graphics->AddBitmapToPipeline(2, winner, m_hwnd, L"data/winner.dds", 409, 110);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -266,7 +264,7 @@ bool Game::InitializeMenuScreen()
 	winner->width_in = (m_Graphics->GetScreenWidth() / 2) - 205;
 	winner->height_in = (m_Graphics->GetScreenWidth() / 2) - 55;
 
-	result = m_Graphics->AddBitmapToPipeline(2, loser, m_hwnd, L"../Engine/data/loser.dds", 499, 110);
+	result = m_Graphics->AddBitmapToPipeline(2, loser, m_hwnd, L"data/loser.dds", 499, 110);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -275,7 +273,7 @@ bool Game::InitializeMenuScreen()
 	loser->width_in = (m_Graphics->GetScreenWidth() / 2) - 250;
 	loser->height_in = (m_Graphics->GetScreenWidth() / 2) - 55;
 
-	result = m_Graphics->AddBitmapToPipeline(2, loser, m_hwnd, L"../Engine/data/black.dds", 250, 300);
+	result = m_Graphics->AddBitmapToPipeline(2, loser, m_hwnd, L"data/black.dds", 150, 260);
 	if (!result) {
 		MessageBox(m_hwnd, L"Could not add bitmap to pipeline.", L"Error", MB_OK);
 		return false;
@@ -308,7 +306,7 @@ bool Game::InitializeMainGame(bool multiplayer)
 		return false;
 	}
 
-	result = mainPlayer->Initialize(m_raceTrack, m_Graphics, m_Sound, m_hwnd, m_Network, "../Engine/data/c_main.txt", L"../Engine/data/cars.dds");
+	result = mainPlayer->Initialize(m_raceTrack, m_Graphics, m_Sound, m_hwnd, m_Network, "data/c_main.txt", L"data/cars.dds");
 	if (!result) {
 		return false;
 	}
@@ -323,18 +321,18 @@ bool Game::InitializeMainGame(bool multiplayer)
 			return false;
 		}
 
-		opponent->Initialize(m_Graphics, m_hwnd, m_Network, m_Text, "../Engine/data/c_main.txt", L"../Engine/data/opponent.dds");
+		opponent->Initialize(m_Graphics, m_hwnd, m_Network, m_Text, "data/c_main.txt", L"data/opponent.dds");
 		if (!result) {
 			return false;
 		}
 
 		if (m_Network->trackPosition == 0) {
-			mainPlayer->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
+			mainPlayer->SetPosition(12.0f, 2.0f, 0.0f, 0.0f);
 			opponent->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
 		}
 		else if (m_Network->trackPosition == 1) {
 			mainPlayer->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
-			opponent->SetPosition(-12.0f, 2.0f, 0.0f, 0.0f);
+			opponent->SetPosition(12.0f, 2.0f, 0.0f, 0.0f);
 		}
 	}
 
@@ -348,7 +346,7 @@ bool Game::MenuFrame()
 	//////////////////////////////////////////////////////////////////////////////////
 	if (menuState < 3) {
 		if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
-			m_Sound->PlayWaveFile("../Engine/data/cursor.wav", 0);
+			m_Sound->PlayWaveFile("data/cursor.wav", 0);
 			if (menuState != 2) {
 				menuState++;
 			}
@@ -358,7 +356,7 @@ bool Game::MenuFrame()
 			menuWasDownPressed = true;
 		}
 		else if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
-			m_Sound->PlayWaveFile("../Engine/data/cursor.wav", 0);
+			m_Sound->PlayWaveFile("data/cursor.wav", 0);
 			if (menuState != 0) {
 				menuState--;
 			}
@@ -378,7 +376,7 @@ bool Game::MenuFrame()
 
 	if ((menuState >= 3) && (menuState < 6)) {
 		if ((m_Input->IsDownPressed() == true) && (menuWasDownPressed == false)) {
-			m_Sound->PlayWaveFile("../Engine/data/cursor.wav", 0);
+			m_Sound->PlayWaveFile("data/cursor.wav", 0);
 			if (menuState != 5) {
 				menuState++;
 			}
@@ -388,7 +386,7 @@ bool Game::MenuFrame()
 			menuWasDownPressed = true;
 		}
 		else if ((m_Input->IsUpPressed() == true) && (menuWasUpPressed == false)) {
-			m_Sound->PlayWaveFile("../Engine/data/cursor.wav", 0);
+			m_Sound->PlayWaveFile("data/cursor.wav", 0);
 			if (menuState != 3) {
 				menuState--;
 			}
@@ -449,9 +447,9 @@ bool Game::MenuFrame()
 		switch (menuState) {
 		case 0:
 			m_Sound->StopWaveFile(0);
-			m_Sound->PlayWaveFile("../Engine/data/select.wav", 0);
-			m_Sound->LoopWaveFile("../Engine/data/music.wav", 1);
-			m_Sound->PlayWaveFile("../Engine/data/carstart.wav", 1);
+			m_Sound->PlayWaveFile("data/select.wav", 0);
+			m_Sound->LoopWaveFile("data/music.wav", 1);
+			m_Sound->PlayWaveFile("data/carstart.wav", 1);
 			totalGameTime = 0.0f;
 			result = InitializeMainGame(false);
 			if (!result) {
@@ -463,30 +461,30 @@ bool Game::MenuFrame()
 			m_Graphics->SetGameState(gameState); //Ensure the correct graphics are rendering for the game state
 			break;
 		case 1:
-			m_Sound->PlayWaveFile("../Engine/data/select.wav", 0);
+			m_Sound->PlayWaveFile("data/select.wav", 0);
 			m_Graphics->SetMenuState(1);
 			menuState = 3;
 			break;
 		case 2:
-			m_Sound->PlayWaveFile("../Engine/data/menuback.wav", 0);
+			m_Sound->PlayWaveFile("data/menuback.wav", 0);
 			return false; // Quits the game
 		case 3:
-			m_Sound->PlayWaveFile("../Engine/data/select.wav", 0);
+			m_Sound->PlayWaveFile("data/select.wav", 0);
 			menuState = 4;
 			break;
 		case 4:
-			m_Sound->PlayWaveFile("../Engine/data/select.wav", 0);
+			m_Sound->PlayWaveFile("data/select.wav", 0);
 			m_Network->EstablishConnection(acceptInputBuffer);
 			menuState = 6;
 			break;
 		case 5:
 			// Go back to main menu
-			m_Sound->PlayWaveFile("../Engine/data/menuback.wav", 0);
+			m_Sound->PlayWaveFile("data/menuback.wav", 0);
 			m_Graphics->SetMenuState(0);
 			menuState = 1;
 			break;
 		case 6:
-			m_Sound->PlayWaveFile("../Engine/data/menuback.wav", 0);
+			m_Sound->PlayWaveFile("data/menuback.wav", 0);
 			m_Graphics->m_Text->UpdateSentence(m_Graphics->m_Text->networkStatus, "Connection attempt cancelled", 10, 10, 1.0f, 1.0f, 1.0f);
 			m_Network->establishingConnection = false;
 			menuState = 4;
@@ -507,8 +505,8 @@ bool Game::MenuFrame()
 		m_Sound->StopWaveFile(0);
 		gameState = 2;
 		totalGameTime = 0.0f;
-		m_Sound->PlayWaveFile("../Engine/data/carstart.wav", 1);
-		m_Sound->LoopWaveFile("../Engine/data/music.wav", 1);
+		m_Sound->PlayWaveFile("data/carstart.wav", 1);
+		m_Sound->LoopWaveFile("data/music.wav", 1);
 		m_Graphics->SetGameState(gameState);
 	}
 
@@ -518,7 +516,6 @@ bool Game::MenuFrame()
 bool Game::GameFrame()
 {
 	mainPlayer->Frame(deltaTime / 1000, totalGameTime);
-	m_raceTrack->Frame();
 	m_Graphics->m_Camera->Follow(mainPlayer->GetPosition(), mainPlayer->GetForwardVector(), deltaTime / 1000);
 
 	if (isCountdownDone == false) {
@@ -527,21 +524,21 @@ bool Game::GameFrame()
 				if (three == false) {
 					m_Graphics->countdown = 0;
 					three = true;
-					m_Sound->PlayWaveFile("../Engine/data/321.wav", 1);
+					m_Sound->PlayWaveFile("data/321.wav", 1);
 				}
 			}
 			else if ((totalGameTime >= 2.0f) && (totalGameTime < 3.0f)) {
 				if (two == false) {
 					m_Graphics->countdown = 1;
 					two = true;
-					m_Sound->PlayWaveFile("../Engine/data/321.wav", 1);
+					m_Sound->PlayWaveFile("data/321.wav", 1);
 				}
 			}
 			else if ((totalGameTime >= 3.0f) && (totalGameTime < 4.0f)) {
 				if (one == false) {
 					m_Graphics->countdown = 2;
 					one = true;
-					m_Sound->PlayWaveFile("../Engine/data/321.wav", 1);
+					m_Sound->PlayWaveFile("data/321.wav", 1);
 				}
 			}
 			else if (totalGameTime >= 4.0f) {
@@ -551,7 +548,7 @@ bool Game::GameFrame()
 				mainPlayer->SetGameStarted();
 				m_Network->ResetGameTime();
 				m_Network->raceHasStarted = true;
-				m_Sound->PlayWaveFile("../Engine/data/go.wav", 1);
+				m_Sound->PlayWaveFile("data/go.wav", 1);
 				gameStarted = true;
 			}
 		}
@@ -675,13 +672,13 @@ void Game::Victory(bool didWin)
 	gameStarted = false;
 	if (didWin == true) {
 		m_Graphics->victory = true;
-		m_Sound->PlayWaveFile("../Engine/data/victory.wav", 3);
+		m_Sound->PlayWaveFile("data/victory.wav", 3);
 	}
 	if (didWin == false) {
 		gameEndTime = totalGameTime;
 		gameHasEnded = true;
 		m_Graphics->loss = true;
-		m_Sound->PlayWaveFile("../Engine/data/defeat.wav", 3);
+		m_Sound->PlayWaveFile("data/defeat.wav", 3);
 	}
 }
 

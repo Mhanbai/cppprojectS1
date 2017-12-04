@@ -53,14 +53,6 @@ bool Car::Initialize(RaceTrack* &racetrack, GraphicsClass *& graphics, SoundClas
 		return false;
 	}
 
-	/*for (int i = 0; i < 4; i++) {
-		//Add the car to the graphics pipeline
-		result = m_Graphics->AddToPipeline(nodes[i], hwnd, "../Engine/data/skysphere.txt", L"../Engine/data/cars.dds");
-		if (!result) {
-			return false;
-		}
-	}*/
-
 	//Find the list of positions that determine the boundaries of the car
 	m_Collider = FindCollider();
 
@@ -87,7 +79,7 @@ void Car::Frame(float deltaTime, float gameTime)
 					m_Sound->StopWaveFile(2);
 					slowcarsfx = false;
 				}
-				m_Sound->LoopWaveFile("../Engine/data/caridle.wav", 2); //Then start looping the new noise
+				m_Sound->LoopWaveFile("data/caridle.wav", 2); //Then start looping the new noise
 				idlecarsfx = true; //Boolean to determine that the noise is playing
 			}
 		}
@@ -96,7 +88,7 @@ void Car::Frame(float deltaTime, float gameTime)
 				m_Sound->StopWaveFile(2);
 				idlecarsfx = false;
 				fastcarsfx = false;
-				m_Sound->LoopWaveFile("../Engine/data/carslow.wav", 2);
+				m_Sound->LoopWaveFile("data/carslow.wav", 2);
 				slowcarsfx = true;
 			}
 			gear = 0.5f;
@@ -108,7 +100,7 @@ void Car::Frame(float deltaTime, float gameTime)
 			if (fastcarsfx == false) {
 				m_Sound->StopWaveFile(2);
 				slowcarsfx = false;
-				m_Sound->LoopWaveFile("../Engine/data/carfast.wav", 2);
+				m_Sound->LoopWaveFile("data/carfast.wav", 2);
 				fastcarsfx = true;
 			}
 			gear = 1.0f;

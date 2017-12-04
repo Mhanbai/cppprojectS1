@@ -28,7 +28,7 @@ bool SkyDomeShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
 	// Initialize the vertex and pixel shaders.
-	result = InitializeShader(device, hwnd, L"../Engine/skydome.vs", L"../Engine/skydome.ps");
+	result = InitializeShader(device, hwnd, L"skydome.vs", L"skydome.ps");
 	if (!result)
 	{
 		return false;

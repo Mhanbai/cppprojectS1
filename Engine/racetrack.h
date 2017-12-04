@@ -36,7 +36,6 @@ public:
 	~RaceTrack();
 	bool Initialize(GraphicsClass* &graphics, HWND &hwnd, D3DClass* &D3D);
 	void Shutdown();
-	void Frame();
 
 	//Variables and lists for collision
 	D3DXVECTOR3* mesh; //Collision mesh

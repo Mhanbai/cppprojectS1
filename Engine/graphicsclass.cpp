@@ -94,7 +94,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	}
 
 	// Initialize the terrain object.
-	result = m_Terrain->Initialize(m_D3D->GetDevice(), "../Engine/data/heightmap01.bmp", L"../Engine/data/dirt01.dds");
+	result = m_Terrain->Initialize(m_D3D->GetDevice(), "data/heightmap01.bmp", L"data/dirt01.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the terrain object.", L"Error", MB_OK);
@@ -198,7 +198,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, TextClass* &te
 	}
 
 	// Initialize the foliage object.
-	result = m_Foliage->Initialize(m_D3D->GetDevice(), L"../Engine/data/grass.dds", 40000);
+	result = m_Foliage->Initialize(m_D3D->GetDevice(), L"data/grass.dds", 40000);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the foliage object.", L"Error", MB_OK);
@@ -485,7 +485,6 @@ bool GraphicsClass::Render()
 	// Get the position of the camera.
 	cameraPosition = m_Camera->GetPosition();
 
-	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	switch (gameState) {
 	case 0:
 		RenderMainMenu(worldMatrix, viewMatrix, projectionMatrix, cameraPosition);
@@ -544,7 +543,7 @@ bool GraphicsClass::Render()
 		result = m_FoliageShader->Render(m_D3D->GetDeviceContext(), m_Foliage->GetVertexCount(), m_Foliage->GetInstanceCount(), viewMatrix, projectionMatrix, m_Foliage->GetTexture());
 
 		m_D3D->TurnZBufferOff();
-		//Render Game UI Assets
+		//Render CountDown assets, this is a bit over complex but it was the only non-complicated solution
 		switch (countdown) {
 		case 0:
 			result = gameUIAssets[0]->Render(m_D3D->GetDeviceContext(), gameUIAssets[0]->width_in, gameUIAssets[0]->height_in);
